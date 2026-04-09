@@ -1,0 +1,41 @@
+{{define "admin_voters.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_voters_content"}}
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Voters Management (DPT)</h1>
+        <p class="text-slate-500 mt-1">Manage institutional electorate records and verify participation status.</p>
+    </div>
+    <a href="/admin/voters/new" class="px-5 py-2 bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white rounded-xl font-semibold shadow-md flex items-center gap-2"><span class="material-symbols-outlined">add</span>Add Voter</a>
+</section>
+<section class="bg-white rounded-2xl shadow-sm border border-slate-200/10 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50">
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">UUID</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Name</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Class</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Phone Number</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Voted Status</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {{range .Voters}}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-mono text-xs text-slate-400">{{.UUID}}</td>
+                    <td class="px-6 py-4 font-semibold text-slate-900">{{.Name}}</td>
+                    <td class="px-6 py-4 text-slate-600">{{.ClassName}}</td>
+                    <td class="px-6 py-4 text-slate-600">{{.PhoneNumber}}</td>
+                    <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{if eq .HasVoted "Sudah"}}bg-emerald-100 text-emerald-700{{else}}bg-slate-100 text-slate-700{{end}}">{{.HasVoted}}</span></td>
+                    <td class="px-6 py-4 text-right"><form action="/admin/voters/{{.ID}}/delete" method="POST" class="inline"><button type="submit" class="text-red-600 hover:text-red-800">Delete</button></form></td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">Tidak ada pemilih.</td></tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+{{end}}

@@ -1,0 +1,63 @@
+{{define "admin_dashboard.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_dashboard_content"}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">groups</span></div>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+2.4%</span>
+        </div>
+        <p class="text-slate-500 text-sm font-medium mb-1">Total Voters</p>
+        <h3 class="text-4xl font-bold">{{.TotalVoters}}</h3>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Verified DPT List</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">poll</span></div>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+1.8%</span>
+        </div>
+        <p class="text-slate-500 text-sm font-medium mb-1">Votes Cast</p>
+        <h3 class="text-4xl font-bold">{{.VotesCast}}</h3>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Recorded Ballots</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
+        <div class="flex justify-between items-start mb-4">
+            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">insights</span></div>
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Trending</span>
+        </div>
+        <p class="text-slate-500 text-sm font-medium mb-1">Participation</p>
+        <h3 class="text-4xl font-bold">{{.Participation}}</h3>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Real-time turnout</p>
+    </div>
+</div>
+<section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
+    <h2 class="text-xl font-semibold mb-4">Pengumuman Terbaru</h2>
+    <p class="text-slate-600">{{if .Announcement}}{{.Announcement}}{{else}}Belum ada pengumuman.{{end}}</p>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
+        <h2 class="text-xl font-semibold mb-4">Hasil Sementara - Ketua</h2>
+        <ul class="space-y-3">
+            {{range .ChairmanResults}}
+            <li class="flex justify-between gap-4 p-4 rounded-2xl bg-slate-50">
+                <span>{{.Name}}</span><span class="font-semibold">{{.Count}}</span>
+            </li>
+            {{else}}
+            <li class="text-slate-500">Tidak ada data.</li>
+            {{end}}
+        </ul>
+    </section>
+    <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
+        <h2 class="text-xl font-semibold mb-4">Hasil Sementara - Wakil</h2>
+        <ul class="space-y-3">
+            {{range .ViceChairmanResults}}
+            <li class="flex justify-between gap-4 p-4 rounded-2xl bg-slate-50">
+                <span>{{.Name}}</span><span class="font-semibold">{{.Count}}</span>
+            </li>
+            {{else}}
+            <li class="text-slate-500">Tidak ada data.</li>
+            {{end}}
+        </ul>
+    </section>
+</div>
+{{end}}

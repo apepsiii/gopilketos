@@ -1,0 +1,31 @@
+{{define "vote_step2.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <title>Pilih Wakil Ketua OSIS | SMK NIBA E-Voting</title>
+    <style>.material-symbols-outlined{font-variation-settings:'FILL'0,'wght'400,'GRAD'0,'opsz'24;}</style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/20 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="text-lg font-bold">SMK NIBA E-Voting</div>
+            <span class="text-sm uppercase tracking-[0.4em] text-slate-500">Step 2 of 3</span>
+        </div>
+    </nav>
+    <main class="pt-28 pb-16 px-6 max-w-7xl mx-auto">
+        <div class="mb-10 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.4em] text-primary">Choose Your Vice Chairman</p>
+            <h1 class="text-4xl font-bold mt-4">Select the partner for your chosen chairman.</h1>
+            <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Choose a vice-chairman who complements the leadership vision.</p>
+        </div>
+        <div id="candidates-list" class="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3"></div>
+    </main>
+    <script src="/static/js/vote_step2.js" defer></script>
+</body>
+</html>
+{{end}}

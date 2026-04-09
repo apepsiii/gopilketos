@@ -1,0 +1,32 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build directories
+bin/
+
+# Vendor dir
+vendor/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local database
+database/evoting.db
+
+# Generated files
+*.log
+*.tmp
+
+# Dependency directories
+/pkg/

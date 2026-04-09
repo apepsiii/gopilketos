@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voters Management | OSIS E-Voting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "surface-container": "#eceef0",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#e2dfff",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "surface-tint": "#4d44e3",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-background": "#191c1e",
+                        "secondary-container": "#d0e1fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-surface-variant": "#464555",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-container": "#dad7ff",
+                        "outline": "#777587",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#a44100",
+                        "surface-dim": "#d8dadc",
+                        "background": "#f7f9fb",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "primary": "#3525cd",
+                        "inverse-surface": "#2d3133",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed": "#0f0069",
+                        "on-secondary-container": "#54647a",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "tertiary": "#7e3000",
+                        "secondary-fixed": "#d3e4fe",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "tertiary-fixed": "#ffdbcc",
+                        "outline-variant": "#c7c4d8",
+                        "on-tertiary-fixed": "#351000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .voter-card-print {
+            aspect-ratio: 1 / 1.414; /* A4 aspect approximation for grid cards */
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-64 fixed left-0 top-0 overflow-y-auto bg-slate-50 dark:bg-slate-900 flex flex-col gap-4 p-4 z-50">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg overflow-hidden">
+<img alt="OSIS Logo" class="w-full h-full object-cover" data-alt="professional minimalist logo for an educational institution with clean geometric shapes in blue and white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKqe2SpEbyFHYhfCChhgGczaAXzX2bIkbj_g5zbvyPLfcbtribraCBX6mX0e4kdQbQjjD85RSYy_ijpHvWvkYMoyhR5hgLsyEwjuIcPVJF1jmlXQrKqnfdwH-HxzVWNHf9oVNNGDXMlItpMx_Aiv0Ux_ArI8xapIkuy0h9HabCUOKiMVuipJHkFVncX7DV06uQi4wtUfhHVma_XkTrAqBVbYJw6bzxdZbEPdiSf8fwbB8VjwJBAGZJPDN9NUIvxo-A3b42rGVdol0"/>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight text-indigo-700 dark:text-indigo-400">OSIS E-Voting</h1>
+<p class="text-[10px] uppercase tracking-widest font-semibold text-slate-400">The Digital Registrar</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-200 rounded-md font-sans antialiased text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-200 rounded-md font-sans antialiased text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+                Candidates
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-400 shadow-sm rounded-md font-sans antialiased text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="person_check" style="font-variation-settings: 'FILL' 1;">person_check</span>
+                Voters
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-200 rounded-md font-sans antialiased text-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+                Audit Logs
+            </a>
+</nav>
+<div class="mt-auto">
+<button class="w-full py-3 px-4 bg-primary text-white rounded-xl font-semibold shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                Launch Election
+            </button>
+</div>
+</aside>
+<!-- TopNavBar Component -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<h2 class="font-semibold tracking-tight text-slate-900 dark:text-slate-50">Administrator Portal</h2>
+<div class="h-4 w-px bg-slate-200 mx-2"></div>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" data-icon="search">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-low border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Search voters..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full text-xs font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                System Status: Online
+            </div>
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:text-indigo-600 transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="text-slate-500 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border border-slate-100 shadow-sm">
+<img alt="Admin Avatar" class="w-full h-full object-cover" data-alt="close-up portrait of a professional administrator in a minimalist office setting with soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFkM88necSBXQ07dZ6vrjkyHKEQB4PGiszYNWF1hOBujnyLVgt5kBdYBVM0dHHGo3Yv7d6Kb-WJStscNzKp59OslcVnmJD9BWvIFKu1Nc1B-iZuFNelsMbr5Rijr0AxwA0g2paZAurcxe0R0edCm0iKUuo2h6zszgZTkK_ZyQ7Ksf-Ml5sCfvr2Hwe-onjWtT0tS3WKuqeD0qtNAAdJWgMoq-Yn5BdQmXlByuQnG-jFR5vKBuTgWf7_xuaMTtUCxCRve-J8xlNkbw"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-16 min-h-screen">
+<div class="p-8 space-y-8">
+<!-- Page Header Section -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex items-center gap-2 text-xs font-medium text-slate-400 mb-2">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-surface">Voters Management</span>
+</nav>
+<h1 class="text-3xl font-bold tracking-tight text-on-surface">Voters Management (DPT)</h1>
+<p class="text-on-surface-variant mt-1">Manage institutional electorate records and verify participation status.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-surface-container-lowest border border-outline-variant/30 text-on-surface rounded-xl font-medium hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="upload_file">upload_file</span>
+                        Import CSV
+                    </button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface rounded-xl font-medium hover:bg-surface-container-highest transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="qr_code">qr_code</span>
+                        Generate QR Cards
+                    </button>
+<button class="px-5 py-2 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        Add Voter
+                    </button>
+</div>
+</section>
+<!-- Table View Section -->
+<section class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/20 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">UUID</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Name</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Class</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Phone Number</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Voted Status</th>
+<th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-slate-400">8f2a...c91e</td>
+<td class="px-6 py-4 font-semibold text-on-surface">Alexandria Valentina</td>
+<td class="px-6 py-4 text-slate-600">XII MIPA 1</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-slate-600">
+<img alt="WhatsApp" class="w-4 h-4 opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsP9s0Aps-At5Q_6JQIiQ58ZQZFHbGXu-XpSAdUph5YmSumliwVHz5iGF0QPHlyo7c6LsoEzVqOjkFw6Z6IKLERdDSIfWEm8U2pqfQkmXozQzumRV3KZUBUyqI_ceczQQPXX_s_kNkDzXch38BPm1RlGThMQd0pv0UvofpbspTXRDeU8Z8KSYJdZH0PV40AxbXVtN9R2z4xiefY6GJDBvXvPSnaf3VWcR37H2opeRC9fCZ88ca4ePT91C8Q8l0XXulfyCHIWA-6DU"/>
+                                        +62 812-3456-7890
+                                    </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                        Voted
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-slate-400">3d41...b76a</td>
+<td class="px-6 py-4 font-semibold text-on-surface">Marcus Aurelius Chen</td>
+<td class="px-6 py-4 text-slate-600">XI IPS 3</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-slate-600">
+<img alt="WhatsApp" class="w-4 h-4 opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4BoAyte9VJz9zYPk-hRe0o5taghsPZoMRcn7gF2EpJHrhQHzz7dVvEk8y58ph3tlEcL9_SThf29v1CmvyN03RWTWQoIUYD33UpAJmp7DJqmF5iW-ZOInn5jIH-fJTfGcDgVNMP1B53xbEf33rUChWim5IvNOQybM2ytBE4-NX2ChvxpzgolS4jqETcSD-BI-LxfHK1g_Y_x1HcgTNhEeR4Q5ZpCX-MAOzX5WPh-w1OSucbgcFk3wWb3tTsHb6gC6xqkO9Bo1aHKc"/>
+                                        +62 821-9988-7766
+                                    </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container-highest text-slate-600">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        Not Voted
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-slate-400">9c11...f002</td>
+<td class="px-6 py-4 font-semibold text-on-surface">Siti Nurhaliza</td>
+<td class="px-6 py-4 text-slate-600">X BB 2</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-slate-600">
+<img alt="WhatsApp" class="w-4 h-4 opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmtkLlJnCsZY1HTf-rL1OBHgEswSV5M02OmFstS5gGMjSUoIziD-ZOQ5azFEFoNxgQTMM9fZK1Jpzr2SngmXbNDlL3DozMf-cynhMyJvv4d-V9GpVQsGigUVQ3ardJmSzQWLSBLuHAig_DLEroaE2edoRmAJJT41CR0wuEgcDluNVzeW9LYfYl99r9Na6GJVlNhQA0w651WTIA8yr9n7UFRhXAzNX6zChN7p3JJVBMjrbAM74MoYM1vX84PlaJbG4dFH69IxhdH5M"/>
+                                        +62 811-2222-3333
+                                    </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-fixed text-on-primary-fixed">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                        Voted
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-mono text-xs text-slate-400">a4f8...e233</td>
+<td class="px-6 py-4 font-semibold text-on-surface">Dian Sastrowardoyo</td>
+<td class="px-6 py-4 text-slate-600">XII MIPA 4</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2 text-slate-600">
+<img alt="WhatsApp" class="w-4 h-4 opacity-70" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHmi_yN7ThYZHzUeNQvM8OQUdA99hgNMs8Wow_WehmqGjNRlCKqY2sG_-6n97C7tdcd_U0SgafdX9gUEcTTNCGGQ4gIL8LYam71XcAVCdsOcMiWS7KhJJBg6Y5ijmlmvo0MIDRC8skdPOWfgKPxBVrbXxpmI85zUo7zQ6YghgRKoDwt0bBJuMnfW7vxG5QHOCFAC1J3y_6OrxxNJvfD3Nbf3OaW8QQoSZ_G4JQHqF_bZ4ZFSiIN6vUEE_CM4cqVz3Rz9C_Xqz4nTs"/>
+                                        +62 877-5544-3322
+                                    </div>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container-highest text-slate-600">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        Not Voted
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="p-1 hover:text-primary transition-colors"><span class="material-symbols-outlined" data-icon="edit">edit</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 flex items-center justify-between border-t border-slate-100 bg-surface-container-low/20">
+<p class="text-xs text-slate-500 font-medium">Showing 1 to 4 of 1,240 entries</p>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 text-xs font-semibold text-slate-400 bg-white border border-slate-200 rounded-lg cursor-not-allowed">Previous</button>
+<button class="px-3 py-1 text-xs font-semibold text-white bg-primary rounded-lg">1</button>
+<button class="px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">2</button>
+<button class="px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">3</button>
+<button class="px-3 py-1 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50">Next</button>
+</div>
+</div>
+</section>
+<!-- Printable Cards Section -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">Printable Voter Login Cards</h2>
+<p class="text-on-surface-variant">A4-ready cards for physical distribution. Best printed on 210gsm cardstock.</p>
+</div>
+<button class="px-4 py-2 border-2 border-primary text-primary rounded-xl font-bold hover:bg-primary/5 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="print">print</span>
+                        Print Current Page
+                    </button>
+</div>
+<!-- Bento Grid for Print Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="voter-card-print bg-white border-[3px] border-slate-900 p-6 flex flex-col items-center justify-between text-center relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-slate-900"></div>
+<div class="w-full flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Official E-Voting Card</span>
+<span class="text-[10px] font-black text-slate-900">2024/2025</span>
+</div>
+<div class="space-y-1 mb-4">
+<h3 class="text-xs font-extrabold text-primary uppercase tracking-widest">SMK NIBA E-Voting</h3>
+<div class="h-0.5 w-12 bg-primary mx-auto"></div>
+</div>
+<div class="my-6 w-40 h-40 border-2 border-slate-100 p-2 bg-slate-50 relative">
+<img alt="QR Code" class="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="minimalist clean QR code design with pixelated geometric patterns in deep blue on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCY2Xm2FmhyNi8FI7pL3bU_h3aAL2JfNNkO_g5KrVVGr-DPKSF2OoV57U-VRgt-YoW95Bbq8Ez0IjvPxx5M70EpqePKCf_I2AHyslxyRKL8XcKtF0DhWJuqMK_7AZXSCLzzdDU0ZGiY_8sQj1YLubqMx5LxTkm9A-QsYxdx-F2lZ3ddY3QwLIrz3eIafZYFhT0lS8ykC6uPIqvfcUrIHzXr5VqCMV9Z5NnW98xCv4jFKs3DtM6tiT4xzN3nkuL-qDIy8P2X5VPJO-w"/>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-black text-slate-900 leading-tight">ALEXANDRIA VALENTINA</p>
+<p class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block">XII MIPA 1</p>
+</div>
+<div class="mt-6 pt-4 border-t border-dashed border-slate-200 w-full">
+<p class="text-[9px] font-medium text-slate-400 italic">"Scan this QR Code to login and vote"</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="voter-card-print bg-white border-[3px] border-slate-900 p-6 flex flex-col items-center justify-between text-center relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-slate-900"></div>
+<div class="w-full flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Official E-Voting Card</span>
+<span class="text-[10px] font-black text-slate-900">2024/2025</span>
+</div>
+<div class="space-y-1 mb-4">
+<h3 class="text-xs font-extrabold text-primary uppercase tracking-widest">SMK NIBA E-Voting</h3>
+<div class="h-0.5 w-12 bg-primary mx-auto"></div>
+</div>
+<div class="my-6 w-40 h-40 border-2 border-slate-100 p-2 bg-slate-50 relative">
+<img alt="QR Code" class="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="minimalist clean QR code design with pixelated geometric patterns in deep blue on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJyOp997lyefXrVi90LxxDFwqqv85br7I2AfvRkA_89NyG07KNauLP_0VLoBjAWHedFJ984R-QZmYLZvt3dadR98N-PpoeL3NHrcOEmtpUHv8lanwdkjjx3pmthSMv4TrwrMIUH4bOoKMECPJcAZGvqg4FOOQjM6w6ryXBd2PkPBr7FTrgnd_4CE9b1Kzc49wgJNrY1Ibf5twHnwGRUhRehsZUgb2gug17x7Cc3MGHlpAoXiMYJrQxUyPDeS-U8fEIqgAirMj_D_k"/>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-black text-slate-900 leading-tight">MARCUS AURELIUS CHEN</p>
+<p class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block">XI IPS 3</p>
+</div>
+<div class="mt-6 pt-4 border-t border-dashed border-slate-200 w-full">
+<p class="text-[9px] font-medium text-slate-400 italic">"Scan this QR Code to login and vote"</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="voter-card-print bg-white border-[3px] border-slate-900 p-6 flex flex-col items-center justify-between text-center relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-slate-900"></div>
+<div class="w-full flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Official E-Voting Card</span>
+<span class="text-[10px] font-black text-slate-900">2024/2025</span>
+</div>
+<div class="space-y-1 mb-4">
+<h3 class="text-xs font-extrabold text-primary uppercase tracking-widest">SMK NIBA E-Voting</h3>
+<div class="h-0.5 w-12 bg-primary mx-auto"></div>
+</div>
+<div class="my-6 w-40 h-40 border-2 border-slate-100 p-2 bg-slate-50 relative">
+<img alt="QR Code" class="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="minimalist clean QR code design with pixelated geometric patterns in deep blue on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCefYuQwx8XgTByB_cxXkRk28NNoyjtR95Oy7lCvGfRvGjBrvj8VBZngQz8sH1QJymYcYnIwJK-UoflumCzq8W0FxhTqLA24bU2QliGTUIeZdMel3MDddCGP1diFSt3jUyTET6a6S1y7HHvNInRVQce1ib0RpobPXTTGVloUmRL3De5gKOTiIjEtSLcW-yTFKx86-odJ-m3hZKm2F9coVgSXylseQ_5uV53A33N1oDf-WxmyRE3upNt62XJYgeogVRE6zQp4wsNGys"/>
+</div>
+<div class="space-y-1">
+<p class="text-sm font-black text-slate-900 leading-tight">SITI NURHALIZA</p>
+<p class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block">X BB 2</p>
+</div>
+<div class="mt-6 pt-4 border-t border-dashed border-slate-200 w-full">
+<p class="text-[9px] font-medium text-slate-400 italic">"Scan this QR Code to login and vote"</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

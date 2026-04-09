@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SMK NIBA E-Voting Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container-high": "#e6e8ea",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary-container": "#dad7ff",
+                        "surface-container": "#eceef0",
+                        "background": "#f7f9fb",
+                        "inverse-surface": "#2d3133",
+                        "on-tertiary-fixed": "#351000",
+                        "outline-variant": "#c7c4d8",
+                        "surface-tint": "#4d44e3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "error": "#ba1a1a",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#e0e3e5",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "error-container": "#ffdad6",
+                        "on-background": "#191c1e",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#0f0069",
+                        "tertiary-fixed": "#ffdbcc",
+                        "inverse-primary": "#c3c0ff",
+                        "tertiary": "#7e3000",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "surface-container-highest": "#e0e3e5",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-surface-variant": "#464555",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#505f76",
+                        "tertiary-container": "#a44100",
+                        "surface": "#f7f9fb",
+                        "outline": "#777587",
+                        "on-secondary-container": "#54647a",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed": "#e2dfff",
+                        "primary-container": "#4f46e5",
+                        "primary": "#3525cd",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "surface-dim": "#d8dadc",
+                        "on-surface": "#191c1e",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f7f9fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar Component -->
+<aside class="h-screen w-72 fixed left-0 top-0 flex flex-col bg-slate-50 dark:bg-slate-900 z-50">
+<div class="flex flex-col h-full py-10 px-6 gap-y-2">
+<!-- Institutional Identity -->
+<div class="flex items-center gap-3 px-2 mb-10">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="text-xl font-bold text-indigo-700 dark:text-indigo-300 leading-tight">OSIS Registry</h2>
+<p class="text-[10px] font-semibold tracking-widest uppercase text-slate-500">Institutional Authority</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white shadow-lg shadow-indigo-200/40 rounded-lg transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined active-nav-icon">dashboard</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm hover:text-indigo-600 rounded-lg transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">person_search</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Candidates</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm hover:text-indigo-600 rounded-lg transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">how_to_reg</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Voters (DPT)</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm hover:text-indigo-600 rounded-lg transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Audit Logs</span>
+</a>
+</nav>
+<!-- Footer Navigation -->
+<div class="mt-auto space-y-1 border-t border-slate-200 dark:border-slate-800 pt-6">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:shadow-sm rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-semibold tracking-wide uppercase">Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Wrapper -->
+<div class="flex-1 ml-72 flex flex-col min-h-screen">
+<!-- TopAppBar Component -->
+<header class="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl docked full-width top-0 sticky z-40 shadow-[0px_4px_20px_rgba(25,28,30,0.04)]">
+<div class="flex items-center justify-between px-8 py-3 w-full">
+<div class="flex items-center gap-8">
+<h1 class="text-lg font-bold tracking-tighter text-indigo-900 dark:text-indigo-50">SMK NIBA E-Voting Admin</h1>
+<div class="hidden md:flex items-center bg-slate-50 dark:bg-slate-900 px-4 py-1.5 rounded-full border border-outline-variant/20">
+<span class="material-symbols-outlined text-slate-400 text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-64 placeholder:text-slate-400" placeholder="Search database..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<button class="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95">
+<div class="text-right hidden lg:block">
+<p class="text-xs font-bold text-on-background leading-none">Super Admin</p>
+<p class="text-[10px] text-slate-500">Institutional Access</p>
+</div>
+<img alt="Administrator Profile Avatar" class="w-9 h-9 rounded-full border-2 border-primary/20 object-cover" data-alt="professional portrait of a high-level administrator in a corporate setting with soft natural office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBh4GiuHvoHP536iJzKV7i5nmjuySL2vYJYocZVBF2xzXm03OX2tj4Z8CnBFdmXIPLHNEbz780_ccJMX8OlCWJR8ni-yO5n0jjz0OHKW8XE7JDON-R6H_fnJGEgvV4Sz96mBaf94fc_X3HS35Z3gdTFqLEFpm4SwzYEvhvbumNzS-I9zCB-4Mbpn9kJelVK2lP2PbUQqbmqpUwJmIJ8Bvhfd4Em9ytG9gWeCJLLN0tXD9FpLaEW8OdFtKZaB7RPxgPFakk7o_E1BSI"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="p-10 space-y-10">
+<!-- Page Header Area -->
+<div class="flex justify-between items-end">
+<div>
+<p class="text-primary font-bold text-xs tracking-widest uppercase mb-1">Status Overview</p>
+<h2 class="text-3xl font-bold tracking-tight text-on-background">Election Dashboard</h2>
+</div>
+<div class="flex gap-3">
+<button class="bg-surface-container-high text-on-surface px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:shadow-md transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm">download</span> Export Report
+                    </button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 hover:shadow-lg transition-all active:scale-95 shadow-indigo-200">
+<span class="material-symbols-outlined text-sm">rocket_launch</span> Go Live
+                    </button>
+</div>
+</div>
+<!-- Summary Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Total Voters Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0px_4px_20px_rgba(25,28,30,0.04)] hover:translate-y-[-2px] transition-transform duration-300 border border-transparent hover:border-primary/10">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-primary rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+2.4%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium mb-1">Total Voters</p>
+<h3 class="text-4xl font-bold tracking-tighter text-on-background">1,200</h3>
+<p class="text-[10px] font-semibold text-slate-400 mt-3 uppercase tracking-widest">Verified DPT List</p>
+</div>
+<!-- Votes Cast Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0px_4px_20px_rgba(25,28,30,0.04)] hover:translate-y-[-2px] transition-transform duration-300 border border-transparent hover:border-primary/10">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-primary rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">how_to_vote</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-bold text-primary">Live</span>
+</div>
+</div>
+<p class="text-slate-500 text-sm font-medium mb-1">Votes Cast</p>
+<h3 class="text-4xl font-bold tracking-tighter text-on-background">850</h3>
+<p class="text-[10px] font-semibold text-slate-400 mt-3 uppercase tracking-widest">Encrypted Submissions</p>
+</div>
+<!-- Participation Rate Card -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0px_4px_20px_rgba(25,28,30,0.04)] hover:translate-y-[-2px] transition-transform duration-300 border border-transparent hover:border-primary/10">
+<div class="flex justify-between items-start mb-4">
+<div class="p-3 bg-indigo-50 dark:bg-indigo-900/30 text-primary rounded-xl">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<span class="text-xs font-bold text-slate-500">Threshold: 60%</span>
+</div>
+<p class="text-slate-500 text-sm font-medium mb-1">Participation Rate</p>
+<div class="flex items-end gap-2">
+<h3 class="text-4xl font-bold tracking-tighter text-on-background">70.8%</h3>
+</div>
+<!-- Participation Meter -->
+<div class="mt-4 h-2.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full" style="width: 70.8%"></div>
+</div>
+</div>
+</div>
+<!-- Visualization Section -->
+<section class="bg-surface-container-lowest rounded-2xl shadow-[0px_4px_40px_rgba(25,28,30,0.06)] overflow-hidden border border-slate-100/50">
+<div class="p-8 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center bg-white">
+<div>
+<h3 class="text-xl font-bold tracking-tight text-on-background">Real-time Voting Results</h3>
+<p class="text-sm text-slate-500">Chairman Candidates for OSIS Tenure 2024/2025</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[10px] font-bold uppercase tracking-widest">Auto-Refresh On</span>
+</div>
+</div>
+<!-- Mock Chart Canvas (Editorial Style Bar Chart) -->
+<div class="p-10 bg-white">
+<div class="space-y-10 max-w-5xl mx-auto">
+<!-- Candidate 1 -->
+<div class="relative">
+<div class="flex justify-between items-end mb-3">
+<div class="flex items-center gap-4">
+<img alt="Arya Pratama" class="w-12 h-12 rounded-xl object-cover ring-4 ring-indigo-50" data-alt="close-up portrait of a teenage boy smiling confidently in a school uniform with professional studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADAC1VvmJzeD65YTAloojhpQ63Jj_JaLNTk8q2Sl3mrEyIosBuYhPTdf9Tmew4p9zqKK-j3wODxd3XifzU9OPWHTxGkrNzlftxVWJ9g7ZaDJtUysWHBr6pEOiLOkuj9Gh-tBk8mPut_Q3r9yafbe1v5cwNfSONEmVRketpdxUoTkgFGwOw_VkxBPtA-E7_TvFXFAPb3HEiyJWAFrgjP_5XHy_0CZzouTkHpxo-IPm90ftPbymq_mFFvgmsnjTGWEPaQ1Ze4d7lDLY"/>
+<div>
+<p class="text-sm font-bold text-on-background leading-none">Arya Pratama</p>
+<p class="text-[10px] font-semibold text-slate-400 uppercase tracking-tighter mt-1">Candidate #01</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-primary">342</span>
+<span class="text-xs font-semibold text-slate-400 ml-1">Votes</span>
+</div>
+</div>
+<div class="h-10 w-full bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden group">
+<div class="h-full bg-gradient-to-r from-primary/80 to-primary-container rounded-lg relative transition-all duration-1000 ease-out" style="width: 40%">
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+</div>
+<!-- Candidate 2 -->
+<div class="relative">
+<div class="flex justify-between items-end mb-3">
+<div class="flex items-center gap-4">
+<img alt="Siti Aminah" class="w-12 h-12 rounded-xl object-cover ring-4 ring-indigo-50" data-alt="professional headshot of a smiling young woman wearing a hijab in an educational setting with bright natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVI7XnqQIl1Fa0Z_tvB1EgCiz-YTj6R3Z5sELq_EFdnMMnr79bb50WFc0Bec4ecfLiIC8ElDeTOdwTMDz8vGoTnIy6MRyaFVt29YZ3tLNDes_0tx_vY7z5c-xWfkfYCH3r35aFY37iRyIrrsesMFsJPSBuiuDacXySmt2F19SPK5QA8xjVQBnzhE3MiTVxZjG-UMMunMPJTzMH66XqtEd1Eh8OPVhZvxTf9yf6CfYBKCOB7S8PI5bSmywcn24baNlq3A01vOQEjRI"/>
+<div>
+<p class="text-sm font-bold text-on-background leading-none">Siti Aminah</p>
+<p class="text-[10px] font-semibold text-slate-400 uppercase tracking-tighter mt-1">Candidate #02</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-primary">288</span>
+<span class="text-xs font-semibold text-slate-400 ml-1">Votes</span>
+</div>
+</div>
+<div class="h-10 w-full bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden group">
+<div class="h-full bg-gradient-to-r from-primary/60 to-primary-container/80 rounded-lg relative transition-all duration-1000 ease-out" style="width: 34%">
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+</div>
+<!-- Candidate 3 -->
+<div class="relative">
+<div class="flex justify-between items-end mb-3">
+<div class="flex items-center gap-4">
+<img alt="Budi Hartono" class="w-12 h-12 rounded-xl object-cover ring-4 ring-indigo-50" data-alt="portrait of a cheerful teenage boy with short hair in a clean casual school shirt with warm sunset lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAquon9MTUbYTmUIB6NkBi47IWCzDWr5P1vO3No16yavjx6Se9cNzp2p__URcBMrrdVe5HOfcakTgwhEGFnqihOJlpEqJQXo3gmHBoENdqTaVf9CvthHwjG6_Kzlk-nIXl7lqxbPppSjFYPt_i4tdLVXOiRxx88GvAjgpZp_Y6IRD7XPuDnrzuBym96ns7T-p7EoTscu8PEgLe3JMr4ilmN5FH_lrCPSvs9fMkoSSpeRGKlSnMVbii7tFw86NIGokmUD02PQHA9AX4"/>
+<div>
+<p class="text-sm font-bold text-on-background leading-none">Budi Hartono</p>
+<p class="text-[10px] font-semibold text-slate-400 uppercase tracking-tighter mt-1">Candidate #03</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-primary">120</span>
+<span class="text-xs font-semibold text-slate-400 ml-1">Votes</span>
+</div>
+</div>
+<div class="h-10 w-full bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden group">
+<div class="h-full bg-gradient-to-r from-slate-300 to-slate-400 rounded-lg relative transition-all duration-1000 ease-out" style="width: 14%">
+</div>
+</div>
+</div>
+<!-- Candidate 4 -->
+<div class="relative">
+<div class="flex justify-between items-end mb-3">
+<div class="flex items-center gap-4">
+<img alt="Lani Kusuma" class="w-12 h-12 rounded-xl object-cover ring-4 ring-indigo-50" data-alt="close-up high-quality portrait of a focused young student with glasses in a library background with soft bokeh" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPIga4Av3vvjx7PYTNwPMcZGl2Dre7GSOFUTFefW1YLD9Jjr1M8AAtbJ-aBWGjBP4mw9oNPf3FPW3f7d3blo6eZ5Cunxv5VPBRNuRjTffN3ZbxsNF-mXpgaHy4Zguuy1F_kaLJs6si3ysRuNg0KTd2rlkUKu16FmTqnXYcaLZcGDWXatbf4Lu8dzzLo_tIEGhgg3yEvgf-3QcnHo8oPsraUabjJ5VLuthQLR4YZaP4flKH__jpatmo_q7sAhIu6c8W74gO2ghlYCE"/>
+<div>
+<p class="text-sm font-bold text-on-background leading-none">Lani Kusuma</p>
+<p class="text-[10px] font-semibold text-slate-400 uppercase tracking-tighter mt-1">Candidate #04</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-2xl font-bold text-primary">100</span>
+<span class="text-xs font-semibold text-slate-400 ml-1">Votes</span>
+</div>
+</div>
+<div class="h-10 w-full bg-slate-50 dark:bg-slate-900 rounded-lg overflow-hidden group">
+<div class="h-full bg-gradient-to-r from-slate-200 to-slate-300 rounded-lg relative transition-all duration-1000 ease-out" style="width: 12%">
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Chart Footer Meta -->
+<div class="bg-slate-50/50 p-6 flex flex-wrap gap-8 justify-center border-t border-slate-100">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Valid Ballots</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-slate-300"></div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Abstentions</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Last Update: 2 mins ago</span>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

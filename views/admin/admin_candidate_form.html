@@ -1,0 +1,62 @@
+{{define "admin_candidate_form.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_candidate_form_content"}}
+<section class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200/70 p-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">{{.Action}}</h1>
+            <p class="text-slate-500">Fill candidate details and publish them in the ballot roster.</p>
+        </div>
+        <a href="/admin/candidates" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200">Back to Candidates</a>
+    </div>
+    <form method="POST" action="/admin/candidates/save" enctype="multipart/form-data" class="space-y-6">
+        <input type="hidden" name="id" value="{{.ID}}">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Nama Kandidat</span>
+                <input type="text" name="name" value="{{.Name}}" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+            </label>
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Kelas</span>
+                <input type="text" name="class_name" value="{{.ClassName}}" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+            </label>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Posisi</span>
+                <select name="position" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">
+                    <option value="">Pilih posisi</option>
+                    <option value="CHAIRMAN" {{if eq .Position "CHAIRMAN"}}selected{{end}}>Ketua</option>
+                    <option value="VICE_CHAIRMAN" {{if eq .Position "VICE_CHAIRMAN"}}selected{{end}}>Wakil Ketua</option>
+                </select>
+            </label>
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Foto Kandidat</span>
+                <input type="file" name="photo" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3" />
+            </label>
+        </div>
+        <label class="block">
+            <span class="text-sm font-semibold text-slate-700">URL Foto</span>
+            <input type="text" name="photo_url" value="{{.PhotoURL}}" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+        </label>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Visi</span>
+                <textarea name="vision" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Vision}}</textarea>
+            </label>
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Misi</span>
+                <textarea name="mission" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Mission}}</textarea>
+            </label>
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Program Kerja</span>
+                <textarea name="program" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Program}}</textarea>
+            </label>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-slate-200">
+            <a href="/admin/candidates" class="px-6 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Batal</a>
+            <button type="submit" class="px-6 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Simpan</button>
+        </div>
+    </form>
+</section>
+{{end}}

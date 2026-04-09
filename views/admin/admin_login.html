@@ -1,0 +1,38 @@
+{{define "admin_login.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <title>Admin Login | OSIS E-Voting</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-6">
+    <section class="w-full max-w-md bg-white rounded-[2rem] border border-slate-200 shadow-xl p-8">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-slate-900">Admin Login</h1>
+            <p class="mt-2 text-slate-500">Masuk untuk mengelola pemilih, kandidat, dan pengumuman.</p>
+        </div>
+        {{if .Error}}
+        <div class="mb-6 rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">{{.Error}}</div>
+        {{end}}
+        <form method="POST" action="/admin/login" class="space-y-5">
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Username</span>
+                <input type="text" name="username" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+            </label>
+            <label class="block">
+                <span class="text-sm font-semibold text-slate-700">Password</span>
+                <input type="password" name="password" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+            </label>
+            <button type="submit" class="w-full rounded-3xl bg-[#3525CD] px-4 py-3 text-white font-semibold hover:bg-[#2c1fa9]">Masuk</button>
+        </form>
+        <p class="mt-6 text-center text-sm text-slate-500">Gunakan akun admin untuk mengakses dashboard OSIS.</p>
+    </section>
+</body>
+</html>
+{{end}}

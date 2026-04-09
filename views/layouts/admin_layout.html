@@ -1,0 +1,38 @@
+{{define "admin_layout"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <title>{{.Title}}</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bg-background { background: #f8fafc; }
+        .text-on-background { color: #0f172a; }
+        .text-primary { color: #4f46e5; }
+        .bg-primary { background-color: #4f46e5; }
+        .bg-primary-fixed { background-color: #eef2ff; }
+        .text-on-primary-fixed { color: #312e81; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+    {{template "admin_sidebar" .}}
+    <div class="ml-72 min-h-screen flex flex-col">
+        {{template "admin_navbar" .}}
+        <main class="p-10 space-y-10">
+            {{if eq .ContentTemplate "admin_dashboard_content"}}{{template "admin_dashboard_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_candidates_content"}}{{template "admin_candidates_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_candidate_form_content"}}{{template "admin_candidate_form_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_voters_content"}}{{template "admin_voters_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_voter_form_content"}}{{template "admin_voter_form_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_logs_content"}}{{template "admin_logs_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_settings_content"}}{{template "admin_settings_content" .}}{{end}}
+        </main>
+    </div>
+</body>
+</html>
+{{end}}

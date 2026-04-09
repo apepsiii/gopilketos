@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Confirm Your Vote | SMK NIBA E-Voting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#eceef0",
+                        "primary-container": "#4f46e5",
+                        "primary": "#3525cd",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-secondary-container": "#54647a",
+                        "on-surface-variant": "#464555",
+                        "on-tertiary-container": "#ffd2be",
+                        "tertiary-fixed": "#ffdbcc",
+                        "outline-variant": "#c7c4d8",
+                        "inverse-surface": "#2d3133",
+                        "surface-tint": "#4d44e3",
+                        "secondary": "#505f76",
+                        "outline": "#777587",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary-fixed": "#e2dfff",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#a44100",
+                        "tertiary": "#7e3000",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-background": "#191c1e",
+                        "surface-variant": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "secondary-container": "#d0e1fb",
+                        "surface-dim": "#d8dadc",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#dad7ff",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-primary-fixed": "#0f0069",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-on-surface": "#eff1f3",
+                        "secondary-fixed-dim": "#b7c8e1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #3525cd 0%, #4f46e5 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="flex justify-between items-center w-full px-6 py-4 bg-[#f7f9fb] dark:bg-slate-950 fixed top-0 z-50">
+<div class="text-lg font-bold text-[#191c1e] dark:text-slate-100 font-headline tracking-tight">
+            SMK NIBA E-Voting
+        </div>
+<div class="flex items-center gap-6">
+<span class="font-['Inter'] font-semibold text-sm tracking-tight text-[#3525CD] dark:text-[#4f46e5]">
+                Step 3 of 3
+            </span>
+<button class="text-slate-500 hover:opacity-80 transition-opacity duration-200 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-32">
+<div class="w-full max-w-2xl">
+<!-- Hero Header -->
+<div class="text-center mb-10">
+<h1 class="text-[3.5rem] font-bold text-on-surface tracking-tight leading-tight mb-4">
+                    Confirm Your Vote
+                </h1>
+<p class="text-on-surface-variant text-body-md max-w-md mx-auto">
+                    Please review your final selection carefully before casting your digital ballot.
+                </p>
+</div>
+<!-- Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0px_4px_20px_rgba(25,28,30,0.04)] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 signature-gradient"></div>
+<h2 class="text-label-md font-semibold text-on-secondary-container uppercase tracking-widest mb-8">
+                    Your Selections
+                </h2>
+<div class="space-y-6">
+<!-- Chairman Row -->
+<div class="flex items-center justify-between group p-4 rounded-xl transition-colors hover:bg-surface-container-low">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface-variant mb-1">Chairman</span>
+<span class="text-xl font-bold text-on-surface tracking-tight">Arya Pratama</span>
+</div>
+<div class="relative">
+<img alt="Arya Pratama" class="w-16 h-16 rounded-full object-cover border-4 border-surface-container-low shadow-sm" data-alt="Professional headshot of a young Indonesian man with a friendly smile, clean haircut, wearing a crisp school uniform against a neutral backdrop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArservW8kl72f6VNilI-i924Zp_th2cftbbn05xlshuFStTk2skVAEom0usN-Gl7Qs_ANfM0wITN4vsWSQG_KVjgtwJ_hu9r03tm9FxQYWx_VG_V_zqQap4FSUMNy-V6dq4-8GlOg8kX1zg4ICYNcvDLEBrvMVDELJEGBa0XR89h8-yzDoVFxQeWBkE2s7x9-SC2LJj9KvUIEr7RoWyE-PGrrJmMtYLc7u26vC55siOTqw1AVUpctcrWBoaBAj24nWyugad73uT5g"/>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Separator (Tonal shift based) -->
+<div class="h-px bg-outline-variant/20 mx-4"></div>
+<!-- Vice-Chairman Row -->
+<div class="flex items-center justify-between group p-4 rounded-xl transition-colors hover:bg-surface-container-low">
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface-variant mb-1">Vice-Chairman</span>
+<span class="text-xl font-bold text-on-surface tracking-tight">Dina Lestari</span>
+</div>
+<div class="relative">
+<img alt="Dina Lestari" class="w-16 h-16 rounded-full object-cover border-4 border-surface-container-low shadow-sm" data-alt="Close-up portrait of a confident young Indonesian woman wearing a student hijab, soft natural lighting, elegant and serious expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz8DaMvT_3VGrjidpzkTIP6DAkrdKrdwPQkW-yCRx0A1xsu1N1PcJ8cGJvKTqGm24lslYy_ocVbgYH-mJgqn90QTW1HZZbhcHt1__uzcy8kZx9Djb8sE5lufrPs42ijjOXV7i6SyvUkGtpqAgpO2HZOCnx_ceYkCiZQXrd3nS8Lew2Ga3vCNqkeaE50EtGiAQ-baY3OD-JvSk5-gPuVdvmkgdUrWoJCatDjHIrgsKq1BIjGEATxsdR38vaCv8WbKXFNInkjeUEs-A"/>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Warning Section -->
+<div class="mt-8 flex items-start gap-4 p-5 bg-error-container/30 rounded-xl">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<p class="text-sm text-on-error-container font-medium">
+                    Once submitted, your vote is final and cannot be changed. This action is recorded securely in the institutional database.
+                </p>
+</div>
+<!-- Desktop Action Buttons (Hidden on mobile) -->
+<div class="hidden md:flex flex-col items-center gap-4 mt-12">
+<button class="signature-gradient text-white w-full max-w-md py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 active:scale-[0.98] transition-all duration-200">
+                    Submit Vote
+                </button>
+<button class="text-error font-semibold text-sm hover:underline py-2 active:scale-95 transition-all">
+                    Cancel and Restart
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Shell View) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-4 pb-safe bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-[#e6e8ea]/20 shadow-[0px_-4px_20px_rgba(25,28,30,0.04)] rounded-t-2xl">
+<!-- Cancel Action -->
+<button class="flex flex-col items-center justify-center text-slate-500 px-6 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors active:scale-[0.98] transition-all duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="close">close</span>
+<span class="font-['Inter'] font-medium text-xs uppercase tracking-widest">Cancel</span>
+</button>
+<!-- Submit Action (Active) -->
+<button class="flex flex-col items-center justify-center signature-gradient text-white rounded-xl px-6 py-2 hover:opacity-90 active:scale-[0.98] transition-all duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-['Inter'] font-medium text-xs uppercase tracking-widest">Submit Vote</span>
+</button>
+</div>
+</body></html>

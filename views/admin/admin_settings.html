@@ -1,0 +1,18 @@
+{{define "admin_settings.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_settings_content"}}
+<section class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200/70 p-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-900">Pengumuman Publik</h1>
+        <p class="text-slate-500 mt-2">Atur teks pengumuman yang akan tampil di halaman landing page pemilih.</p>
+    </div>
+    <form method="POST" action="/admin/settings/save" class="space-y-6">
+        <label class="block text-sm font-semibold text-slate-700">Text Pengumuman</label>
+        <textarea name="announcement" rows="8" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-700 focus:border-indigo-500 focus:outline-none">{{.Announcement}}</textarea>
+        <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 pt-4 border-t border-slate-200">
+            <a href="/admin" class="px-6 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Kembali</a>
+            <button type="submit" class="px-6 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Simpan</button>
+        </div>
+    </form>
+</section>
+{{end}}

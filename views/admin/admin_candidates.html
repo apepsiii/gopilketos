@@ -1,0 +1,42 @@
+{{define "admin_candidates.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_candidates_content"}}
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+        <h1 class="text-3xl font-bold text-slate-900 mb-1">Candidates Management</h1>
+        <p class="text-slate-500">Manage candidate records and election roster.</p>
+    </div>
+    <a href="/admin/candidates/new" class="bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 shadow-lg"><span class="material-symbols-outlined">person_add</span>Add Candidate</a>
+</section>
+<section class="bg-white rounded-2xl shadow-sm border border-slate-200/10 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b border-slate-200/70">
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500">Photo</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500">Name</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500">Class</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500">Position</th>
+                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {{range .Candidates}}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4"><img class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}https://via.placeholder.com/80x80?text=Foto{{end}}" alt="{{.Name}}" /></td>
+                    <td class="px-6 py-4"><span class="text-sm font-semibold text-slate-900">{{.Name}}</span><span class="block text-xs text-slate-500">Candidate ID: #{{.ID}}</span></td>
+                    <td class="px-6 py-4 text-sm text-slate-600">{{.ClassName}}</td>
+                    <td class="px-6 py-4"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold {{if eq .Position "CHAIRMAN"}}bg-indigo-50 text-indigo-700{{else}}bg-slate-100 text-slate-700{{end}}">{{.Position}}</span></td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                        <a href="/admin/candidates/edit?id={{.ID}}" class="px-3 py-2 text-slate-600 hover:text-indigo-700">Edit</a>
+                        <form action="/admin/candidates/{{.ID}}/delete" method="POST" class="inline"><button type="submit" class="px-3 py-2 text-red-600 hover:text-red-800">Delete</button></form>
+                    </td>
+                </tr>
+                {{else}}
+                <tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Tidak ada kandidat.</td></tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</section>
+{{end}}
