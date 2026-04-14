@@ -1,18 +1,189 @@
 {{define "admin_settings.html"}}{{template "admin_layout" .}}{{end}}
 
 {{define "admin_settings_content"}}
-<section class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200/70 p-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-900">Pengumuman Publik</h1>
-        <p class="text-slate-500 mt-2">Atur teks pengumuman yang akan tampil di halaman landing page pemilih.</p>
-    </div>
-    <form method="POST" action="/admin/settings/save" class="space-y-6">
-        <label class="block text-sm font-semibold text-slate-700">Text Pengumuman</label>
-        <textarea name="announcement" rows="8" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4 text-slate-700 focus:border-indigo-500 focus:outline-none">{{.Announcement}}</textarea>
-        <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 pt-4 border-t border-slate-200">
-            <a href="/admin" class="px-6 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Kembali</a>
-            <button type="submit" class="px-6 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Simpan</button>
+<form method="POST" action="/admin/settings/save" class="space-y-6">
+    <section class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">campaign</span>
+            Pengumuman Publik
+        </h2>
+        <p class="text-sm text-slate-500 mb-4">Pengumuman ini akan tampil di halaman landing page pemilih.</p>
+        <textarea name="announcement" rows="3" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none">{{.Announcement}}</textarea>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-emerald-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">chat</span>
+            Konfigurasi OneSender WhatsApp
+        </h2>
+        <p class="text-sm text-slate-500 mb-4">Pengaturan untuk mengirim notifikasi WhatsApp setelah pemilih berhasil voting.</p>
+        
+        <div class="space-y-4">
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="onesender_enabled" id="onesender_enabled" value="1" {{if .OneSenderEnabled}}checked{{end}} class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                <label for="onesender_enabled" class="text-sm font-medium text-slate-700">Aktifkan notifikasi WhatsApp</label>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">URL API OneSender</label>
+                    <input type="url" name="onesender_url" value="{{.OneSenderURL}}" placeholder="https://onesender.example.com/send" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">API Key</label>
+                    <input type="password" name="onesender_key" value="{{.OneSenderKey}}" placeholder="Masukkan API key" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none" />
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Template Pesan (Opsional)</label>
+                <textarea name="onesender_template" rows="3" placeholder="Kosongkan untuk menggunakan pesan default" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none">{{.OneSenderTemplate}}</textarea>
+                <p class="text-xs text-slate-500 mt-2">Pesan default akan digunakan jika template kosong.</p>
+            </div>
         </div>
-    </form>
-</section>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-amber-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">send</span>
+            Kirim Pesan Test
+        </h2>
+        <p class="text-sm text-slate-500 mb-4">Kirim pesan test untuk memastikan konfigurasi OneSender sudah benar.</p>
+        
+        <div class="flex items-end gap-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Nomor HP</label>
+                <input type="text" id="test-phone" placeholder="08xxxxxxxxxx" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none" />
+            </div>
+            <button type="button" id="test-btn" class="px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">send</span>
+                Kirim Test
+            </button>
+        </div>
+        <div id="test-result" class="mt-4 hidden"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-red-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">restart_alt</span>
+            Reset Data Voting
+        </h2>
+        <p class="text-sm text-slate-500 mb-4">Mengosongkan semua suara dan mereset status voter. Tindakan ini tidak dapat dibatalkan!</p>
+        <button type="button" id="reset-btn" class="px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">restart_alt</span>
+            Reset Semua Suara
+        </button>
+        <div id="reset-result" class="mt-4 hidden"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-purple-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">backup</span>
+            Backup & Laporan
+        </h2>
+        <p class="text-sm text-slate-500 mb-4">Download data voting untuk backup atau laporan.</p>
+        <div class="flex flex-wrap gap-3">
+            <a href="/admin/settings/backup" class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">download</span>
+                Download Backup JSON
+            </a>
+            <a href="/admin/settings/report" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">description</span>
+                Export Laporan CSV
+            </a>
+        </div>
+    </section>
+
+    <div class="flex justify-end pt-4">
+        <button type="submit" class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">save</span>
+            Simpan Semua Pengaturan
+        </button>
+    </div>
+</form>
+
+<script>
+document.getElementById('test-btn').addEventListener('click', async function() {
+    const phone = document.getElementById('test-phone').value;
+    const result = document.getElementById('test-result');
+    const btn = this;
+    
+    if (!phone) {
+        result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
+        result.textContent = 'Nomor HP wajib diisi';
+        result.classList.remove('hidden');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Mengirim...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('phone', phone);
+        
+        const res = await fetch('/admin/settings/test-message', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.status === 'success') {
+            result.className = 'mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm';
+            result.textContent = data.message || 'Pesan test berhasil dikirim!';
+        } else {
+            result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
+            result.textContent = data.error || 'Gagal mengirim pesan';
+        }
+    } catch (err) {
+        result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
+        result.textContent = 'Terjadi kesalahan: ' + err.message;
+    }
+    
+    result.classList.remove('hidden');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;">send</span> Kirim Test';
+});
+
+document.getElementById('reset-btn').addEventListener('click', async function() {
+    if (!confirm('PERHATIAN! Semua suara akan dihapus dan status voter direset. Apakah Anda yakin?')) {
+        return;
+    }
+    if (!confirm('Tindakan ini TIDAK DAPAT DIBATALKAN. Lanjutkan?')) {
+        return;
+    }
+    
+    const btn = this;
+    const result = document.getElementById('reset-result');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> Mereset...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('confirm', '1');
+        
+        const res = await fetch('/admin/settings/reset-votes', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        
+        if (res.ok && data.status === 'success') {
+            result.className = 'mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm';
+            result.textContent = data.message || 'Reset berhasil!';
+        } else {
+            result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
+            result.textContent = data.error || 'Gagal mereset';
+        }
+    } catch (err) {
+        result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
+        result.textContent = 'Terjadi kesalahan: ' + err.message;
+    }
+    
+    result.classList.remove('hidden');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 1, \'wght\' 400, \'GRAD\' 0, \'opsz\' 24;">restart_alt</span> Reset Semua Suara';
+});
+</script>
 {{end}}

@@ -1,0 +1,11 @@
+.git
+.gitignore
+.env
+*.md
+dist
+tmp
+installer
+.vscode
+.kilo
+*.db
+*.zip

@@ -1,63 +1,192 @@
 {{define "admin_dashboard.html"}}{{template "admin_layout" .}}{{end}}
 
 {{define "admin_dashboard_content"}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
-        <div class="flex justify-between items-start mb-4">
-            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">groups</span></div>
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+2.4%</span>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                <span class="material-symbols-outlined text-lg">groups</span>
+            </div>
+            <span class="text-xs font-medium text-slate-500">Total Pemilih</span>
         </div>
-        <p class="text-slate-500 text-sm font-medium mb-1">Total Voters</p>
-        <h3 class="text-4xl font-bold">{{.TotalVoters}}</h3>
-        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Verified DPT List</p>
+        <p class="text-3xl font-bold text-slate-900">{{.TotalVoters}}</p>
+        <p class="text-xs text-slate-400 mt-1">DPT</p>
     </div>
-    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
-        <div class="flex justify-between items-start mb-4">
-            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">poll</span></div>
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+1.8%</span>
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-green-50 text-green-600 rounded-lg">
+                <span class="material-symbols-outlined text-lg">how_to_vote</span>
+            </div>
+            <span class="text-xs font-medium text-slate-500">Sudah Vote</span>
         </div>
-        <p class="text-slate-500 text-sm font-medium mb-1">Votes Cast</p>
-        <h3 class="text-4xl font-bold">{{.VotesCast}}</h3>
-        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Recorded Ballots</p>
+        <p class="text-3xl font-bold text-slate-900">{{.VotesCast}}</p>
+        <p class="text-xs text-slate-400 mt-1">Suara Masuk</p>
     </div>
-    <div class="bg-white p-6 rounded-xl shadow-lg border border-transparent hover:border-primary/10 transition-all">
-        <div class="flex justify-between items-start mb-4">
-            <div class="p-3 bg-indigo-50 text-primary rounded-xl"><span class="material-symbols-outlined">insights</span></div>
-            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Trending</span>
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+                <span class="material-symbols-outlined text-lg">pending</span>
+            </div>
+            <span class="text-xs font-medium text-slate-500">Belum Vote</span>
         </div>
-        <p class="text-slate-500 text-sm font-medium mb-1">Participation</p>
-        <h3 class="text-4xl font-bold">{{.Participation}}</h3>
-        <p class="text-[10px] uppercase tracking-widest text-slate-400 mt-3">Real-time turnout</p>
+        <p class="text-3xl font-bold text-slate-900">{{.NotVoted}}</p>
+        <p class="text-xs text-slate-400 mt-1">Belum Melihat</p>
+    </div>
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                <span class="material-symbols-outlined text-lg">trending_up</span>
+            </div>
+            <span class="text-xs font-medium text-slate-500">Partisipasi</span>
+        </div>
+        <p class="text-3xl font-bold text-slate-900">{{.Participation}}</p>
+        <p class="text-xs text-slate-400 mt-1">Tingkat Partisipasi</p>
     </div>
 </div>
-<section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
-    <h2 class="text-xl font-semibold mb-4">Pengumuman Terbaru</h2>
-    <p class="text-slate-600">{{if .Announcement}}{{.Announcement}}{{else}}Belum ada pengumuman.{{end}}</p>
-</section>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
-        <h2 class="text-xl font-semibold mb-4">Hasil Sementara - Ketua</h2>
-        <ul class="space-y-3">
-            {{range .ChairmanResults}}
-            <li class="flex justify-between gap-4 p-4 rounded-2xl bg-slate-50">
-                <span>{{.Name}}</span><span class="font-semibold">{{.Count}}</span>
-            </li>
-            {{else}}
-            <li class="text-slate-500">Tidak ada data.</li>
-            {{end}}
-        </ul>
-    </section>
-    <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/70">
-        <h2 class="text-xl font-semibold mb-4">Hasil Sementara - Wakil</h2>
-        <ul class="space-y-3">
-            {{range .ViceChairmanResults}}
-            <li class="flex justify-between gap-4 p-4 rounded-2xl bg-slate-50">
-                <span>{{.Name}}</span><span class="font-semibold">{{.Count}}</span>
-            </li>
-            {{else}}
-            <li class="text-slate-500">Tidak ada data.</li>
-            {{end}}
-        </ul>
-    </section>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-semibold text-slate-900 mb-4">Status Voting</h3>
+        <div class="relative h-64 flex items-center justify-center">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
+        <h3 class="text-sm font-semibold text-slate-900 mb-4">Perolehan Suara Ketua</h3>
+        <div class="h-64">
+            <canvas id="chairmanChart"></canvas>
+        </div>
+    </div>
 </div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-semibold text-slate-900 mb-4">Perolehan Suara Wakil Ketua</h3>
+        <div class="h-64">
+            <canvas id="viceChairmanChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h3 class="text-sm font-semibold text-slate-900 mb-4">Pengumuman</h3>
+        <div class="p-4 bg-slate-50 rounded-xl">
+            <p class="text-sm text-slate-600">{{if .Announcement}}{{.Announcement}}{{else}}<span class="text-slate-400 italic">Belum ada pengumuman.</span>{{end}}</p>
+        </div>
+        <a href="/admin/settings" class="inline-flex items-center gap-2 mt-4 text-sm text-blue-600 hover:text-blue-700">
+            <span class="material-symbols-outlined text-base">edit</span>
+            Edit Pengumuman
+        </a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chartColors = {
+        blue: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
+        green: ['#22c55e', '#4ade80', '#86efac', '#bbf7d0'],
+        purple: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe']
+    };
+
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Sudah Vote', 'Belum Vote'],
+            datasets: [{
+                data: [{{.VotesCast}}, {{.NotVoted}}],
+                backgroundColor: ['#22c55e', '#f59e0b'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        font: { size: 12 }
+                    }
+                }
+            }
+        }
+    });
+
+    const chairmanData = [
+        {{range .ChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
+    ];
+    const chairmanCtx = document.getElementById('chairmanChart').getContext('2d');
+    new Chart(chairmanCtx, {
+        type: 'bar',
+        data: {
+            labels: chairmanData.map(d => d.name),
+            datasets: [{
+                label: 'Suara',
+                data: chairmanData.map(d => d.count),
+                backgroundColor: '#3b82f6',
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { display: false }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    const viceData = [
+        {{range .ViceChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
+    ];
+    const viceCtx = document.getElementById('viceChairmanChart').getContext('2d');
+    new Chart(viceCtx, {
+        type: 'bar',
+        data: {
+            labels: viceData.map(d => d.name),
+            datasets: [{
+                label: 'Suara',
+                data: viceData.map(d => d.count),
+                backgroundColor: '#8b5cf6',
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: { display: false }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
 {{end}}

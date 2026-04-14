@@ -1,56 +1,64 @@
 {{define "vote_confirmation.html"}}
 <!DOCTYPE html>
-<html class="light" lang="id">
+<html lang="id">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <title>Confirm Your Vote | SMK NIBA E-Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>Konfirmasi Suara | SMK NIBA E-Voting</title>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .signature-gradient { background: linear-gradient(135deg, #3525cd 0%, #4f46e5 100%); }
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        * { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
     </style>
 </head>
-<body class="bg-surface selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen flex flex-col">
-    <nav class="flex justify-between items-center w-full px-6 py-4 bg-[#f7f9fb] fixed top-0 z-50">
+<body class="bg-neutral-50 min-h-screen flex flex-col">
+    <nav class="flex justify-between items-center w-full px-6 py-4 bg-white fixed top-0 z-50 border-b border-neutral-200">
         <div class="text-lg font-bold">SMK NIBA E-Voting</div>
         <div class="flex items-center gap-6">
-            <span class="font-semibold text-sm tracking-tight text-[#3525CD]">Step 3 of 3</span>
-            <button class="text-slate-500 hover:opacity-80 active:scale-95 transition-transform"><span class="material-symbols-outlined">help</span></button>
+            <span class="font-semibold text-sm text-blue-600">Langkah 3 dari 3</span>
         </div>
     </nav>
     <main class="flex-grow flex flex-col items-center justify-center px-4 pt-24 pb-32">
         <div class="w-full max-w-2xl">
             <div class="text-center mb-10">
-                <h1 class="text-[3.5rem] font-bold tracking-tight leading-tight mb-4">Confirm Your Vote</h1>
-                <p class="text-on-surface-variant text-base max-w-md mx-auto">Please review your final selection carefully before casting your digital ballot.</p>
+                <h1 class="text-4xl font-bold text-neutral-900 mb-4">Konfirmasi Suara</h1>
+                <p class="text-neutral-600 text-base max-w-md mx-auto">Periksa kembali pilihan Anda sebelum mengirim suara.</p>
             </div>
-            <div class="bg-surface-container-lowest rounded-xl p-8 shadow-[0px_4px_20px_rgba(25,28,30,0.04)] relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 signature-gradient"></div>
-                <h2 class="uppercase tracking-widest text-xs font-semibold text-on-secondary-container mb-8">Your Selections</h2>
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-neutral-200">
+                <h2 class="uppercase tracking-widest text-xs font-semibold text-neutral-500 mb-6">Ringkasan Pilihan</h2>
                 <div id="summary" class="space-y-6"></div>
             </div>
-            <div class="mt-8 flex items-start gap-4 p-5 bg-error-container/30 rounded-xl">
-                <span class="material-symbols-outlined text-error">warning</span>
-                <p class="text-sm text-on-error-container font-medium">Once submitted, your vote is final and cannot be changed. This action is recorded securely in the institutional database.</p>
+            <div class="mt-6 flex items-start gap-4 p-5 bg-amber-50 rounded-xl border border-amber-200">
+                <span class="material-symbols-outlined text-amber-600" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">warning</span>
+                <p class="text-sm text-amber-800 font-medium">Setelah dikirim, suara tidak dapat diubah. Tindakan ini tercatat aman di database institusi.</p>
             </div>
-            <div class="flex flex-col items-center gap-4 mt-12">
-                <button id="submit-btn" class="signature-gradient text-white w-full max-w-md py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:opacity-90 active:scale-[0.98] transition-all duration-200">Submit Vote</button>
-                <button id="restart-btn" class="text-error font-semibold text-sm hover:underline">Cancel and Restart</button>
+            <div class="flex flex-col items-center gap-4 mt-10">
+                <button id="submit-btn" class="w-full max-w-md py-4 px-8 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors">Kirim Suara</button>
+                <button id="restart-btn" class="text-red-600 font-semibold text-sm hover:underline">Batal & Mulai Ulang</button>
             </div>
         </div>
     </main>
-    <div class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-4 bg-white/80 backdrop-blur-xl border-t border-[#e6e8ea]/20 shadow-[0px_-4px_20px_rgba(25,28,30,0.04)] rounded-t-2xl">
-        <button class="flex flex-col items-center justify-center text-slate-500 px-6 py-2 hover:bg-slate-100 active:scale-[0.98]">
-            <span class="material-symbols-outlined mb-1">close</span>
-            <span class="text-xs uppercase tracking-widest">Cancel</span>
+    <div class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-4 bg-white/80 backdrop-blur-xl border-t border-neutral-200 rounded-t-2xl">
+        <button class="flex flex-col items-center justify-center text-neutral-500 px-6 py-2 hover:bg-neutral-100">
+            <span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">close</span>
+            <span class="text-xs uppercase tracking-widest">Batal</span>
         </button>
-        <button class="flex flex-col items-center justify-center signature-gradient text-white rounded-xl px-6 py-2 active:scale-[0.98]">
-            <span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-            <span class="text-xs uppercase tracking-widest">Submit Vote</span>
+        <button class="flex flex-col items-center justify-center bg-blue-600 text-white rounded-xl px-6 py-2">
+            <span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check_circle</span>
+            <span class="text-xs uppercase tracking-widest">Kirim Suara</span>
         </button>
     </div>
     <script src="/static/js/vote_confirmation.js" defer></script>

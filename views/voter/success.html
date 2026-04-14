@@ -2,16 +2,80 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voting Berhasil - E-Voting SMK NIBA</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>Voting Berhasil | SMK NIBA E-Voting</title>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
+        @keyframes checkmark {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-checkmark { animation: checkmark 0.5s ease-out forwards; }
+        .animate-fade-in { animation: fadeInUp 0.6s ease-out forwards; }
+        .delay-100 { animation-delay: 0.1s; opacity: 0; }
+        .delay-200 { animation-delay: 0.2s; opacity: 0; }
+        .delay-300 { animation-delay: 0.3s; opacity: 0; }
+    </style>
 </head>
-<body>
-    <main>
-        <h2>Terima Kasih!</h2>
-        <p>Suara Anda telah berhasil direkam.<br>Silakan kembali ke halaman utama.</p>
-        <a href="/" class="btn">Kembali ke Beranda</a>
+<body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen flex flex-col">
+    <main class="flex-1 flex items-center justify-center px-6 py-16">
+        <div class="max-w-md w-full text-center">
+            <div class="animate-checkmark inline-flex items-center justify-center w-24 h-24 bg-emerald-500 rounded-full mb-8 shadow-lg shadow-emerald-500/30">
+                <span class="material-symbols-outlined text-5xl text-white" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check_circle</span>
+            </div>
+            
+            <h1 class="text-3xl font-semibold text-neutral-900 mb-3 animate-fade-in">Suara Terkirim!</h1>
+            <p class="text-neutral-500 mb-10 animate-fade-in delay-100">
+                Terima kasih telah berpartisipasi dalam pemilihan OSIS SMK NIBA Business School. Suara Anda telah tercatat dengan aman.
+            </p>
+
+            <div class="bg-white rounded-2xl border border-neutral-200 p-6 mb-8 text-left animate-fade-in delay-200">
+                <h2 class="text-sm font-semibold text-neutral-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-emerald-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">verified</span>
+                    Konfirmasi
+                </h2>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-600 text-lg mt-0.5" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                        <span class="text-sm text-neutral-600">Identitas Anda tersimpan dengan aman dan terpisah dari suara</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-600 text-lg mt-0.5" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                        <span class="text-sm text-neutral-600">Setiap UUID hanya dapat digunakan sekali voting</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-emerald-600 text-lg mt-0.5" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                        <span class="text-sm text-neutral-600">Proses voting menjunjung prinsip Luber Jurdil</span>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="/" class="inline-flex items-center justify-center gap-2 w-full py-4 px-6 bg-neutral-900 text-white font-medium rounded-xl hover:bg-neutral-800 transition-colors animate-fade-in delay-300">
+                <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">home</span>
+                Kembali ke Beranda
+            </a>
+        </div>
     </main>
 </body>
 </html>

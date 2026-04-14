@@ -1,0 +1,160 @@
+{{define "admin_presence_scanner.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>Scanner Kehadiran - OSIS E-Voting</title>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 24px; line-height: 1; display: inline-block; -webkit-font-smoothing: antialiased; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+    <nav class="bg-white border-b border-slate-200 px-6 py-4">
+        <div class="max-w-lg mx-auto flex items-center justify-between">
+            <a href="/admin" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined">how_to_vote</span>
+                </div>
+                <span class="font-bold text-slate-900">SMK NIBA</span>
+            </a>
+            <a href="/admin/attendance" class="px-4 py-2 text-slate-600 hover:text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Kembali
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-lg mx-auto p-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+            <h1 class="text-xl font-bold text-slate-900 mb-1">Input Kehadiran Voter</h1>
+            <p class="text-sm text-slate-500 mb-6">Masukkan UUID voter yang hadir</p>
+            
+            <div class="flex gap-2">
+                <input type="text" id="uuid-input" placeholder="Masukkan UUID voter" 
+                       class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none font-mono text-sm" />
+                <button id="submit-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors">
+                    <span class="material-symbols-outlined">check</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="result-card" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div id="result-header" class="p-6 pb-4">
+                    <div class="flex items-center gap-4">
+                        <div id="result-icon" class="w-16 h-16 rounded-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl"></span>
+                        </div>
+                        <div>
+                            <h2 id="result-name" class="text-xl font-bold text-slate-900"></h2>
+                            <p id="result-class" class="text-sm text-slate-500"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 pb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 rounded-xl p-4 text-center">
+                            <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Status Hadir</p>
+                            <p id="result-presence" class="font-bold text-lg"></p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4 text-center">
+                            <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Status Vote</p>
+                            <p id="result-voted" class="font-bold text-lg"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center">
+            <a href="/admin/attendance" class="text-sm text-slate-500 hover:text-slate-700">
+                Lihat Daftar Kehadiran
+            </a>
+        </div>
+    </main>
+
+    <script>
+    const uuidInput = document.getElementById('uuid-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultCard = document.getElementById('result-card');
+
+    function showResult(success, data) {
+        resultCard.classList.remove('hidden');
+        const header = document.getElementById('result-header');
+        const icon = document.getElementById('result-icon');
+        const iconSpan = icon.querySelector('span');
+        const name = document.getElementById('result-name');
+        const classEl = document.getElementById('result-class');
+        const presence = document.getElementById('result-presence');
+        const voted = document.getElementById('result-voted');
+
+        if (!success) {
+            header.className = 'p-6 pb-4 bg-red-50';
+            icon.className = 'w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600';
+            iconSpan.textContent = 'error';
+            name.textContent = 'Error';
+            classEl.textContent = data;
+            presence.textContent = '-';
+            voted.textContent = '-';
+            return;
+        }
+
+        name.textContent = data.name || '-';
+        classEl.textContent = data.class || '-';
+
+        if (data.status === 'already_marked') {
+            header.className = 'p-6 pb-4 bg-amber-50';
+            icon.className = 'w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-600';
+            iconSpan.textContent = 'schedule';
+            presence.textContent = data.presence === 1 ? 'Hadir' : 'Belum';
+            presence.className = 'font-bold text-lg ' + (data.presence === 1 ? 'text-emerald-600' : 'text-amber-600');
+        } else {
+            header.className = 'p-6 pb-4 bg-emerald-50';
+            icon.className = 'w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600';
+            iconSpan.textContent = 'check_circle';
+            presence.textContent = 'Hadir';
+            presence.className = 'font-bold text-lg text-emerald-600';
+        }
+
+        voted.textContent = data.voted === 1 ? 'Sudah' : 'Belum';
+        voted.className = 'font-bold text-lg ' + (data.voted === 1 ? 'text-emerald-600' : 'text-slate-400');
+    }
+
+    function markAttendance(uuid) {
+        fetch('/admin/attendance/mark', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ uuid: uuid })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' || data.status === 'already_marked') {
+                showResult(true, data.data);
+            } else {
+                showResult(false, data.error || 'Terjadi kesalahan');
+            }
+        })
+        .catch(err => showResult(false, err.message));
+    }
+
+    submitBtn.addEventListener('click', function() {
+        const uuid = uuidInput.value.trim();
+        if (!uuid) {
+            alert('Masukkan UUID voter');
+            return;
+        }
+        markAttendance(uuid);
+    });
+
+    uuidInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitBtn.click();
+    });
+    </script>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  pilketos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pilketos
+    ports:
+      - "8024:8024"
+    volumes:
+      - pilketos_data:/app/database
+      - pilketos_uploads:/app/public/uploads
+    environment:
+      - TZ=Asia/Jakarta
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8024/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  pilketos_data:
+  pilketos_uploads:

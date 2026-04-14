@@ -1,0 +1,153 @@
+{{define "admin_attendance.html"}}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>Daftar Kehadiran - OSIS E-Voting</title>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            line-height: 1;
+            display: inline-block;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+    <nav class="bg-white border-b border-slate-200 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <a href="/admin" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined">how_to_vote</span>
+                    </div>
+                    <div>
+                        <span class="font-bold text-slate-900">SMK NIBA</span>
+                        <span class="text-xs text-slate-500 block">Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/admin/attendance/scanner" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined">qr_code_scanner</span>
+                    Scanner
+                </a>
+                <a href="/admin" class="px-4 py-2 text-slate-600 hover:text-slate-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-900">Daftar Kehadiran</h1>
+            <p class="text-slate-500 mt-1">Monitoring kehadiran voter di lokasi pemilihan</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                        <span class="material-symbols-outlined">how_to_reg</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-900">{{.TotalHadir}}</p>
+                        <p class="text-sm text-slate-500">Hadir</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                        <span class="material-symbols-outlined">person_off</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-900">{{.TotalBelum}}</p>
+                        <p class="text-sm text-slate-500">Belum Hadir</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+                        <span class="material-symbols-outlined">groups</span>
+                    </div>
+                    <div>
+                        <p class="text-2xl font-bold text-slate-900">{{.Total}}</p>
+                        <p class="text-sm text-slate-500">Total Pemilih</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200">
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Status</th>
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Nama</th>
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Kelas</th>
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">No. HP</th>
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Hadir Jam</th>
+                            <th class="px-6 py-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Vote</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {{range .Voters}}
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-6 py-4">
+                                {{if eq .PresenceStatus 1}}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+                                    <span class="material-symbols-outlined text-sm">check_circle</span>
+                                    Hadir
+                                </span>
+                                {{else}}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600">
+                                    <span class="material-symbols-outlined text-sm">schedule</span>
+                                    Belum
+                                </span>
+                                {{end}}
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-slate-900">{{.Name}}</td>
+                            <td class="px-6 py-4 text-slate-600">{{.ClassName}}</td>
+                            <td class="px-6 py-4 text-slate-600">{{.PhoneNumber}}</td>
+                            <td class="px-6 py-4 text-slate-600">{{.AttendedAt}}</td>
+                            <td class="px-6 py-4">
+                                {{if eq .HasVoted "Sudah"}}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                    <span class="material-symbols-outlined text-sm">how_to_vote</span>
+                                    Sudah
+                                </span>
+                                {{else}}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500">
+                                    <span class="material-symbols-outlined text-sm">pending</span>
+                                    Belum
+                                </span>
+                                {{end}}
+                            </td>
+                        </tr>
+                        {{else}}
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-400">
+                                <span class="material-symbols-outlined text-5xl">person_off</span>
+                                <p class="mt-2">Belum ada data kehadiran.</p>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
+{{end}}

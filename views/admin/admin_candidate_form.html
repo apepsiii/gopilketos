@@ -5,12 +5,11 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
             <h1 class="text-3xl font-bold text-slate-900">{{.Action}}</h1>
-            <p class="text-slate-500">Fill candidate details and publish them in the ballot roster.</p>
+            <p class="text-slate-500">Isi detail kandidat dan terbitkan ke daftar ballot.</p>
         </div>
-        <a href="/admin/candidates" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200">Back to Candidates</a>
+        <a href="/admin/candidates" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200">Kembali ke Kandidat</a>
     </div>
-    <form method="POST" action="/admin/candidates/save" enctype="multipart/form-data" class="space-y-6">
-        <input type="hidden" name="id" value="{{.ID}}">
+    <form method="POST" action="{{if .ID}}/admin/candidates/{{.ID}}{{else}}/admin/candidates{{end}}" enctype="multipart/form-data" class="space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <label class="block">
                 <span class="text-sm font-semibold text-slate-700">Nama Kandidat</span>

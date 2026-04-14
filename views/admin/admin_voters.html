@@ -3,39 +3,264 @@
 {{define "admin_voters_content"}}
 <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
     <div>
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Voters Management (DPT)</h1>
-        <p class="text-slate-500 mt-1">Manage institutional electorate records and verify participation status.</p>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Manajemen Pemilih (DPT)</h1>
+        <p class="text-slate-500 mt-1">Kelola catatan pemilih dan verifikasi status partisipasi.</p>
     </div>
-    <a href="/admin/voters/new" class="px-5 py-2 bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white rounded-xl font-semibold shadow-md flex items-center gap-2"><span class="material-symbols-outlined">add</span>Add Voter</a>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <a href="/admin/voters/new" class="px-5 py-2 bg-blue-600 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-blue-700 transition">
+            <span class="material-symbols-outlined text-lg">add</span>Tambah
+        </a>
+        <a href="/admin/voters/import" class="px-5 py-2 bg-emerald-600 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-emerald-700 transition">
+            <span class="material-symbols-outlined text-lg">upload_file</span>Import
+        </a>
+        <a href="/admin/voters/cards" class="px-5 py-2 bg-slate-700 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-slate-800 transition" target="_blank">
+            <span class="material-symbols-outlined text-lg">print</span>Cetak Kartu
+        </a>
+    </div>
 </section>
-<section class="bg-white rounded-2xl shadow-sm border border-slate-200/10 overflow-hidden">
+
+{{if .ImportMessage}}
+<div class="mb-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-4 text-emerald-900">
+    {{.ImportMessage}}
+</div>
+{{end}}
+
+<section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2 text-sm text-slate-600">
+                <input type="checkbox" id="select-all" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                Pilih Semua
+            </label>
+            <span id="selected-count" class="text-sm text-slate-500">0 dipilih</span>
+        </div>
+        <div id="bulk-actions" class="hidden flex items-center gap-3">
+            <button type="button" id="delete-selected" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">delete</span>
+                Hapus Terpilih
+            </button>
+        </div>
+    </div>
+    
     <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse" id="voters-table">
             <thead>
                 <tr class="bg-slate-50">
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">UUID</th>
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Name</th>
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Class</th>
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Phone Number</th>
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500">Voted Status</th>
-                    <th class="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-500 text-right">Actions</th>
+                    <th class="px-4 py-3 w-10">
+                        <span class="sr-only">Pilih</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="id">
+                        ID <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="uuid">
+                        UUID <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="name">
+                        Nama <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="class_name">
+                        Kelas <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="phone_number">
+                        No. HP <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="presence_status">
+                        Hadir <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="has_voted">
+                        Vote <span class="sort-icon">↕</span>
+                    </th>
+                    <th class="px-4 py-3 text-right text-xs uppercase tracking-widest font-bold text-slate-500">
+                        Aksi
+                    </th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody class="divide-y divide-slate-100" id="voters-tbody">
                 {{range .Voters}}
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-6 py-4 font-mono text-xs text-slate-400">{{.UUID}}</td>
-                    <td class="px-6 py-4 font-semibold text-slate-900">{{.Name}}</td>
-                    <td class="px-6 py-4 text-slate-600">{{.ClassName}}</td>
-                    <td class="px-6 py-4 text-slate-600">{{.PhoneNumber}}</td>
-                    <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{if eq .HasVoted "Sudah"}}bg-emerald-100 text-emerald-700{{else}}bg-slate-100 text-slate-700{{end}}">{{.HasVoted}}</span></td>
-                    <td class="px-6 py-4 text-right"><form action="/admin/voters/{{.ID}}/delete" method="POST" class="inline"><button type="submit" class="text-red-600 hover:text-red-800">Delete</button></form></td>
+                <tr class="hover:bg-slate-50 transition-colors" data-id="{{.ID}}" data-uuid="{{.UUID}}">
+                    <td class="px-4 py-3">
+                        <input type="checkbox" class="voter-checkbox w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" value="{{.ID}}" />
+                    </td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-400">#{{.ID}}</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-500">{{.UUID}}</td>
+                    <td class="px-4 py-3 font-semibold text-slate-900">{{.Name}}</td>
+                    <td class="px-4 py-3 text-slate-600">{{.ClassName}}</td>
+                    <td class="px-4 py-3 text-slate-600">{{.PhoneNumber}}</td>
+                    <td class="px-4 py-3">
+                        {{if .PresenceStatus}}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                            <span class="material-symbols-outlined text-sm">check_circle</span>
+                            Hadir
+                        </span>
+                        {{else}}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                            Belum
+                        </span>
+                        {{end}}
+                    </td>
+                    <td class="px-4 py-3">
+                        {{if eq .HasVoted "Sudah"}}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                            <span class="material-symbols-outlined text-sm">how_to_vote</span>
+                            Sudah
+                        </span>
+                        {{else}}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                            <span class="material-symbols-outlined text-sm">pending</span>
+                            Belum
+                        </span>
+                        {{end}}
+                    </td>
+                    <td class="px-4 py-3 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="/admin/voters/{{.ID}}/edit" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                <span class="material-symbols-outlined">edit</span>
+                            </a>
+                            <form action="/admin/voters/{{.ID}}/delete" method="POST" class="inline" onsubmit="return confirm('Yakin hapus pemilih ini?')">
+                                <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
                 {{else}}
-                <tr><td colspan="6" class="px-6 py-8 text-center text-slate-500">Tidak ada pemilih.</td></tr>
+                <tr>
+                    <td colspan="9" class="px-4 py-12 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-5xl">person_off</span>
+                        <p class="mt-2">Tidak ada pemilih.</p>
+                    </td>
+                </tr>
                 {{end}}
             </tbody>
         </table>
     </div>
 </section>
+
+<form id="bulk-delete-form" action="/admin/voters/bulk-delete" method="POST" class="hidden">
+    <input type="hidden" name="ids" id="bulk-ids" />
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var selectAll = document.getElementById('select-all');
+    var checkboxes = document.querySelectorAll('.voter-checkbox');
+    var selectedCount = document.getElementById('selected-count');
+    var bulkActions = document.getElementById('bulk-actions');
+    var deleteSelected = document.getElementById('delete-selected');
+    var bulkIds = document.getElementById('bulk-ids');
+    var bulkDeleteForm = document.getElementById('bulk-delete-form');
+    var tbody = document.getElementById('voters-tbody');
+    
+    var sortColumn = 'id';
+    var sortDirection = 'desc';
+    
+    function updateSelectedCount() {
+        var checked = document.querySelectorAll('.voter-checkbox:checked');
+        var count = checked.length;
+        selectedCount.textContent = count + ' dipilih';
+        if (count === 0) {
+            bulkActions.classList.add('hidden');
+        } else {
+            bulkActions.classList.remove('hidden');
+        }
+    }
+    
+    selectAll.addEventListener('change', function() {
+        checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+        updateSelectedCount();
+    });
+    
+    checkboxes.forEach(function(cb) {
+        cb.addEventListener('change', updateSelectedCount);
+    });
+    
+    deleteSelected.addEventListener('click', function() {
+        var checked = document.querySelectorAll('.voter-checkbox:checked');
+        if (checked.length === 0) return;
+        if (!confirm('Yakin hapus ' + checked.length + ' pemilih?')) return;
+        
+        var ids = Array.from(checked).map(function(cb) { return cb.value; }).join(',');
+        bulkIds.value = ids;
+        bulkDeleteForm.submit();
+    });
+    
+    document.querySelectorAll('.sortable').forEach(function(th) {
+        th.addEventListener('click', function() {
+            var col = this.dataset.sort;
+            if (sortColumn === col) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = col;
+                sortDirection = 'asc';
+            }
+            updateSortIcons();
+            sortTable();
+        });
+    });
+    
+    function updateSortIcons() {
+        document.querySelectorAll('.sortable').forEach(function(th) {
+            var icon = th.querySelector('.sort-icon');
+            if (th.dataset.sort === sortColumn) {
+                icon.textContent = sortDirection === 'asc' ? '↑' : '↓';
+            } else {
+                icon.textContent = '↕';
+            }
+        });
+    }
+    
+    function sortTable() {
+        var rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
+        rows.sort(function(a, b) {
+            var aVal, bVal;
+            switch(sortColumn) {
+                case 'id':
+                    aVal = parseInt(a.dataset.id);
+                    bVal = parseInt(b.dataset.id);
+                    break;
+                case 'uuid':
+                    aVal = a.dataset.uuid.toLowerCase();
+                    bVal = b.dataset.uuid.toLowerCase();
+                    break;
+                case 'name':
+                    aVal = a.cells[3].textContent.toLowerCase();
+                    bVal = b.cells[3].textContent.toLowerCase();
+                    break;
+                case 'class_name':
+                    aVal = a.cells[4].textContent.toLowerCase();
+                    bVal = b.cells[4].textContent.toLowerCase();
+                    break;
+                case 'phone_number':
+                    aVal = a.cells[5].textContent.toLowerCase();
+                    bVal = b.cells[5].textContent.toLowerCase();
+                    break;
+                case 'presence_status':
+                    aVal = a.cells[6].textContent.trim().toLowerCase();
+                    bVal = b.cells[6].textContent.trim().toLowerCase();
+                    break;
+                case 'has_voted':
+                    aVal = a.cells[7].textContent.trim().toLowerCase();
+                    bVal = b.cells[7].textContent.trim().toLowerCase();
+                    break;
+                default:
+                    aVal = a.dataset.id;
+                    bVal = b.dataset.id;
+            }
+            if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+            if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+        rows.forEach(function(row) { tbody.appendChild(row); });
+    }
+    
+    updateSortIcons();
+});
+</script>
+
+<style>
+.sort-icon { font-size: 10px; opacity: 0.5; }
+.sortable:hover .sort-icon { opacity: 1; }
+</style>
 {{end}}

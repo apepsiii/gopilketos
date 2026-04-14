@@ -1,0 +1,7 @@
+app_name: "Pilketos E-Voting"
+port: "8024"
+domain: ""
+install_dir: ""
+admin_user: "admin"
+admin_pass: "admin123"
+db_path: "database/evoting.db"

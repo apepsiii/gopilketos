@@ -1,0 +1,13 @@
+# Air live reload config for OSIS e-voting
+# Run `air` from project root after installing the binary.
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/main.exe ."
+  bin = "./tmp/main.exe"
+  delay = 500
+  include_ext = ["go", "html", "tmpl", "css", "js"]
+  exclude_dir = ["tmp", ".git", "dist", "installer", ".vscode", ".kilo"]
+  log = "stdout"
+  color = true

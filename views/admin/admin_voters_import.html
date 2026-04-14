@@ -1,0 +1,28 @@
+{{define "admin_voters_import.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_voters_import_content"}}
+<section class="max-w-3xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200/70 p-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-slate-900">Import Pemilih</h1>
+        <p class="text-slate-500 mt-2">Unggah file Excel (.xlsx) atau CSV berisi daftar pemilih untuk menambahkan anggota DPT secara massal.</p>
+    </div>
+    <form action="/admin/voters/import" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <label class="block">
+            <span class="text-sm font-semibold text-slate-700">Pilih File</span>
+            <input type="file" name="import_file" accept=".xlsx,.csv" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
+        </label>
+        <div class="rounded-3xl bg-slate-50 border border-slate-200 p-6 text-sm text-slate-700 space-y-3">
+            <p class="font-semibold">Format yang didukung:</p>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Kolom: UUID, Nama, Kelas, Nomor HP</li>
+                <li>Jika UUID kosong atau tidak valid, sistem akan membuat UUID baru secara otomatis.</li>
+                <li>Duplikat UUID akan diabaikan untuk menghindari overwrite.</li>
+            </ul>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 pt-4 border-t border-slate-200">
+            <a href="/admin/voters" class="px-6 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Kembali</a>
+            <button type="submit" class="px-6 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Mulai Import</button>
+        </div>
+    </form>
+</section>
+{{end}}

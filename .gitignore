@@ -8,6 +8,8 @@
 
 # Build directories
 bin/
+tmp/
+dist/
 
 # Vendor dir
 vendor/
@@ -23,6 +25,7 @@ Thumbs.db
 
 # Local database
 database/evoting.db
+*.db
 
 # Generated files
 *.log
@@ -30,3 +33,17 @@ database/evoting.db
 
 # Dependency directories
 /pkg/
+
+# Environment files
+.env
+
+# Docker image tar
+*.tar
+
+# Kilo/OpenCode config
+.kilo/
+.kilocode/
+.opencode/
+
+# Uploads (optional - comment out if you want to include sample uploads)
+# public/uploads/

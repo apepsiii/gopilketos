@@ -5,27 +5,95 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Pilih Ketua OSIS | SMK NIBA E-Voting</title>
-    <style>.material-symbols-outlined{font-variation-settings:'FILL'0,'wght'400,'GRAD'0,'opsz'24;}</style>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
 </head>
-<body class="bg-surface text-on-surface font-body min-h-screen">
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/20 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="text-lg font-bold">SMK NIBA E-Voting</div>
-            <span class="text-sm uppercase tracking-[0.35em] text-slate-500">Step 1 of 3</span>
+<body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200/50">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+                </div>
+                <span class="font-semibold text-sm">SMK NIBA</span>
+            </div>
+            <span class="text-xs text-neutral-400">Langkah 1 dari 3</span>
         </div>
     </nav>
-    <main class="pt-28 pb-16 px-6 max-w-7xl mx-auto">
-        <div class="mb-10 text-center">
-            <p class="text-sm font-semibold uppercase tracking-[0.4em] text-primary">Choose Your Chairman</p>
-            <h1 class="text-4xl font-bold mt-4">Select the leader for the next term.</h1>
-            <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Click a candidate to advance to the vice-chairman selection step.</p>
+
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-10">
+                <p class="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-2">Langkah 1</p>
+                <h1 class="text-3xl font-semibold text-neutral-900 mb-2">Pilih Ketua OSIS</h1>
+                <p class="text-neutral-500 text-sm">Pilih kandidat ketua OSIS untuk periode selanjutnya</p>
+            </div>
+            <div id="candidates-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
-        <div id="candidates-list" class="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3"></div>
     </main>
-    <script src="/static/js/vote_step1.js" defer></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const params = new URLSearchParams(window.location.search);
+        const uuid = params.get('uuid');
+        if (!uuid) {
+            window.location.href = '/scanner';
+            return;
+        }
+
+        const list = document.getElementById('candidates-list');
+        list.innerHTML = '<div class="col-span-full text-center py-12 text-neutral-400">Memuat kandidat...</div>';
+
+        try {
+            const response = await fetch('/api/candidates?position=CHAIRMAN');
+            const candidates = await response.json();
+            if (!response.ok || candidates.length === 0) {
+                list.innerHTML = '<div class="col-span-full text-center py-12 text-neutral-400">Tidak ada kandidat ketua.</div>';
+                return;
+            }
+
+            list.innerHTML = candidates.map(c => `
+                <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300 hover:shadow-lg transition-all cursor-pointer"
+                     onclick="window.location.href='/vote/step2?uuid=${encodeURIComponent(uuid)}&chairman_id=${c.id}'">
+                    <div class="flex flex-col items-center text-center">
+                        <img src="${c.photo_url || '/static/images/default-profile.svg'}" alt="${c.name}"
+                             class="w-24 h-24 rounded-full object-cover bg-neutral-100 mb-4" />
+                        <h3 class="font-semibold text-neutral-900">${c.name}</h3>
+                        <p class="text-xs text-neutral-500 mb-4">${c.class_name}</p>
+                        <div class="w-full pt-4 border-t border-neutral-100 text-left space-y-2">
+                            <div>
+                                <p class="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">Visi</p>
+                                <p class="text-sm text-neutral-600 line-clamp-2">${c.vision}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                        <span>Pilih</span>
+                        <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">arrow_forward</span>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            list.innerHTML = '<div class="col-span-full text-center py-12 text-red-400">Gagal memuat kandidat.</div>';
+        }
+    });
+    </script>
 </body>
 </html>
 {{end}}

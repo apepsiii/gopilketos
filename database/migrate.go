@@ -15,6 +15,10 @@ func Migrate(db *sql.DB) error {
 		`CREATE TABLE IF NOT EXISTS settings (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			announcement_text TEXT,
+			onesender_enabled INTEGER DEFAULT 0,
+			onesender_api_url TEXT,
+			onesender_api_key TEXT,
+			onesender_template TEXT,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
 		`CREATE TABLE IF NOT EXISTS candidates (
@@ -52,5 +56,32 @@ func Migrate(db *sql.DB) error {
 			return err
 		}
 	}
+
+	columnChecks := map[string]string{
+		"onesender_enabled":  "INTEGER DEFAULT 0",
+		"onesender_api_url":  "TEXT",
+		"onesender_api_key":  "TEXT",
+		"onesender_template": "TEXT",
+	}
+	for col, colType := range columnChecks {
+		var dummy int
+		err := db.QueryRow("SELECT " + col + " FROM settings LIMIT 1").Scan(&dummy)
+		if err != nil {
+			db.Exec("ALTER TABLE settings ADD COLUMN " + col + " " + colType)
+		}
+	}
+
+	voterColumnChecks := map[string]string{
+		"presence_status": "INTEGER DEFAULT 0",
+		"attended_at":     "DATETIME",
+	}
+	for col, colType := range voterColumnChecks {
+		var dummy int
+		err := db.QueryRow("SELECT " + col + " FROM voters LIMIT 1").Scan(&dummy)
+		if err != nil {
+			db.Exec("ALTER TABLE voters ADD COLUMN " + col + " " + colType)
+		}
+	}
+
 	return nil
 }

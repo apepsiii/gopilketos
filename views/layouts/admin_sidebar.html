@@ -4,19 +4,19 @@
         <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg"><span class="material-symbols-outlined">account_balance</span></div>
         <div>
             <h2 class="text-xl font-bold text-indigo-700">OSIS Registry</h2>
-            <p class="text-[10px] uppercase tracking-widest text-slate-500">Institutional Authority</p>
+            <p class="text-[10px] uppercase tracking-widest text-slate-500">Autoritas Institusi</p>
         </div>
     </div>
     <nav class="space-y-2 flex-1">
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "dashboard"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "candidates"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/candidates"><span class="material-symbols-outlined">person_search</span><span>Candidates</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "voters"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/voters"><span class="material-symbols-outlined">how_to_reg</span><span>Voters</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "logs"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/logs"><span class="material-symbols-outlined">history_edu</span><span>Audit Logs</span></a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "candidates"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/candidates"><span class="material-symbols-outlined">person_search</span><span>Kandidat</span></a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "voters"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/voters"><span class="material-symbols-outlined">how_to_reg</span><span>Pemilih</span></a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "logs"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/logs"><span class="material-symbols-outlined">history_edu</span><span>Log Audit</span></a>
         <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "settings"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}" href="/admin/settings"><span class="material-symbols-outlined">campaign</span><span>Pengumuman</span></a>
     </nav>
     <div class="pt-6 border-t border-slate-200">
-        <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-white rounded-lg"><span class="material-symbols-outlined">contact_support</span>Support</a>
-        <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container/20 rounded-lg"><span class="material-symbols-outlined">logout</span>Sign Out</a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-white rounded-lg"><span class="material-symbols-outlined">contact_support</span>Bantuan</a>
+        <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg"><span class="material-symbols-outlined">logout</span>Keluar</a>
     </div>
 </aside>
 {{end}}

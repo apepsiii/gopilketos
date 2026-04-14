@@ -1,158 +1,427 @@
 {{define "landing.html"}}
 <!DOCTYPE html>
-<html class="scroll-smooth" lang="id">
+<html lang="id">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
-    <title>SMK NIBA E-Voting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <title>SMK NIBA - Pemilihan OSIS</title>
     <style>
+        * { font-family: 'Inter', sans-serif; }
         .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
         }
-        .primary-gradient {
-            background: linear-gradient(135deg, #3525cd 0%, #4f46e5 100%);
-        }
+        .slider { position: relative; overflow: hidden; }
+        .slider-track { display: flex; transition: transform 0.5s ease-in-out; }
+        .slide { min-width: 100%; display: flex; align-items: center; justify-content: center; }
+        .slider-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s; }
+        .slider-dot.active { background: white; width: 24px; border-radius: 4px; }
+        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .modal-enter { animation: modalEnter 0.3s ease-out; }
+        .modal-leave { animation: modalLeave 0.2s ease-in forwards; }
+        @keyframes modalEnter { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes modalLeave { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
     </style>
 </head>
-<body class="bg-background text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/20 shadow-sm">
-        <div class="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-            <div class="text-lg font-bold tracking-tighter text-indigo-900 font-headline">SMK NIBA Business School E-Voting</div>
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium tracking-tight">
-                <a class="text-indigo-600 border-b-2 border-indigo-600 py-1" href="#elections">Elections</a>
-                <a class="text-slate-600 hover:text-indigo-500 py-1" href="#candidates">Candidates</a>
-                <a class="text-slate-600 hover:text-indigo-500 py-1" href="#how-to-vote">How to Vote</a>
+<body class="bg-white text-slate-900 antialiased">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+                </div>
+                <span class="font-semibold text-sm">SMK NIBA</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="#kandidat" class="text-sm text-slate-600 hover:text-blue-600 transition-colors">Kandidat</a>
+                <a href="/scanner" class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Mulai Voting</a>
             </div>
-            <a href="/scanner" class="primary-gradient text-white px-6 py-2.5 rounded-xl font-medium text-sm shadow-lg shadow-primary/20">Login to Vote</a>
         </div>
     </nav>
-    <main class="pt-24">
-        <section class="px-6 py-20 md:py-32 max-w-7xl mx-auto relative overflow-hidden">
-            <div class="absolute top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl"></div>
-            <div class="max-w-3xl">
-                <span class="text-primary font-label text-xs font-semibold tracking-widest uppercase mb-4 block">Institutional OSIS Election 2024</span>
-                <h1 class="text-5xl md:text-7xl font-bold text-on-surface tracking-tight mb-8 leading-[1.1]">Welcome to the <span class="text-primary">OSIS Election.</span></h1>
-                <p class="text-lg md:text-xl text-on-surface-variant leading-relaxed mb-10 max-w-2xl">{{.Announcement}}</p>
-                <div class="flex flex-wrap gap-4">
-                    <a class="primary-gradient text-white px-8 py-4 rounded-xl font-semibold flex items-center gap-2" href="#candidates">View Candidates <span class="material-symbols-outlined">arrow_forward</span></a>
-                    <a class="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-semibold hover:bg-surface-container-highest" href="#how-to-vote">How to Vote</a>
-                </div>
+
+    <main class="pt-16">
+        <section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+                <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
             </div>
-            <div class="mt-20 p-8 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10">
-                <div class="flex justify-between items-end mb-4">
+            
+            <div class="relative max-w-6xl mx-auto px-6 py-20">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <h3 class="font-headline font-semibold text-lg">Live Participation</h3>
-                        <p class="text-on-surface-variant text-sm">Voters from all departments</p>
+                        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-medium mb-6">
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                            Voting Sedang Aktif
+                        </div>
+                        <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
+                            Pemilihan<br/><span class="text-blue-200">OSIS 2026</span>
+                        </h1>
+                        
+                        <div class="grid grid-cols-3 gap-6 mb-8">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold">{{.TotalVoters}}</div>
+                                <div class="text-xs text-blue-200 mt-1">Total Pemilih</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold">{{.TotalVotes}}</div>
+                                <div class="text-xs text-blue-200 mt-1">Suara Masuk</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-emerald-400">{{.Participation}}%</div>
+                                <div class="text-xs text-blue-200 mt-1">Partisipasi</div>
+                            </div>
+                        </div>
+
+                        <a href="/scanner" class="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg">
+                            <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">qr_code_scanner</span>
+                            Scan QR untuk Vote
+                        </a>
                     </div>
-                    <div class="text-right">
-                        <span class="text-3xl font-bold text-primary">64%</span>
-                        <p class="text-on-surface-variant text-xs font-label uppercase tracking-widest">Turnout Rate</p>
+
+                    <div class="slider" id="heroSlider">
+                        <div class="slider-track" id="sliderTrack">
+                            {{range .ChairmanCandidates}}
+                            <div class="slide">
+                                <div class="bg-white/15 backdrop-blur-lg rounded-3xl p-8 w-full max-w-sm border border-white/20 cursor-pointer" onclick="openModal('chairman', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
+                                    <div class="flex flex-col items-center text-center">
+                                        <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}" 
+                                             alt="{{.Name}}" class="w-32 h-32 rounded-full object-cover border-4 border-white/30 mb-4" />
+                                        <span class="text-xs font-medium text-blue-200 uppercase tracking-wider mb-1">Ketua OSIS</span>
+                                        <h3 class="text-xl font-bold mb-1">{{.Name}}</h3>
+                                        <p class="text-sm text-blue-200 mb-4">{{.ClassName}}</p>
+                                        <p class="text-sm text-white/90 line-clamp-3 italic">"{{.Vision}}"</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{end}}
+                            {{range .ViceChairmanCandidates}}
+                            <div class="slide">
+                                <div class="bg-white/15 backdrop-blur-lg rounded-3xl p-8 w-full max-w-sm border border-white/20 cursor-pointer" onclick="openModal('vice', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
+                                    <div class="flex flex-col items-center text-center">
+                                        <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}" 
+                                             alt="{{.Name}}" class="w-32 h-32 rounded-full object-cover border-4 border-white/30 mb-4" />
+                                        <span class="text-xs font-medium text-blue-200 uppercase tracking-wider mb-1">Wakil Ketua OSIS</span>
+                                        <h3 class="text-xl font-bold mb-1">{{.Name}}</h3>
+                                        <p class="text-sm text-blue-200 mb-4">{{.ClassName}}</p>
+                                        <p class="text-sm text-white/90 line-clamp-3 italic">"{{.Vision}}"</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {{end}}
+                        </div>
+                        <div class="flex justify-center gap-2 mt-6" id="sliderDots"></div>
                     </div>
-                </div>
-                <div class="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
-                    <div class="h-full primary-gradient" style="width: 64%"></div>
                 </div>
             </div>
         </section>
-        <section id="candidates" class="py-24 bg-surface-container-low">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="flex justify-between items-end mb-16">
-                    <div class="max-w-xl">
-                        <h2 class="text-3xl md:text-4xl font-bold text-on-surface mb-4">Chairman Candidates</h2>
-                        <p class="text-on-surface-variant">Leading with vision, integrity, and a commitment to excellence for SMK NIBA.</p>
+
+        {{if .Announcement}}
+        <section class="bg-blue-50 border-b border-blue-100">
+            <div class="max-w-6xl mx-auto px-6 py-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">campaign</span>
                     </div>
-                    <div class="hidden md:block">
-                        <span class="bg-primary-fixed text-on-primary-fixed px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider">Vote Phase Active</span>
+                    <div>
+                        <h3 class="font-semibold text-blue-900 mb-1">Pengumuman</h3>
+                        <p class="text-sm text-blue-800">{{.Announcement}}</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {{range .ChairmanCandidates}}
-                    <div class="bg-surface-container-lowest p-6 rounded-xl group hover:shadow-2xl transition-all duration-300">
-                        <div class="relative mb-6 overflow-hidden rounded-lg aspect-[4/5]">
-                            <img class="w-full h-full object-cover" src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}https://via.placeholder.com/400x500?text=Photo{{end}}" alt="{{.Name}}" />
-                            <div class="absolute top-4 left-4">
-                                <span class="bg-primary text-on-primary px-3 py-1 rounded-md text-xs font-bold">Ketua</span>
+            </div>
+        </section>
+        {{end}}
+
+        <section id="kandidat" class="py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Kandidat Pemilihan</h2>
+                    <p class="text-slate-500">Calon Ketua dan Wakil Ketua OSIS SMK NIBA Business School</p>
+                </div>
+
+                {{if or .ChairmanCandidates .ViceChairmanCandidates}}
+                <div class="space-y-12">
+                    {{if .ChairmanCandidates}}
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">person</span>
                             </div>
+                            <h3 class="text-xl font-semibold">Kandidat Ketua OSIS</h3>
                         </div>
-                        <h3 class="text-xl font-bold text-on-surface">{{.Name}}</h3>
-                        <p class="text-primary font-medium text-sm mb-6">{{.ClassName}}</p>
-                        <div class="space-y-6">
-                            <div>
-                                <h4 class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Vision</h4>
-                                <p class="text-sm text-on-surface leading-relaxed italic">{{.Vision}}</p>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {{range .ChairmanCandidates}}
+                            <div class="group bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer" onclick="openModal('chairman', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
+                                <div class="flex flex-col items-center text-center">
+                                    <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}" 
+                                         alt="{{.Name}}" class="w-24 h-24 rounded-full object-cover bg-slate-200 mb-4" />
+                                    <h4 class="font-semibold text-slate-900">{{.Name}}</h4>
+                                    <p class="text-xs text-slate-500 mb-3">{{.ClassName}}</p>
+                                    <div class="w-full pt-4 border-t border-slate-200 text-left">
+                                        <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Visi</p>
+                                        <p class="text-sm text-slate-600 line-clamp-2">{{.Vision}}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
+                                    <span>Lihat Detail</span>
+                                    <span class="material-symbols-outlined text-base">open_in_new</span>
+                                </div>
                             </div>
-                            <div>
-                                <h4 class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Program</h4>
-                                <p class="text-sm text-on-surface leading-relaxed">{{.Program}}</p>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{end}}
+
+                    {{if .ViceChairmanCandidates}}
+                    <div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">groups</span>
                             </div>
+                            <h3 class="text-xl font-semibold">Kandidat Wakil Ketua OSIS</h3>
+                        </div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {{range .ViceChairmanCandidates}}
+                            <div class="group bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all cursor-pointer" onclick="openModal('vice', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
+                                <div class="flex flex-col items-center text-center">
+                                    <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}" 
+                                         alt="{{.Name}}" class="w-24 h-24 rounded-full object-cover bg-slate-200 mb-4" />
+                                    <h4 class="font-semibold text-slate-900">{{.Name}}</h4>
+                                    <p class="text-xs text-slate-500 mb-3">{{.ClassName}}</p>
+                                    <div class="w-full pt-4 border-t border-slate-200 text-left">
+                                        <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">Visi</p>
+                                        <p class="text-sm text-slate-600 line-clamp-2">{{.Vision}}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-center gap-1 text-xs font-medium text-indigo-600 group-hover:text-indigo-700">
+                                    <span>Lihat Detail</span>
+                                    <span class="material-symbols-outlined text-base">open_in_new</span>
+                                </div>
+                            </div>
+                            {{end}}
                         </div>
                     </div>
                     {{end}}
                 </div>
+                {{else}}
+                <div class="text-center py-16 text-slate-400">
+                    <span class="material-symbols-outlined text-5xl mb-4">person_off</span>
+                    <p>Belum ada kandidat</p>
+                </div>
+                {{end}}
             </div>
         </section>
-        <section id="vice-candidates" class="pb-24">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="flex justify-between items-end mb-16">
-                    <div class="max-w-xl">
-                        <h2 class="text-3xl md:text-4xl font-bold text-on-surface mb-4">Vice-Chairman Candidates</h2>
-                        <p class="text-on-surface-variant">Strong student representatives ready to support and serve every class.</p>
-                    </div>
+
+        <section class="py-20 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Cara Voting</h2>
+                    <p class="text-slate-500">Ikuti langkah-langkah berikut untuk menyalurkan suara Anda</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {{range .ViceChairmanCandidates}}
-                    <div class="bg-surface-container-lowest p-6 rounded-xl group hover:shadow-2xl transition-all duration-300">
-                        <div class="relative mb-6 overflow-hidden rounded-lg aspect-[4/5]">
-                            <img class="w-full h-full object-cover" src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}https://via.placeholder.com/400x500?text=Photo{{end}}" alt="{{.Name}}" />
-                            <div class="absolute top-4 left-4">
-                                <span class="bg-primary text-on-primary px-3 py-1 rounded-md text-xs font-bold">Wakil</span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold text-on-surface">{{.Name}}</h3>
-                        <p class="text-primary font-medium text-sm mb-6">{{.ClassName}}</p>
-                        <div class="space-y-6">
-                            <div>
-                                <h4 class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Vision</h4>
-                                <p class="text-sm text-on-surface leading-relaxed italic">{{.Vision}}</p>
-                            </div>
-                            <div>
-                                <h4 class="text-xs uppercase tracking-widest text-on-surface-variant mb-2">Program</h4>
-                                <p class="text-sm text-on-surface leading-relaxed">{{.Program}}</p>
-                            </div>
-                        </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
+                        <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">1</div>
+                        <h3 class="text-lg font-semibold mb-2">Scan QR Code</h3>
+                        <p class="text-sm text-slate-500">Buka scanner dan arahkan kamera ke QR Code di kartu pemilih Anda</p>
                     </div>
-                    {{end}}
+                    <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
+                        <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">2</div>
+                        <h3 class="text-lg font-semibold mb-2">Pilih Kandidat</h3>
+                        <p class="text-sm text-slate-500">Pilih kandidat Ketua dan Wakil Ketua OSIS pilihan Anda</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
+                        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">3</div>
+                        <h3 class="text-lg font-semibold mb-2">Konfirmasi</h3>
+                        <p class="text-sm text-slate-500">Periksa pilihan Anda dan kirim suara untuk direkam</p>
+                    </div>
                 </div>
             </div>
         </section>
-        <section id="how-to-vote" class="pb-24 px-6">
-            <div class="max-w-7xl mx-auto bg-white rounded-3xl p-10 shadow-xl border border-outline-variant/10">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-4">How to Vote</h2>
-                        <ol class="space-y-4 text-on-surface-variant">
-                            <li><span class="font-semibold">1.</span> Scan your QR code via the login scanner.</li>
-                            <li><span class="font-semibold">2.</span> Choose your Chairman and Vice-Chairman.</li>
-                            <li><span class="font-semibold">3.</span> Confirm your selections and submit securely.</li>
-                        </ol>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="p-6 bg-surface-container-lowest rounded-3xl border border-outline-variant/10">
-                            <h3 class="text-sm uppercase tracking-[0.28em] text-on-surface-variant mb-3">Secure</h3>
-                            <p>Your vote is recorded anonymously and protected by institutional safeguards.</p>
+
+        <section class="py-16 bg-white border-t border-slate-200">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="bg-blue-50 rounded-2xl p-8 border border-blue-100">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-900">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">verified</span>
+                                Keamanan Terjamin
+                            </h3>
+                            <ul class="space-y-3 text-sm text-slate-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Identitas terpisah dari suara voting
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Setiap UUID hanya dapat digunakan sekali
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Data terenkripsi dalam database
+                                </li>
+                            </ul>
                         </div>
-                        <div class="p-6 bg-surface-container-lowest rounded-3xl border border-outline-variant/10">
-                            <h3 class="text-sm uppercase tracking-[0.28em] text-on-surface-variant mb-3">Transparent</h3>
-                            <p>Audit logs are available to the admin for verification without exposing identities.</p>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-900">
+                                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">balance</span>
+                                Prinsip Luber Jurdil
+                            </h3>
+                            <ul class="space-y-3 text-sm text-slate-600">
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Langsung - Pemilih berhak memilih sendiri
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Umum - Seluruh siswa berhak memilih
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="material-symbols-outlined text-blue-600 text-lg" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
+                                    Rahasia - Suara tidak bisa ditelusuri
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <footer class="bg-blue-600 text-white py-12">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold">SMK NIBA</span>
+                        <p class="text-xs text-blue-200">E-Voting OSIS</p>
+                    </div>
+                </div>
+                <a href="/scanner" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                    Mulai Voting
+                </a>
+            </div>
+            <div class="border-t border-blue-500 pt-8 text-center text-sm text-blue-200">
+                © 2026 SMK NIBA Business School Bogor. Hak Cipta Dilindungi.
+            </div>
+        </div>
+    </footer>
+
+    <div id="candidateModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="flex items-start justify-center min-h-full p-4 py-8">
+            <div class="modal-enter bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden my-auto">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+                            <span id="modalPosition" class="text-sm font-medium uppercase tracking-wider"></span>
+                        </div>
+                        <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 max-h-[60vh] overflow-y-auto">
+                    <div class="flex flex-col items-center text-center mb-6">
+                        <img id="modalPhoto" src="/static/images/default-profile.svg" alt="" class="w-32 h-32 rounded-full object-cover border-4 border-slate-100 mb-4" />
+                        <h3 id="modalName" class="text-xl font-bold text-slate-900"></h3>
+                        <p id="modalClass" class="text-sm text-slate-500"></p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 rounded-xl p-4">
+                            <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Visi</p>
+                            <p id="modalVision" class="text-sm text-slate-700"></p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4">
+                            <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Misi</p>
+                            <p id="modalMission" class="text-sm text-slate-700"></p>
+                        </div>
+                        <div class="bg-blue-50 rounded-xl p-4">
+                            <p class="text-[10px] font-medium text-blue-600 uppercase tracking-wider mb-2">Program Kerja</p>
+                            <p id="modalProgram" class="text-sm text-slate-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <script>
+    function openModal(type, id, name, className, photoUrl, vision, mission, program) {
+        const modal = document.getElementById('candidateModal');
+        document.getElementById('modalPosition').textContent = type === 'chairman' ? 'Ketua OSIS' : 'Wakil Ketua OSIS';
+        document.getElementById('modalName').textContent = name;
+        document.getElementById('modalClass').textContent = className;
+        document.getElementById('modalPhoto').src = photoUrl || '/static/images/default-profile.svg';
+        document.getElementById('modalVision').textContent = vision || '-';
+        document.getElementById('modalMission').textContent = mission || '-';
+        document.getElementById('modalProgram').textContent = program || '-';
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('candidateModal');
+        modal.querySelector('.bg-white').classList.remove('modal-enter');
+        modal.querySelector('.bg-white').classList.add('modal-leave');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.querySelector('.bg-white').classList.remove('modal-leave');
+            modal.querySelector('.bg-white').classList.add('modal-enter');
+            document.body.style.overflow = '';
+        }, 200);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('sliderTrack');
+        const dotsContainer = document.getElementById('sliderDots');
+        const slides = track ? track.querySelectorAll('.slide') : [];
+        
+        if (slides.length > 0) {
+            let currentSlide = 0;
+            
+            slides.forEach((_, index) => {
+                const dot = document.createElement('button');
+                dot.className = 'slider-dot' + (index === 0 ? ' active' : '');
+                dot.onclick = () => goToSlide(index);
+                dotsContainer.appendChild(dot);
+            });
+            
+            function goToSlide(index) {
+                currentSlide = index;
+                track.style.transform = `translateX(-${index * 100}%)`;
+                dotsContainer.querySelectorAll('.slider-dot').forEach((dot, i) => {
+                    dot.className = 'slider-dot' + (i === index ? ' active' : '');
+                });
+            }
+            
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
+                goToSlide(currentSlide);
+            }, 4000);
+        }
+    });
+    </script>
 </body>
 </html>
 {{end}}

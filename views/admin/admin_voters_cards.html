@@ -1,0 +1,170 @@
+{{define "admin_voters_cards.html"}}{{template "admin_layout" .}}{{end}}
+
+{{define "admin_voters_cards_content"}}
+<section class="space-y-8">
+    <div class="flex items-center justify-between gap-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Kartu Pemilih</h1>
+            <p class="text-slate-500 mt-2">Cetak 8 kartu per lembar A4. Setiap kartu berisi logo, identitas pemilih, barcode, dan QR code.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="px-5 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Cetak</button>
+            <button onclick="downloadPdf()" class="px-5 py-3 rounded-3xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700">Download PDF</button>
+            <a href="/admin/voters" class="px-5 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Kembali</a>
+        </div>
+    </div>
+    <div id="print-grid" class="grid gap-4" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+        {{range .Voters}}
+    <article class="voter-card rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" data-name="{{.Name}}" data-class="{{.ClassName}}" data-uuid="{{.UUID}}">
+            <div class="flex items-center justify-between gap-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="logo flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3525CD] text-white text-lg font-bold">OSIS</div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Pemilihan Ketua &amp; Wakil Ketua</p>
+                        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">OSIS SMK NIBA Business School</p>
+                        <h2 class="text-xl font-bold text-slate-900">Kartu Pemilih</h2>
+                    </div>
+                </div>
+                <div class="badge rounded-2xl bg-slate-100 px-3 py-1 text-xs font-semibold uppercase text-slate-700">Pemilih</div>
+            </div>
+            <div class="mb-4 rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center">
+                <p class="text-lg font-semibold text-slate-900">{{.Name}}</p>
+                <p class="mt-2 text-sm font-semibold text-slate-700">{{.ClassName}}</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                        <div class="flex items-center justify-center">
+                            <div class="qr-code" data-uuid="{{.UUID}}" id="qr-{{.ID}}"></div>
+                </div>
+                <div class="barcode-wrap text-center">
+                    <svg id="barcode-{{.ID}}"></svg>
+                    <p class="mt-2 text-xs text-slate-500 break-words">{{.UUID}}</p>
+                </div>
+            </div>
+        </article>
+        {{end}}
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    const { jsPDF } = window.jspdf;
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.voter-card').forEach(function(card) {
+        var uuid = card.querySelector('.qr-code').dataset.uuid;
+        var qrContainer = card.querySelector('.qr-code');
+        var canvas = document.createElement('canvas');
+        qrContainer.appendChild(canvas);
+        QRCode.toCanvas(canvas, uuid, { width: 120, margin: 0 }, function (error) {
+            if (error) console.error(error);
+        });
+        var barcodeSvg = card.querySelector('svg');
+        var barcodeValue = uuid.replace(/-/g, '').slice(0, 12).toUpperCase();
+        JsBarcode(barcodeSvg, barcodeValue, {
+            format: 'CODE128',
+            width: 1.5,
+            height: 40,
+            displayValue: false,
+            margin: 0
+        });
+    });
+});
+
+async function makeQrDataUrl(text) {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        QRCode.toCanvas(canvas, text, { width: 120, margin: 0 }, (error) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(canvas.toDataURL('image/png'));
+        });
+    });
+}
+
+function makeBarcodeDataUrl(text) {
+    const canvas = document.createElement('canvas');
+    const barcodeValue = text.replace(/-/g, '').slice(0, 12).toUpperCase();
+    JsBarcode(canvas, barcodeValue, {
+        format: 'CODE128',
+        width: 1.2,
+        height: 40,
+        displayValue: false,
+        margin: 0
+    });
+    return canvas.toDataURL('image/png');
+}
+
+async function downloadPdf() {
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 10;
+    const cardWidth = (pageWidth - margin * 2 - 5) / 2;
+    const cardHeight = 65;
+    const gap = 5;
+    let x = margin;
+    let y = margin;
+    const voters = Array.from(document.querySelectorAll('.voter-card')).map((card) => ({
+        uuid: card.dataset.uuid,
+        name: card.dataset.name,
+        className: card.dataset.class
+    }));
+    for (let i = 0; i < voters.length; i++) {
+        const voter = voters[i];
+        const qrDataUrl = await makeQrDataUrl(voter.uuid);
+        const barcodeDataUrl = makeBarcodeDataUrl(voter.uuid);
+        pdf.setDrawColor(55, 37, 205);
+        pdf.setLineWidth(0.6);
+        pdf.rect(x, y, cardWidth, cardHeight, 'S');
+    pdf.setFontSize(8);
+    pdf.setTextColor(55, 37, 205);
+    pdf.text('Pemilihan Ketua & Wakil Ketua', x + 5, y + 8);
+    pdf.text('OSIS SMK NIBA Business School', x + 5, y + 13);
+        pdf.setFontSize(11);
+        pdf.setTextColor(20, 20, 20);
+    pdf.text('Kartu Pemilih', x + 5, y + 20);
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(voter.name, x + 5, y + 28);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(voter.className, x + 5, y + 42);
+        pdf.addImage(qrDataUrl, 'PNG', x + cardWidth - 35, y + 10, 30, 30);
+    pdf.addImage(barcodeDataUrl, 'PNG', x + 5, y + cardHeight - 20, cardWidth - 10, 12);
+    pdf.setFontSize(7);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('ID: ' + voter.uuid.replace(/-/g, '').slice(0, 12).toUpperCase(), x + 5, y + cardHeight - 4);
+        if ((i + 1) % 8 === 0 && i + 1 < voters.length) {
+            pdf.addPage();
+            x = margin;
+            y = margin;
+        } else if ((i + 1) % 2 === 0) {
+            x = margin;
+            y += cardHeight + gap;
+        } else {
+            x += cardWidth + gap;
+        }
+    }
+    pdf.save('kartu_pemilih.pdf');
+}
+</script>
+<style>
+    @page { size: A4 portrait; margin: 10mm; }
+    @media print {
+        body { margin: 0; }
+        .voter-card { page-break-inside: avoid; break-inside: avoid; }
+        .voter-card:nth-child(8n) { page-break-after: always; }
+        .voter-card { box-shadow: none !important; }
+        .logo { background: #3525CD !important; color: white !important; }
+        #print-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 70mm; gap: 8mm; }
+        .voter-card { min-height: 65mm; padding: 14px; }
+        .voter-card .qr-code { margin: 0 auto; }
+        .barcode-wrap svg { width: 100%; height: 40px; }
+    }
+    @media screen {
+        body { background: #f8fafc; }
+    }
+</style>
+{{end}}

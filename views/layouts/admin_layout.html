@@ -29,6 +29,8 @@
             {{if eq .ContentTemplate "admin_candidate_form_content"}}{{template "admin_candidate_form_content" .}}{{end}}
             {{if eq .ContentTemplate "admin_voters_content"}}{{template "admin_voters_content" .}}{{end}}
             {{if eq .ContentTemplate "admin_voter_form_content"}}{{template "admin_voter_form_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_voters_import_content"}}{{template "admin_voters_import_content" .}}{{end}}
+            {{if eq .ContentTemplate "admin_voters_cards_content"}}{{template "admin_voters_cards_content" .}}{{end}}
             {{if eq .ContentTemplate "admin_logs_content"}}{{template "admin_logs_content" .}}{{end}}
             {{if eq .ContentTemplate "admin_settings_content"}}{{template "admin_settings_content" .}}{{end}}
         </main>

@@ -1,10 +1,11 @@
 module gopilketos
 
-go 1.25.6
+go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v5 v5.1.0
+	gopkg.in/yaml.v3 v3.0.1
 	modernc.org/sqlite v1.48.1
 )
 

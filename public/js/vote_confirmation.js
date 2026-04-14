@@ -27,18 +27,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         const chairman = await chairmanResponse.json();
         const vice = await viceResponse.json();
 
-        summary.innerHTML = `
-            <div class="candidate-card selected">
-                <h3>Ketua Terpilih</h3>
-                <p><strong>${chairman.name}</strong> (${chairman.class_name})</p>
-                <p>${chairman.vision}</p>
+summary.innerHTML = `
+            <div class="p-6 rounded-xl bg-primary-container/30 border border-primary/20">
+                <p class="text-xs font-bold uppercase tracking-widest text-primary mb-3">Ketua Terpilih</p>
+                <div class="flex items-center gap-4">
+                    <img src="${chairman.photo_url || '/static/images/default-profile.svg'}" alt="${chairman.name}" class="w-16 h-16 rounded-full object-cover border-2 border-primary/30" />
+                    <div>
+                        <p class="font-bold text-lg text-on-surface">${chairman.name}</p>
+                        <p class="text-sm text-on-surface-variant">${chairman.class_name}</p>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-white/50 rounded-lg">
+                    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Visi</p>
+                    <p class="text-sm text-on-surface">${chairman.vision}</p>
+                </div>
             </div>
-            <div class="candidate-card selected">
-                <h3>Wakil Terpilih</h3>
-                <p><strong>${vice.name}</strong> (${vice.class_name})</p>
-                <p>${vice.vision}</p>
+            <div class="p-6 rounded-xl bg-secondary-container/30 border border-secondary/20">
+                <p class="text-xs font-bold uppercase tracking-widest text-secondary mb-3">Wakil Ketua Terpilih</p>
+                <div class="flex items-center gap-4">
+                    <img src="${vice.photo_url || '/static/images/default-profile.svg'}" alt="${vice.name}" class="w-16 h-16 rounded-full object-cover border-2 border-secondary/30" />
+                    <div>
+                        <p class="font-bold text-lg text-on-surface">${vice.name}</p>
+                        <p class="text-sm text-on-surface-variant">${vice.class_name}</p>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-white/50 rounded-lg">
+                    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Visi</p>
+                    <p class="text-sm text-on-surface">${vice.vision}</p>
+                </div>
             </div>
-            <p class="warning">Sekali dikirim, pilihan tidak bisa diubah.</p>
         `;
 
         submitButton.onclick = async () => {
