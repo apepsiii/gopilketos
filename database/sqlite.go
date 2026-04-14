@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func InitDB(dbPath string) *sql.DB {
@@ -15,9 +15,7 @@ func InitDB(dbPath string) *sql.DB {
 		log.Fatalf("failed to create database directory: %v", err)
 	}
 
-	dsn := dbPath + "?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)&_pragma=foreign_keys(1)"
-
-	db, err := sql.Open("sqlite", dsn)
+	db, err := sql.Open("sqlite3", dbPath+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout=5000&_pragma=synchronous=NORMAL")
 	if err != nil {
 		log.Fatalf("failed to open database: %v", err)
 	}
