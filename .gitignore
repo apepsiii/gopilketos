@@ -36,6 +36,7 @@ database/evoting.db
 
 # Environment files
 .env
+.env.local
 
 # Docker image tar
 *.tar
@@ -45,5 +46,13 @@ database/evoting.db
 .kilocode/
 .opencode/
 
-# Uploads (optional - comment out if you want to include sample uploads)
-# public/uploads/
+# Context/design docs (keep for reference)
+# context/
+
+# Empty directories
+config/
+routes/
+
+# Uploads - keep structure but ignore files
+public/uploads/*
+!public/uploads/.gitkeep
