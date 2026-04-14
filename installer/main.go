@@ -320,6 +320,7 @@ func createDirs(config *Config) error {
 	dirs := []string{
 		config.InstallDir,
 		filepath.Dir(config.DbPath),
+		filepath.Join(config.InstallDir, "public", "uploads"),
 		"/var/log",
 	}
 	for _, dir := range dirs {

@@ -401,7 +401,9 @@ func saveCandidatePhoto(file *multipart.FileHeader) (string, error) {
 	}
 	defer src.Close()
 	filename := fmt.Sprintf("%s_%s", uuid.NewString(), filepath.Base(file.Filename))
-	destPath := filepath.Join("public", "uploads", filename)
+
+	uploadsDir := findUploadsDir()
+	destPath := filepath.Join(uploadsDir, filename)
 	if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
 		return "", err
 	}
@@ -414,6 +416,17 @@ func saveCandidatePhoto(file *multipart.FileHeader) (string, error) {
 		return "", err
 	}
 	return "/static/uploads/" + filename, nil
+}
+
+func findUploadsDir() string {
+	exeDir, err := os.Executable()
+	if err == nil {
+		dir := filepath.Join(filepath.Dir(exeDir), "public", "uploads")
+		if _, err := os.Stat(dir); err == nil {
+			return dir
+		}
+	}
+	return filepath.Join("public", "uploads")
 }
 
 func normalizeCandidatePhotoURL(photoURL string) string {

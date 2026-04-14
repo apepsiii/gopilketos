@@ -21,8 +21,10 @@ import (
 const AppVersion = "v1.0.1"
 
 //go:embed views
-//go:embed public
-var assets embed.FS
+//go:embed public/css
+//go:embed public/js
+//go:embed public/images
+var embeddedAssets embed.FS
 
 type Config struct {
 	AppName    string `yaml:"app_name"`
@@ -35,13 +37,28 @@ type Config struct {
 }
 
 func getViewsFS() fs.FS {
-	f, _ := fs.Sub(assets, "views")
+	f, _ := fs.Sub(embeddedAssets, "views")
 	return f
 }
 
-func getPublicFS() fs.FS {
-	f, _ := fs.Sub(assets, "public")
+func getStaticFS() fs.FS {
+	f, _ := fs.Sub(embeddedAssets, "public")
 	return f
+}
+
+func getUploadsDir() string {
+	exeDir, err := os.Executable()
+	if err == nil {
+		dir := filepath.Join(filepath.Dir(exeDir), "public", "uploads")
+		if _, err := os.Stat(dir); err == nil {
+			return dir
+		}
+	}
+
+	cwd, _ := os.Getwd()
+	dir := filepath.Join(cwd, "public", "uploads")
+	os.MkdirAll(dir, 0755)
+	return dir
 }
 
 func loadConfig() *Config {
@@ -90,7 +107,6 @@ func loadConfig() *Config {
 	return config
 }
 
-// TemplateRenderer implements echo.Renderer
 type TemplateRenderer struct {
 	templates *template.Template
 }
@@ -114,6 +130,9 @@ func main() {
 		log.Fatalf("Failed to create database directory: %v", err)
 	}
 
+	uploadsDir := getUploadsDir()
+	os.MkdirAll(uploadsDir, 0755)
+
 	db := database.InitDB(config.DbPath)
 	defer db.Close()
 
@@ -136,7 +155,9 @@ func main() {
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 
-	e.StaticFS("/static", getPublicFS())
+	e.StaticFS("/static", getStaticFS())
+
+	e.Static("/static/uploads", uploadsDir)
 
 	e.GET("/", handlers.LandingPageHandler(db))
 	e.GET("/scanner", handlers.ScannerPageHandler())
@@ -200,10 +221,11 @@ func main() {
 	fmt.Printf("===========================================\n")
 	fmt.Printf("  Pilketos E-Voting System\n")
 	fmt.Printf("===========================================\n")
-	fmt.Printf("  Port:   %s\n", config.Port)
-	fmt.Printf("  Domain: %s\n", config.Domain)
-	fmt.Printf("  DB:     %s\n", config.DbPath)
-	fmt.Printf("  Admin:  %s\n", config.AdminUser)
+	fmt.Printf("  Port:    %s\n", config.Port)
+	fmt.Printf("  Domain:  %s\n", config.Domain)
+	fmt.Printf("  DB:      %s\n", config.DbPath)
+	fmt.Printf("  Uploads: %s\n", uploadsDir)
+	fmt.Printf("  Admin:   %s\n", config.AdminUser)
 	fmt.Printf("===========================================\n")
 	fmt.Printf("  Server running at :%s\n", config.Port)
 	fmt.Printf("  Press Ctrl+C to stop\n")
