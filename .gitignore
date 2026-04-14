@@ -6,6 +6,9 @@
 *.test
 *.out
 
+# Build output files (versioned)
+pilketos_v*
+
 # Build directories
 bin/
 tmp/

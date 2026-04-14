@@ -18,6 +18,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const AppVersion = "v1.0.0"
+
 //go:embed views
 //go:embed public
 var assets embed.FS
