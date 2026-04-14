@@ -18,7 +18,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const AppVersion = "v1.0.0"
+const AppVersion = "v1.0.1"
 
 //go:embed views
 //go:embed public
