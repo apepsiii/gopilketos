@@ -2,12 +2,15 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -19,6 +22,7 @@ const (
 	yellow = "\033[33m"
 	cyan   = "\033[36m"
 	white  = "\033[37m"
+	bold   = "\033[1m"
 )
 
 type Config struct {
@@ -36,23 +40,40 @@ func main() {
 	printBanner()
 	fmt.Println()
 
-	config, err := runWizard()
-	if err != nil {
-		printError("Installation cancelled")
-		os.Exit(1)
+	existingConfig := loadExistingConfig()
+
+	action := selectAction(existingConfig != nil)
+
+	var config *Config
+
+	if action == "update" && existingConfig != nil {
+		config = existingConfig
+		fmt.Println()
+		printInfo("Updating existing installation...")
+		fmt.Println()
+	} else {
+		config = runWizard(existingConfig)
+		if config == nil {
+			printError("Installation cancelled")
+			os.Exit(1)
+		}
 	}
 
 	fmt.Println()
-	printInfo("Starting installation...")
+	if action == "update" {
+		printInfo("Starting update process...")
+	} else {
+		printInfo("Starting installation...")
+	}
 	fmt.Println()
 
-	if err := install(config); err != nil {
-		printError(fmt.Sprintf("Installation failed: %v", err))
+	if err := install(config, action == "update"); err != nil {
+		printError(fmt.Sprintf("Process failed: %v", err))
 		fmt.Println()
 		os.Exit(1)
 	}
 
-	printSuccessBox(config)
+	printSuccessBox(config, action == "update")
 }
 
 func printBanner() {
@@ -73,160 +94,233 @@ func printBanner() {
 	fmt.Print(cyan + header + reset)
 }
 
-func printSuccessBox(config *Config) {
-	box := fmt.Sprintf(`
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║           ██████╗ ███████╗ █████╗ ██████╗ ███╗   ███╗       ║
-║           ██╔══██╗██╔════╝██╔══██╗██╔══██╗████╗ ████║       ║
-║           ██████╔╝█████╗  ███████║██║  ██║██╔████╔██║       ║
-║           ██╔══██╗██╔══╝  ██╔══██║██║  ██║██║╚██╔╝██║       ║
-║           ██║  ██║███████╗██║  ██║██████╔╝██║ ╚═╝ ██║       ║
-║           ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝       ║
-║                                                              ║
-║                  INSTALLATION COMPLETED!                      ║
-║                                                              ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                              ║
-║    Domain:     %shttps://%s%s                    ║
-║    Admin:      %shttps://%s/admin/login%s                  ║
-║    Port:       %s%s%s                               ║
-║                                                              ║
-║    Username:   %s%s%s                                    ║
-║    Password:   %s%s%s                               ║
-║                                                              ║
-╠══════════════════════════════════════════════════════════════╣
-║                                                              ║
-║    Commands:                                                 ║
-║      sudo systemctl start %s                                 ║
-║      sudo systemctl enable %s                                ║
-║      sudo systemctl status %s                               ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
-`, cyan, config.Domain, reset, cyan, config.Domain, reset, cyan, config.Port, reset, cyan, config.AdminUser, reset, cyan, config.AdminPass, reset, config.AppName, config.AppName, config.AppName)
-	fmt.Print(green + box + reset)
+func loadExistingConfig() *Config {
+	configPath := "/opt/pilketos/config.yaml"
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return nil
+	}
+
+	var config Config
+	if err := yaml.Unmarshal(data, &config); err != nil {
+		return nil
+	}
+
+	return &config
 }
 
-func runWizard() (*Config, error) {
+func selectAction(hasExisting bool) string {
 	reader := bufio.NewReader(os.Stdin)
-	config := &Config{
+
+	if hasExisting {
+		fmt.Println("  " + white + "Existing installation detected:" + reset)
+		fmt.Println("  " + strings.Repeat("─", 50))
+		fmt.Println("    " + cyan + "[1]" + reset + " Update existing installation (keep config)")
+		fmt.Println("    " + cyan + "[2]" + reset + " Fresh install (new configuration)")
+		fmt.Println("    " + cyan + "[3]" + reset + " Cancel")
+		fmt.Println("  " + strings.Repeat("─", 50))
+		fmt.Println()
+
+		for {
+			fmt.Print("  " + white + "Select option [1-3]: " + reset)
+			input, _ := reader.ReadString('\n')
+			input = strings.TrimSpace(input)
+
+			switch input {
+			case "1":
+				return "update"
+			case "2":
+				return "install"
+			case "3":
+				os.Exit(0)
+			}
+		}
+	}
+
+	return "install"
+}
+
+func runWizard(existing *Config) *Config {
+	reader := bufio.NewReader(os.Stdin)
+
+	defaults := &Config{
 		AppName:    "pilketos",
 		Port:       "8024",
 		Domain:     "",
 		InstallDir: "/opt/pilketos",
 		AdminUser:  "admin",
-		AdminPass:  randomString(12),
+		AdminPass:  generateRandomPassword(),
 		DbPath:     "/opt/pilketos/database/evoting.db",
 	}
 
-	printStep(1, 6, "Domain Configuration")
-	fmt.Print(white + "  Domain (e.g., vote.bersekola.app): " + reset)
-	domain, _ := reader.ReadString('\n')
-	config.Domain = strings.TrimSpace(domain)
-	if config.Domain == "" {
-		return nil, fmt.Errorf("domain is required")
+	if existing != nil {
+		defaults = existing
 	}
 
-	printStep(2, 6, "Port Configuration")
-	fmt.Printf("  %sPort%s [%s%s%s]: ", white, reset, cyan, config.Port, reset)
+	printStep(1, 5, "Domain Configuration")
+	if existing != nil {
+		fmt.Printf("  Current: %s%s%s\n", cyan, existing.Domain, reset)
+	}
+	fmt.Print("  " + white + "Domain (e.g., vote.bersekola.app): " + reset)
+	domain, _ := reader.ReadString('\n')
+	configDomain := strings.TrimSpace(domain)
+	if configDomain == "" && existing != nil {
+		configDomain = existing.Domain
+	}
+	if configDomain == "" {
+		printError("Domain is required")
+		os.Exit(1)
+	}
+
+	config := &Config{
+		AppName:    defaults.AppName,
+		Domain:     configDomain,
+		InstallDir: defaults.InstallDir,
+		DbPath:     defaults.DbPath,
+	}
+
+	printStep(2, 5, "Port Configuration")
+	if existing != nil {
+		fmt.Printf("  Current: %s%s%s\n", cyan, existing.Port, reset)
+	}
+	fmt.Printf("  %sPort%s [%s%s%s]: ", white, reset, cyan, defaults.Port, reset)
 	port, _ := reader.ReadString('\n')
 	port = strings.TrimSpace(port)
 	if port != "" {
 		config.Port = port
+	} else {
+		config.Port = defaults.Port
 	}
 
-	printStep(3, 6, "Installation Directory")
-	fmt.Printf("  %sInstall Directory%s [%s%s%s]: ", white, reset, cyan, config.InstallDir, reset)
+	printStep(3, 5, "Installation Directory")
+	if existing != nil {
+		fmt.Printf("  Current: %s%s%s\n", cyan, existing.InstallDir, reset)
+	}
+	fmt.Printf("  %sInstall Directory%s [%s%s%s]: ", white, reset, cyan, defaults.InstallDir, reset)
 	dir, _ := reader.ReadString('\n')
 	dir = strings.TrimSpace(dir)
 	if dir != "" {
 		config.InstallDir = strings.TrimSuffix(dir, "/")
 		config.DbPath = filepath.Join(config.InstallDir, "database", "evoting.db")
+	} else {
+		config.InstallDir = defaults.InstallDir
+		config.DbPath = defaults.DbPath
 	}
 
-	printStep(4, 6, "Admin Credentials")
-	fmt.Printf("  %sAdmin Username%s [%s%s%s]: ", white, reset, cyan, config.AdminUser, reset)
+	printStep(4, 5, "Admin Credentials")
+	if existing != nil {
+		fmt.Printf("  Current Username: %s%s%s\n", cyan, existing.AdminUser, reset)
+	}
+	fmt.Printf("  %sAdmin Username%s [%s%s%s]: ", white, reset, cyan, defaults.AdminUser, reset)
 	user, _ := reader.ReadString('\n')
 	user = strings.TrimSpace(user)
 	if user != "" {
 		config.AdminUser = user
+	} else {
+		config.AdminUser = defaults.AdminUser
 	}
 
-	fmt.Print("  " + white + "Admin Password" + reset + " [" + cyan + "(auto-generated)" + reset + "]: ")
+	if existing != nil {
+		fmt.Printf("  Current Password: %s%s%s\n", cyan, "(hidden)", reset)
+		fmt.Printf("  %sAdmin Password%s [%s%s%s]: ", white, reset, cyan, "(keep existing)", reset)
+	} else {
+		fmt.Printf("  %sAdmin Password%s [%s%s%s]: ", white, reset, cyan, "(auto-generated)", reset)
+	}
+	fmt.Printf("    %sGenerated: %s%s%s\n", yellow, green, config.AdminPass, reset)
 	pass, _ := reader.ReadString('\n')
 	pass = strings.TrimSpace(pass)
 	if pass != "" {
 		config.AdminPass = pass
-	} else {
-		fmt.Printf("    %sGenerated: %s%s\n", cyan, config.AdminPass, reset)
+	} else if existing != nil {
+		config.AdminPass = existing.AdminPass
 	}
 
-	printStep(5, 6, "Review Configuration")
+	printStep(5, 5, "Review Configuration")
 	fmt.Println()
-	fmt.Println("  " + white + "Configuration Summary:" + reset)
+	fmt.Println("  " + bold + white + "Configuration Summary:" + reset)
 	fmt.Println("  " + strings.Repeat("─", 50))
-	fmt.Printf("  %sDomain:%s      %s\n", white, reset, config.Domain)
-	fmt.Printf("  %sPort:%s        %s\n", white, reset, config.Port)
-	fmt.Printf("  %sInstall Dir:%s %s\n", white, reset, config.InstallDir)
-	fmt.Printf("  %sDatabase:%s    %s\n", white, reset, config.DbPath)
-	fmt.Printf("  %sAdmin User:%s  %s\n", white, reset, config.AdminUser)
-	fmt.Printf("  %sAdmin Pass:%s  %s\n", white, reset, config.AdminPass)
+	fmt.Printf("  %sDomain:%s        %s%s%s\n", white, reset, green, config.Domain, reset)
+	fmt.Printf("  %sPort:%s          %s%s%s\n", white, reset, green, config.Port, reset)
+	fmt.Printf("  %sInstall Dir:%s   %s%s%s\n", white, reset, green, config.InstallDir, reset)
+	fmt.Printf("  %sDatabase:%s      %s%s%s\n", white, reset, green, config.DbPath, reset)
+	fmt.Printf("  %sAdmin User:%s    %s%s%s\n", white, reset, green, config.AdminUser, reset)
+	fmt.Printf("  %sAdmin Pass:%s    %s%s%s\n", white, reset, green, config.AdminPass, reset)
 	fmt.Println("  " + strings.Repeat("─", 50))
 	fmt.Println()
 
-	printStep(6, 6, "Starting Installation")
-	return config, nil
+	fmt.Printf("  %sProceed with installation?%s [%sY%s/n]: ", white, reset, green, reset)
+	confirm, _ := reader.ReadString('\n')
+	confirm = strings.TrimSpace(strings.ToLower(confirm))
+	if confirm == "n" || confirm == "no" {
+		return nil
+	}
+
+	return config
 }
 
-func install(config *Config) error {
+func install(config *Config, isUpdate bool) error {
 	steps := []struct {
 		name string
 		fn   func(*Config) error
 	}{
-		{"Create installation directories", createDirs},
-		{"Stop existing service (if any)", stopService},
-		{"Copy application files", copyFiles},
-		{"Generate configuration file", generateConfig},
-		{"Set file permissions", setPermissions},
-		{"Create systemd service", createSystemdService},
-		{"Configure Nginx", configureNginx},
-		{"Reload systemd and nginx", reloadServices},
-		{"Start application service", startServiceFn},
-		{"Verify installation", verifyInstall},
+		{"Creating directories", createDirs},
+		{"Stopping existing service", stopService},
+		{"Copying application binary", copyFiles},
+		{"Generating configuration", generateConfig},
+		{"Setting permissions", setPermissions},
+		{"Creating systemd service", createSystemdService},
+		{"Configuring Nginx", configureNginx},
+		{"Reloading systemd daemon", reloadSystemd},
+		{"Enabling service", enableService},
+		{"Starting service", startService},
+		{"Verifying installation", verifyInstall},
 	}
 
 	total := len(steps)
-	prefix := ""
+	fmt.Println()
+
 	for i, step := range steps {
-		percent := float64(i+1) / float64(total) * 100
-		barLen := 30
-		filled := int(float64(barLen) * float64(i+1) / float64(total))
-		bar := ""
-		for j := 0; j < barLen; j++ {
-			if j < filled {
-				bar += green + "█" + reset
-			} else {
-				bar += "░"
-			}
-		}
-		fmt.Printf("\r  %s[%s] %3d%% %s", prefix, bar, int(percent), step.name)
-		prefix = "\r"
+		printProgress(i+1, total, step.name)
 
 		if err := step.fn(config); err != nil {
-			return fmt.Errorf("%s: %w", step.name, err)
+			fmt.Println()
+			printError(fmt.Sprintf("Failed: %v", err))
+			return err
+		}
+
+		printSuccess(fmt.Sprintf("%s ✓", step.name))
+	}
+
+	fmt.Println()
+	return nil
+}
+
+func printProgress(current, total int, message string) {
+	percent := float64(current) / float64(total) * 100
+	barLen := 40
+	filled := int(float64(barLen) * percent / 100)
+
+	bar := ""
+	for j := 0; j < barLen; j++ {
+		if j < filled {
+			bar += green + "█" + reset
+		} else {
+			bar += "░"
 		}
 	}
-	fmt.Printf("\r  %s[%s] 100%% Done!%s\n", green, green+"█"+reset, reset)
-	return nil
+
+	fmt.Printf("  %s[%s]%s %3.0f%% %s", cyan, bar, reset, percent, message)
+}
+
+func printSuccess(msg string) {
+	fmt.Printf("  %s\n", green+msg+reset)
 }
 
 func createDirs(config *Config) error {
 	dirs := []string{
 		config.InstallDir,
 		filepath.Dir(config.DbPath),
-		"/etc/nginx/sites-available",
-		"/etc/nginx/sites-enabled",
-		"/etc/systemd/system",
+		"/var/log",
 	}
 	for _, dir := range dirs {
 		if err := os.MkdirAll(dir, 0755); err != nil {
@@ -244,59 +338,33 @@ func stopService(config *Config) error {
 func copyFiles(config *Config) error {
 	exePath, err := os.Executable()
 	if err != nil {
-		return fmt.Errorf("failed to get executable path: %w", err)
+		return fmt.Errorf("get executable path: %w", err)
 	}
 
-	srcBin := exePath
 	dstBin := filepath.Join(config.InstallDir, config.AppName)
 
-	if err := copyFile(srcBin, dstBin); err != nil {
-		return fmt.Errorf("failed to copy binary: %w", err)
-	}
-
-	return nil
-}
-
-func copyFile(src, dst string) error {
-	sourceFile, err := os.Open(src)
+	srcFile, err := os.Open(exePath)
 	if err != nil {
 		return err
 	}
-	defer sourceFile.Close()
+	defer srcFile.Close()
 
-	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
-		return err
-	}
-
-	destFile, err := os.Create(dst)
+	dstFile, err := os.Create(dstBin)
 	if err != nil {
 		return err
 	}
-	defer destFile.Close()
+	defer dstFile.Close()
 
-	_, err = io.Copy(destFile, sourceFile)
+	_, err = io.Copy(dstFile, srcFile)
 	if err != nil {
 		return err
 	}
 
-	info, err := sourceFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	return os.Chmod(dst, info.Mode())
+	return os.Chmod(dstBin, 0755)
 }
 
 func generateConfig(config *Config) error {
-	yamlData, err := yaml.Marshal(&Config{
-		AppName:    config.AppName,
-		Port:       config.Port,
-		Domain:     config.Domain,
-		InstallDir: config.InstallDir,
-		AdminUser:  config.AdminUser,
-		AdminPass:  config.AdminPass,
-		DbPath:     config.DbPath,
-	})
+	yamlData, err := yaml.Marshal(config)
 	if err != nil {
 		return err
 	}
@@ -306,23 +374,22 @@ func generateConfig(config *Config) error {
 }
 
 func setPermissions(config *Config) error {
-	pilketosPath := filepath.Join(config.InstallDir, config.AppName)
-	if err := os.Chmod(pilketosPath, 0755); err != nil {
-		return err
-	}
-	return os.Chown(filepath.Join(config.InstallDir, "database"), 0, 0)
+	dbDir := filepath.Dir(config.DbPath)
+	os.Chmod(dbDir, 0755)
+	return nil
 }
 
 func createSystemdService(config *Config) error {
 	serviceContent := fmt.Sprintf(`[Unit]
 Description=Pilketos E-Voting System
-After=network.target
+After=network.target nginx.service
+Wants=nginx.service
 
 [Service]
 Type=simple
 User=root
 WorkingDirectory=%s
-ExecStart=%s
+ExecStart=%s/%s
 Restart=always
 RestartSec=5
 StandardOutput=append:/var/log/%s.log
@@ -330,7 +397,7 @@ StandardError=append:/var/log/%s_error.log
 
 [Install]
 WantedBy=multi-user.target
-`, config.InstallDir, filepath.Join(config.InstallDir, config.AppName), config.AppName, config.AppName)
+`, config.InstallDir, config.InstallDir, config.AppName, config.AppName, config.AppName)
 
 	servicePath := filepath.Join("/etc/systemd/system", config.AppName+".service")
 	return os.WriteFile(servicePath, []byte(serviceContent), 0644)
@@ -341,6 +408,8 @@ func configureNginx(config *Config) error {
     listen 80;
     server_name %s;
 
+    client_max_body_size 20M;
+
     location / {
         proxy_pass http://127.0.0.1:%s;
         proxy_http_version 1.1;
@@ -348,10 +417,20 @@ func configureNginx(config *Config) error {
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    location /static/ {
+        proxy_pass http://127.0.0.1:%s;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
     }
 }
-`, config.Domain, config.Port)
+`, config.Domain, config.Port, config.Port)
 
 	nginxPath := filepath.Join("/etc/nginx/sites-available", config.Domain)
 	if err := os.WriteFile(nginxPath, []byte(nginxContent), 0644); err != nil {
@@ -363,57 +442,115 @@ func configureNginx(config *Config) error {
 	return os.Symlink(nginxPath, enabledPath)
 }
 
-func reloadServices(config *Config) error {
-	exec.Command("systemctl", "daemon-reload").CombinedOutput()
+func reloadSystemd(config *Config) error {
+	out, err := exec.Command("systemctl", "daemon-reload").CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s", string(out))
+	}
+	return nil
+}
+
+func enableService(config *Config) error {
+	out, err := exec.Command("systemctl", "enable", config.AppName).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s", string(out))
+	}
+	return nil
+}
+
+func startService(config *Config) error {
+	out, err := exec.Command("systemctl", "start", config.AppName).CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("%s", string(out))
+	}
+
 	exec.Command("systemctl", "reload", "nginx").CombinedOutput()
 	return nil
 }
 
-func startServiceFn(config *Config) error {
-	out, err := exec.Command("systemctl", "enable", config.AppName).CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("enable failed: %s", string(out))
-	}
+func verifyInstall(config *Config) error {
+	time.Sleep(2)
 
-	out, err = exec.Command("systemctl", "start", config.AppName).CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("start failed: %s", string(out))
+	out, err := exec.Command("systemctl", "is-active", config.AppName).CombinedOutput()
+	if err != nil || !strings.Contains(string(out), "active") {
+		return fmt.Errorf("service not running")
 	}
 
 	return nil
 }
 
-func verifyInstall(config *Config) error {
-	out, err := exec.Command("systemctl", "is-active", config.AppName).CombinedOutput()
-	if err != nil || !strings.Contains(string(out), "active") {
-		return fmt.Errorf("service not running: %s", string(out))
+func printSuccessBox(config *Config, isUpdate bool) {
+	actionText := "INSTALLATION COMPLETED!"
+	if isUpdate {
+		actionText = "UPDATE COMPLETED!"
 	}
 
-	out, err = exec.Command("curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", "http://localhost:"+config.Port).CombinedOutput()
-	if err != nil || !strings.Contains(string(out), "200") {
-		return fmt.Errorf("application not responding: %s", string(out))
-	}
+	box := fmt.Sprintf(`
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║           ██████╗ ███████╗ █████╗ ██████╗ ███╗   ███╗       ║
+║           ██╔══██╗██╔════╝██╔══██╗██╔══██╗████╗ ████║       ║
+║           ██████╔╝█████╗  ███████║██║  ██║██╔████╔██║       ║
+║           ██╔══██╗██╔══╝  ██╔══██║██║  ██║██║╚██╔╝██║       ║
+║           ██║  ██║███████╗██║  ██║██████╔╝██║ ╚═╝ ██║       ║
+║           ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝ ╚═╝     ╚═╝       ║
+║                                                              ║
+║                  %s                      ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║    %sAccess URLs:%s                                            ║
+║      • %shttps://%s%s (or http://)                  ║
+║      • %shttps://%s/admin/login%s                        ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║    %sAdmin Credentials:%s                                     ║
+║      Username: %s%s%s                                      ║
+║      Password: %s%s%s                                 ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║    %sService Commands:%s                                      ║
+║      sudo systemctl start pilketos       (Start)            ║
+║      sudo systemctl stop pilketos        (Stop)             ║
+║      sudo systemctl restart pilketos     (Restart)          ║
+║      sudo systemctl status pilketos      (Status)           ║
+║      sudo systemctl enable pilketos      (Auto-start)       ║
+║      sudo systemctl disable pilketos     (Disable auto)     ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║    %sLog Files:%s                                             ║
+║      tail -f /var/log/pilketos.log                          ║
+║      tail -f /var/log/pilketos_error.log                    ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║    %sConfig & Database:%s                                    ║
+║      Config:  %s/opt/pilketos/config.yaml%s                   ║
+║      Database: %s/opt/pilketos/database/evoting.db%s          ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+`, actionText, bold+white, reset, cyan, config.Domain, reset, cyan, config.Domain, reset, bold+white, reset, green, config.AdminUser, reset, green, config.AdminPass, reset, bold+white, reset, bold+white, reset, bold+white, reset, cyan, reset, cyan, reset)
 
-	return nil
+	fmt.Println(green + box + reset)
 }
 
 func printStep(current, total int, message string) {
-	fmt.Printf("\n  %s[%d/%d]%s %s\n", cyan, current, total, reset, message)
+	fmt.Printf("\n  %s[%d/%d]%s %s%s%s\n", cyan, current, total, reset, bold, message, reset)
 }
 
 func printError(msg string) {
-	fmt.Printf("  %s✗%s %s\n", red, reset, msg)
+	fmt.Printf("  %s✗ %s%s\n", red+bold, reset, msg)
 }
 
 func printInfo(msg string) {
-	fmt.Printf("  %sℹ%s %s\n", yellow, reset, msg)
+	fmt.Printf("  %sℹ %s%s\n", yellow+bold, reset, msg)
 }
 
-func randomString(length int) string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[i%len(charset)]
-	}
-	return string(b)
+func generateRandomPassword() string {
+	b := make([]byte, 8)
+	rand.Read(b)
+	return hex.EncodeToString(b)
 }
