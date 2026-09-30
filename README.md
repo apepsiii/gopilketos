@@ -20,6 +20,7 @@ Aplikasi e-voting OSIS untuk SMK NIBA, dibangun dengan Golang, Echo v5, SQLite, 
 
 ### Voter & Public Module
 - Landing page interaktif dengan profil kandidat, video orasi, dan timeline pemilihan
+- **Cek DPT Siswa Aktif (`/dpt`)**: Direktori pencarian DPT dengan filter kelas & status suara (privasi terjaga dengan masked UUID & phone)
 - Galeri Demisioner OSIS dengan filter angkatan/periode & divisi
 - **Bilik Kiosk Video Ucapan (`/kiosk`)**: Layar sentuh perekam pesan & kesan siswa langsung di browser
 - QR Code scanner untuk login bilik suara passwordless
@@ -63,6 +64,7 @@ go run main.go
 
 Akses:
 - Voter: `http://localhost:8024`
+- Cek DPT Siswa: `http://localhost:8024/dpt`
 - Demisioner: `http://localhost:8024/demisioner`
 - Bilik Video Kiosk: `http://localhost:8024/kiosk`
 - Admin: `http://localhost:8024/admin/login`

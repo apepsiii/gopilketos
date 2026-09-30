@@ -28,6 +28,28 @@ type DemisionerPageData struct {
 	TotalCount int
 }
 
+type DPTVoterItem struct {
+	ID          int
+	MaskedUUID  string
+	Name        string
+	ClassName   string
+	MaskedPhone string
+	HasVoted    bool
+	IsPresent   bool
+	AttendedAt  string
+}
+
+type DPTPageData struct {
+	Voters        []DPTVoterItem
+	Classes       []string
+	TotalVoters   int
+	TotalVoted    int
+	TotalNotVoted int
+	TotalPresent  int
+	Participation int
+	TotalClasses  int
+}
+
 type CreditView struct {
 	ID        int
 	Name      string
@@ -186,5 +208,112 @@ func DemisionerPageHandler(db *sql.DB) echo.HandlerFunc {
 			TotalCount: len(credits),
 		}
 		return c.Render(http.StatusOK, "demisioner.html", data)
+	}
+}
+
+func maskPhoneNumber(phone string) string {
+	phone = strings.TrimSpace(phone)
+	if len(phone) < 7 {
+		if phone == "" {
+			return "-"
+		}
+		return phone
+	}
+	prefix := phone[:4]
+	suffix := phone[len(phone)-4:]
+	return prefix + "-****-" + suffix
+}
+
+func maskUUID(uid string) string {
+	uid = strings.TrimSpace(uid)
+	if len(uid) <= 4 {
+		return "••••"
+	}
+	return "••••-" + uid[len(uid)-4:]
+}
+
+// DPTPageHandler serves the public Daftar Pemilih Tetap (DPT) directory
+func DPTPageHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		rows, err := db.Query(`SELECT 
+			id, uuid, name, class_name, 
+			COALESCE(phone_number, ''), 
+			COALESCE(has_voted, 0), 
+			COALESCE(presence_status, 0), 
+			COALESCE(attended_at, '') 
+		FROM voters 
+		ORDER BY class_name ASC, name ASC`)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Gagal memuat DPT: "+err.Error())
+		}
+		defer rows.Close()
+
+		var voters []DPTVoterItem
+		classMap := make(map[string]bool)
+		var classes []string
+		totalVoted := 0
+		totalPresent := 0
+
+		for rows.Next() {
+			var v DPTVoterItem
+			var rawUUID, rawPhone string
+			var hasVotedInt, presenceInt int
+			var rawAttendedAt string
+
+			if err := rows.Scan(
+				&v.ID, &rawUUID, &v.Name, &v.ClassName,
+				&rawPhone, &hasVotedInt, &presenceInt, &rawAttendedAt,
+			); err == nil {
+				v.HasVoted = hasVotedInt == 1
+				v.IsPresent = presenceInt == 1
+				if v.HasVoted {
+					totalVoted++
+				}
+				if v.IsPresent {
+					totalPresent++
+				}
+
+				if rawAttendedAt != "" {
+					if t, err := time.Parse("2006-01-02 15:04:05", rawAttendedAt); err == nil {
+						v.AttendedAt = t.Format("15:04 WIB")
+					} else if t, err := time.Parse(time.RFC3339, rawAttendedAt); err == nil {
+						v.AttendedAt = t.Format("15:04 WIB")
+					} else {
+						v.AttendedAt = rawAttendedAt
+					}
+				}
+
+				// Mask UUID & Phone for privacy and ballot security
+				v.MaskedUUID = maskUUID(rawUUID)
+				v.MaskedPhone = maskPhoneNumber(rawPhone)
+
+				className := strings.TrimSpace(v.ClassName)
+				if className != "" && !classMap[className] {
+					classMap[className] = true
+					classes = append(classes, className)
+				}
+
+				voters = append(voters, v)
+			}
+		}
+
+		totalVoters := len(voters)
+		participation := 0
+		if totalVoters > 0 {
+			participation = (totalVoted * 100) / totalVoters
+		}
+
+		data := DPTPageData{
+			Voters:        voters,
+			Classes:       classes,
+			TotalVoters:   totalVoters,
+			TotalVoted:    totalVoted,
+			TotalNotVoted: totalVoters - totalVoted,
+			TotalPresent:  totalPresent,
+			Participation: participation,
+			TotalClasses:  len(classes),
+		}
+
+		return c.Render(http.StatusOK, "dpt.html", data)
 	}
 }

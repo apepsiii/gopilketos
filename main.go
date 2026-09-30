@@ -162,6 +162,7 @@ func main() {
 
 	e.GET("/", handlers.LandingPageHandler(db))
 	e.GET("/demisioner", handlers.DemisionerPageHandler(db))
+	e.GET("/dpt", handlers.DPTPageHandler(db))
 	e.GET("/kiosk", handlers.KioskPageHandler(db))
 	e.POST("/api/testimonials/upload", handlers.UploadTestimonialHandler(db))
 	e.GET("/scanner", handlers.ScannerPageHandler())

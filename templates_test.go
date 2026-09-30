@@ -114,4 +114,31 @@ func TestTemplatesAndMigration(t *testing.T) {
 	if err := tmpl.ExecuteTemplate(&buf, "admin_testimonials.html", adminTestimData); err != nil {
 		t.Fatalf("Failed to execute admin_testimonials.html: %v", err)
 	}
+
+	// Test rendering dpt.html
+	buf.Reset()
+	dptData := handlers.DPTPageData{
+		Voters: []handlers.DPTVoterItem{
+			{
+				ID:          1,
+				MaskedUUID:  "••••-abcd",
+				Name:        "Siti Aminah",
+				ClassName:   "XII AKL 1",
+				MaskedPhone: "0812-****-4321",
+				HasVoted:    false,
+				IsPresent:   true,
+				AttendedAt:  "08:30 WIB",
+			},
+		},
+		Classes:       []string{"XII AKL 1"},
+		TotalVoters:   1,
+		TotalVoted:    0,
+		TotalNotVoted: 1,
+		TotalPresent:  1,
+		Participation: 0,
+		TotalClasses:  1,
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "dpt.html", dptData); err != nil {
+		t.Fatalf("Failed to execute dpt.html: %v", err)
+	}
 }

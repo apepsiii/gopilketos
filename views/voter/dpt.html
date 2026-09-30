@@ -1,0 +1,553 @@
+{{define "dpt.html"}}
+<!DOCTYPE html>
+<html lang="id" class="h-full scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Pemilih Tetap (DPT) - Pilketos SMK NIBA Business School</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-size: 20px;
+            line-height: 1;
+            font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .font-mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-50/70 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+    <!-- Navbar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+                    <span class="material-symbols-outlined text-xl">how_to_vote</span>
+                </div>
+                <div>
+                    <span class="text-base font-bold text-slate-900 leading-tight block">Pilketos NIBA</span>
+                    <span class="text-[11px] font-medium text-slate-400">SMK NIBA Business School</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+                <a href="/" class="hover:text-indigo-600 transition-colors">Beranda</a>
+                <a href="/#kandidat" class="hover:text-indigo-600 transition-colors">Daftar Kandidat</a>
+                <a href="/#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
+                <a href="/demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>
+                <a href="/dpt" class="text-indigo-600 font-bold flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+                    <span>DPT Siswa</span>
+                </a>
+                <a href="/kiosk" class="text-rose-600 hover:text-rose-700 font-bold transition-colors flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">video_camera_front</span>
+                    <span>Bilik Video</span>
+                </a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <a href="/scanner"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors duration-150">
+                    <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+                    <span>Bilik Suara</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 py-10 lg:py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+            <!-- Hero & Title Section -->
+            <div class="text-center max-w-3xl mx-auto space-y-3">
+                <div
+                    class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold shadow-2xs">
+                    <span class="material-symbols-outlined text-base">how_to_reg</span>
+                    <span>Daftar Pemilih Tetap (DPT) Resmi</span>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Cek Status DPT Siswa Aktif
+                </h1>
+                <p class="text-sm sm:text-base text-slate-500 leading-relaxed max-w-2xl mx-auto">
+                    Periksa data kepesertaan dan pastikan nama Anda terdaftar sebagai pemilih sah dalam Pemilihan Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School.
+                </p>
+            </div>
+
+            <!-- Stats Metrics Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total DPT</span>
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">badge</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-black text-slate-900 leading-none">{{.TotalVoters}}</p>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Siswa terdaftar resmi</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sudah Memilih</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">how_to_vote</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-black text-emerald-600 leading-none">{{.TotalVoted}}</p>
+                        <p class="text-xs text-emerald-600/80 mt-1 font-semibold">{{.Participation}}% Partisipasi suara</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Belum Memilih</span>
+                        <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">pending_actions</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-black text-amber-600 leading-none">{{.TotalNotVoted}}</p>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">Menunggu hak suara</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Hadir di TPS</span>
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-xl">checklist_rtl</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-black text-blue-600 leading-none">{{.TotalPresent}}</p>
+                        <p class="text-xs text-slate-400 mt-1 font-medium">{{.TotalClasses}} Kelas terdaftar</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Filter & Table Card -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <!-- Filters Header -->
+                <div class="p-5 sm:p-6 border-b border-slate-100 space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                        <!-- Search Input -->
+                        <div class="relative flex-1 max-w-md">
+                            <span
+                                class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                            <input type="text" id="dpt-search"
+                                placeholder="Ketik nama siswa atau kelas untuk mencari..."
+                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:border-indigo-500 focus:outline-none transition-colors" />
+                        </div>
+
+                        <!-- Dropdown Filters -->
+                        <div class="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                            <!-- Class Filter -->
+                            <div class="w-full sm:w-48">
+                                <select id="dpt-class-filter"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:border-indigo-500 focus:outline-none transition-colors">
+                                    <option value="">Semua Kelas ({{.TotalClasses}})</option>
+                                    {{range .Classes}}
+                                    <option value="{{.}}">{{.}}</option>
+                                    {{end}}
+                                </select>
+                            </div>
+
+                            <!-- Vote Status Filter -->
+                            <div class="w-full sm:w-44">
+                                <select id="dpt-status-filter"
+                                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm font-semibold text-slate-700 focus:bg-white focus:border-indigo-500 focus:outline-none transition-colors">
+                                    <option value="">Semua Status</option>
+                                    <option value="voted">Sudah Memilih</option>
+                                    <option value="not_voted">Belum Memilih</option>
+                                    <option value="present">Hadir di TPS</option>
+                                    <option value="not_present">Belum Hadir</option>
+                                </select>
+                            </div>
+
+                            <!-- Reset Button -->
+                            <button type="button" id="dpt-reset-btn"
+                                class="p-2.5 rounded-2xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 border border-slate-200 transition shrink-0"
+                                title="Reset Filter">
+                                <span class="material-symbols-outlined text-lg">restart_alt</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Status Indicator -->
+                    <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+                        <div>
+                            Menampilkan <span id="filtered-count" class="font-bold text-slate-900">{{.TotalVoters}}</span> dari <span class="font-bold text-slate-900">{{.TotalVoters}}</span> pemilih
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Sudah Memilih
+                            </span>
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Belum Memilih
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Content -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600" id="dpt-table">
+                        <thead class="bg-slate-50/80 border-b border-slate-200 text-xs uppercase font-bold text-slate-500 tracking-wider">
+                            <tr>
+                                <th class="py-3.5 px-4 sm:px-6 w-14 text-center">No</th>
+                                <th class="py-3.5 px-4 sm:px-6">Nama Pemilih</th>
+                                <th class="py-3.5 px-4 sm:px-6">Kelas</th>
+                                <th class="py-3.5 px-4 sm:px-6">Kontak Siswa</th>
+                                <th class="py-3.5 px-4 sm:px-6 text-center">Token Akses</th>
+                                <th class="py-3.5 px-4 sm:px-6 text-center">Presensi TPS</th>
+                                <th class="py-3.5 px-4 sm:px-6 text-center">Hak Suara</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 font-medium" id="dpt-tbody">
+                            {{range $idx, $v := .Voters}}
+                            <tr class="hover:bg-slate-50/70 transition-colors voter-row"
+                                data-name="{{$v.Name}}"
+                                data-class="{{$v.ClassName}}"
+                                data-voted="{{if $v.HasVoted}}1{{else}}0{{end}}"
+                                data-presence="{{if $v.IsPresent}}1{{else}}0{{end}}">
+                                <td class="py-3.5 px-4 sm:px-6 text-center text-xs text-slate-400 font-mono row-number">
+                                    {{$v.ID}}
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs flex items-center justify-center shrink-0 border border-indigo-100">
+                                            {{printf "%.1s" $v.Name}}
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-slate-900 block leading-tight">{{$v.Name}}</span>
+                                            <span class="text-[11px] text-slate-400">SMK NIBA Business School</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                        {{$v.ClassName}}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-xs text-slate-500 font-mono whitespace-nowrap">
+                                    {{$v.MaskedPhone}}
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1 font-mono text-xs text-slate-500 bg-slate-50 px-2.5 py-0.5 rounded-md border border-slate-200/60" title="Token dirahasiakan untuk mencegah penyalahgunaan surat suara">
+                                        <span class="material-symbols-outlined text-xs text-slate-400">lock</span>
+                                        {{$v.MaskedUUID}}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    {{if $v.IsPresent}}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                                        Hadir {{if $v.AttendedAt}}({{$v.AttendedAt}}){{end}}
+                                    </span>
+                                    {{else}}
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                                        Belum Hadir
+                                    </span>
+                                    {{end}}
+                                </td>
+                                <td class="py-3.5 px-4 sm:px-6 text-center whitespace-nowrap">
+                                    {{if $v.HasVoted}}
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
+                                        Sudah Memilih
+                                    </span>
+                                    {{else}}
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        Belum Memilih
+                                    </span>
+                                    {{end}}
+                                </td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State (Hidden by default) -->
+                <div id="empty-state" class="hidden text-center py-16 px-4">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                        <span class="material-symbols-outlined text-3xl">search_off</span>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-800">Nama Pemilih Tidak Ditemukan</h3>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                        Pastikan ejaan nama atau filter kelas yang Anda pilih sudah benar. Jika Anda merasa siswa aktif namun belum terdata, silakan hubungi panitia.
+                    </p>
+                    <button type="button" onclick="resetFilters()"
+                        class="px-4 py-2 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-xl hover:bg-indigo-100 transition">
+                        Reset Pencarian
+                    </button>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div class="p-4 sm:p-5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span>Tampilkan:</span>
+                        <select id="items-per-page" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-700">
+                            <option value="25" selected>25 per halaman</option>
+                            <option value="50">50 per halaman</option>
+                            <option value="100">100 per halaman</option>
+                            <option value="all">Semua</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="prev-page-btn"
+                            class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">chevron_left</span>
+                            <span>Sebelumnya</span>
+                        </button>
+                        <span id="page-info" class="text-xs font-bold text-slate-700 px-2">Halaman 1</span>
+                        <button type="button" id="next-page-btn"
+                            class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1">
+                            <span>Berikutnya</span>
+                            <span class="material-symbols-outlined text-base">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help & FAQ Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-xl">contact_support</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900 mb-1">Nama Tidak Terdaftar?</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Bagi siswa aktif yang belum tercantum pada DPT, segera lapor ke panitia Pilketos / MPK di Meja Informasi TPS dengan membawa Kartu Pelajar.
+                        </p>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-slate-100">
+                        <span class="text-xs font-bold text-indigo-600 flex items-center gap-1">
+                            <span>Posko Informasi TPS</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900 mb-1">Cara Menyalurkan Suara</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Scan barcode/QR Code pada kartu pemilih di perangkat bilik suara. Pilih calon Ketua &amp; Wakil Ketua OSIS pilihan Anda secara LUBER &amp; JURDIL.
+                        </p>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-slate-100">
+                        <a href="/scanner" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                            <span>Masuk ke Bilik Suara</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+                    <div>
+                        <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
+                            <span class="material-symbols-outlined text-xl">videocam</span>
+                        </div>
+                        <h4 class="text-base font-bold text-slate-900 mb-1">Bilik Video Kiosk</h4>
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Setelah memilih, sampaikan pesan, kesan, atau harapan terbaikmu untuk masa depan OSIS SMK NIBA di Bilik Video Kiosk yang telah disediakan.
+                        </p>
+                    </div>
+                    <div class="pt-4 mt-4 border-t border-slate-100">
+                        <a href="/kiosk" class="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1">
+                            <span>Buka Bilik Kiosk Video</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/80 py-8 mt-12">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-700">OSIS SMK NIBA Business School</span>
+                <span>•</span>
+                <span>Portal Resmi DPT Siswa Aktif</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/" class="hover:text-indigo-600 transition-colors">Beranda</a>
+                <span>•</span>
+                <a href="/demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>
+                <span>•</span>
+                <a href="/kiosk" class="hover:text-indigo-600 transition-colors">Bilik Video</a>
+                <span>•</span>
+                <a href="/admin/login" class="text-slate-500 hover:text-indigo-600 transition-colors font-medium flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    <span>Admin</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Client Filtering & Pagination Script -->
+    <script>
+        const searchInput = document.getElementById('dpt-search');
+        const classFilter = document.getElementById('dpt-class-filter');
+        const statusFilter = document.getElementById('dpt-status-filter');
+        const resetBtn = document.getElementById('dpt-reset-btn');
+        const filteredCountEl = document.getElementById('filtered-count');
+        const emptyState = document.getElementById('empty-state');
+        const itemsPerPageSelect = document.getElementById('items-per-page');
+        const prevPageBtn = document.getElementById('prev-page-btn');
+        const nextPageBtn = document.getElementById('next-page-btn');
+        const pageInfo = document.getElementById('page-info');
+
+        const allRows = Array.from(document.querySelectorAll('.voter-row'));
+        let filteredRows = [...allRows];
+        let currentPage = 1;
+        let itemsPerPage = 25;
+
+        function applyFilters() {
+            const query = searchInput.value.toLowerCase().trim();
+            const selectedClass = classFilter.value.trim();
+            const selectedStatus = statusFilter.value;
+
+            filteredRows = allRows.filter(row => {
+                const name = (row.getAttribute('data-name') || '').toLowerCase();
+                const className = row.getAttribute('data-class') || '';
+                const voted = row.getAttribute('data-voted') === '1';
+                const presence = row.getAttribute('data-presence') === '1';
+
+                // Query filter
+                if (query && !name.includes(query) && !className.toLowerCase().includes(query)) {
+                    return false;
+                }
+
+                // Class filter
+                if (selectedClass && className !== selectedClass) {
+                    return false;
+                }
+
+                // Status filter
+                if (selectedStatus === 'voted' && !voted) return false;
+                if (selectedStatus === 'not_voted' && voted) return false;
+                if (selectedStatus === 'present' && !presence) return false;
+                if (selectedStatus === 'not_present' && presence) return false;
+
+                return true;
+            });
+
+            filteredCountEl.textContent = filteredRows.length;
+            currentPage = 1;
+            renderPagination();
+        }
+
+        function renderPagination() {
+            const total = filteredRows.length;
+
+            if (total === 0) {
+                allRows.forEach(r => r.style.display = 'none');
+                emptyState.classList.remove('hidden');
+                pageInfo.textContent = 'Halaman 0 dari 0';
+                prevPageBtn.disabled = true;
+                nextPageBtn.disabled = true;
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            const limit = itemsPerPage === 'all' ? total : parseInt(itemsPerPage);
+            const totalPages = Math.ceil(total / limit);
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * limit;
+            const endIndex = Math.min(startIndex + limit, total);
+
+            allRows.forEach(r => r.style.display = 'none');
+
+            filteredRows.forEach((row, idx) => {
+                if (idx >= startIndex && idx < endIndex) {
+                    row.style.display = '';
+                }
+            });
+
+            pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages;
+        }
+
+        function resetFilters() {
+            searchInput.value = '';
+            classFilter.value = '';
+            statusFilter.value = '';
+            applyFilters();
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', applyFilters);
+        classFilter.addEventListener('change', applyFilters);
+        statusFilter.addEventListener('change', applyFilters);
+        resetBtn.addEventListener('click', resetFilters);
+
+        itemsPerPageSelect.addEventListener('change', (e) => {
+            itemsPerPage = e.target.value;
+            currentPage = 1;
+            renderPagination();
+        });
+
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPagination();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            const limit = itemsPerPage === 'all' ? filteredRows.length : parseInt(itemsPerPage);
+            const totalPages = Math.ceil(filteredRows.length / limit);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPagination();
+            }
+        });
+
+        // Initial render
+        applyFilters();
+    </script>
+</body>
+
+</html>
+{{end}}

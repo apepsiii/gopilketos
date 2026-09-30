@@ -56,6 +56,10 @@
                     <a href="#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
                     <a href="#partisipasi" class="hover:text-indigo-600 transition-colors">Partisipasi</a>
                     {{if .Credits}}<a href="/demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>{{end}}
+                    <a href="/dpt" class="hover:text-indigo-600 transition-colors flex items-center gap-1 font-semibold">
+                        <span class="material-symbols-outlined text-base">how_to_reg</span>
+                        <span>DPT Siswa</span>
+                    </a>
                     <a href="/kiosk" class="text-rose-600 hover:text-rose-700 font-bold transition-colors flex items-center gap-1">
                         <span class="material-symbols-outlined text-base">video_camera_front</span>
                         <span>Bilik Video</span>
@@ -111,12 +115,14 @@
 
                     <!-- Stats Badges -->
                     <div id="partisipasi" class="mt-14 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
-                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center">
-                            <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">{{.TotalVoters}}</p>
-                            <p
-                                class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1">
-                                Total DPT</p>
-                        </div>
+                        <a href="/dpt" title="Klik untuk cek Daftar Pemilih Tetap"
+                            class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center hover:border-indigo-300 hover:shadow-md transition-all group block">
+                            <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors">{{.TotalVoters}}</p>
+                            <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1 flex items-center justify-center gap-1">
+                                <span>Total DPT</span>
+                                <span class="material-symbols-outlined text-xs group-hover:translate-x-0.5 transition-transform text-indigo-500">arrow_forward</span>
+                            </p>
+                        </a>
                         <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center">
                             <p class="text-2xl sm:text-3xl font-extrabold text-emerald-600">{{.TotalVotes}}</p>
                             <p
