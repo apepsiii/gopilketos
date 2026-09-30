@@ -1,546 +1,596 @@
 {{define "kiosk.html"}}
 <!DOCTYPE html>
 <html lang="id" class="h-full bg-slate-950 text-white select-none">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>{{.Title}}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <style>
-        * {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined';
-            font-size: 24px;
-            line-height: 1;
-            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 0.3; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-        .recording-pulse {
-            animation: pulse-ring 2s infinite ease-in-out;
-        }
-    </style>
-</head>
-<body class="h-full flex flex-col justify-between overflow-hidden bg-radial from-slate-900 to-slate-950">
 
-    <!-- Top Bar -->
-    <header class="px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-md z-20">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
-                <span class="material-symbols-outlined text-2xl">videocam</span>
-            </div>
-            <div>
-                <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
-                    Bilik Video Harapan &amp; Kesan
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">Kiosk Booth</span>
-                </h1>
-                <p class="text-xs text-slate-400">Pemilihan Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <!-- Fullscreen Toggle Button -->
-            <button type="button" id="fullscreen-btn"
-                class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition">
-                <span class="material-symbols-outlined text-sm">fullscreen</span>
-                <span>Layar Penuh</span>
-            </button>
-            <a href="/"
-                class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition">
-                <span class="material-symbols-outlined text-sm">home</span>
-                <span>Beranda</span>
-            </a>
-        </div>
-    </header>
-
-    <!-- Main Content Stage Area -->
-    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
-
-        <!-- Stage 1: Setup & Identity Form -->
-        <section id="stage-setup" class="max-w-md w-full bg-slate-900/90 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl z-10 transition-all duration-300">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mx-auto mb-3 shadow-inner">
-                    <span class="material-symbols-outlined text-3xl">sentiment_satisfied</span>
-                </div>
-                <h2 class="text-xl sm:text-2xl font-black text-white">Sampaikan Harapanmu!</h2>
-                <p class="text-xs sm:text-sm text-slate-400 mt-1">Rekam pesan singkat, kesan, atau harapan terbaikmu untuk masa depan OSIS SMK NIBA.</p>
-            </div>
-
-            <form id="setup-form" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Nama Lengkap / Panggilan <span class="text-rose-400">*</span></label>
-                    <input type="text" id="input-name" required placeholder="Contoh: Ahmad Rizki"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Kelas / Jurusan <span class="text-rose-400">*</span></label>
-                    <input type="text" id="input-class" required placeholder="Contoh: XII AKL 1"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Kesan Singkat (Opsional)</label>
-                    <input type="text" id="input-message" placeholder="Contoh: Semoga OSIS tahun ini makin keren dan seru!"
-                        class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
-                </div>
-
-                <div class="pt-2">
-                    <button type="submit"
-                        class="w-full py-4 bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 text-white font-extrabold text-base rounded-2xl shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 transition active:scale-[0.98]">
-                        <span class="material-symbols-outlined text-xl">camera_alt</span>
-                        Siapkan Kamera &amp; Mulai
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Stage 2: Camera Viewport & Recording Controls (Hidden by default) -->
-        <section id="stage-camera" class="hidden flex flex-col items-center justify-center w-full max-w-4xl h-full max-h-[720px] relative">
-            <div class="relative w-full h-full rounded-3xl overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center">
-                <!-- Live Webcam View -->
-                <video id="live-video" autoplay playsinline muted class="w-full h-full object-cover mirror-mode"></video>
-                <!-- Playback Review Video -->
-                <video id="playback-video" controls playsinline class="w-full h-full object-contain hidden"></video>
-
-                <!-- Status Badges Overlay (Top) -->
-                <div class="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
-                    <div id="voter-badge" class="px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-bold text-white flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span id="display-identity">Nama Siswa</span>
-                    </div>
-
-                    <!-- Live Recording Indicator -->
-                    <div id="rec-indicator" class="hidden px-3.5 py-1.5 rounded-full bg-rose-600/90 backdrop-blur-md border border-rose-400/40 text-xs font-extrabold text-white flex items-center gap-2 shadow-lg shadow-rose-600/50">
-                        <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
-                        <span>MEREKAM: <span id="timer-display" class="font-mono">00:00</span> / 00:30</span>
-                    </div>
-                </div>
-
-                <!-- Countdown Overlay (3..2..1) -->
-                <div id="countdown-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-20 hidden">
-                    <div id="countdown-number" class="text-8xl sm:text-9xl font-black text-rose-500 scale-125 transition-transform duration-300">
-                        3
-                    </div>
-                    <p class="text-sm font-bold text-slate-300 mt-4 tracking-wider uppercase">Tersenyumlah ke kamera...</p>
-                </div>
-
-                <!-- Bottom Floating Controls Overlay -->
-                <div class="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-4 z-10 px-4">
-                    <!-- State: Ready to Record -->
-                    <div id="controls-ready" class="flex items-center gap-3">
-                        <button type="button" id="btn-cancel-cam"
-                            class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
-                            <span class="material-symbols-outlined text-lg">arrow_back</span>
-                            Ganti Nama
-                        </button>
-
-                        <button type="button" id="btn-start-record"
-                            class="px-8 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-rose-600/50 flex items-center gap-2.5 transition">
-                            <span class="w-4 h-4 rounded-full bg-white"></span>
-                            Mulai Merekam (Maks. 30 dtk)
-                        </button>
-                    </div>
-
-                    <!-- State: Currently Recording -->
-                    <div id="controls-recording" class="hidden flex items-center gap-3">
-                        <button type="button" id="btn-stop-record"
-                            class="px-8 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-2xl shadow-rose-600/60 flex items-center gap-2.5 transition animate-pulse">
-                            <span class="material-symbols-outlined text-xl">stop</span>
-                            Selesai Merekam
-                        </button>
-                    </div>
-
-                    <!-- State: Review & Submit -->
-                    <div id="controls-review" class="hidden flex items-center gap-3 flex-wrap justify-center">
-                        <button type="button" id="btn-retry-record"
-                            class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
-                            <span class="material-symbols-outlined text-lg">replay</span>
-                            Ulangi Rekam
-                        </button>
-
-                        <button type="button" id="btn-submit-video"
-                            class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-500/40 flex items-center gap-2.5 transition">
-                            <span class="material-symbols-outlined text-xl">send</span>
-                            Kirim &amp; Simpan Video
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stage 3: Uploading Progress -->
-        <section id="stage-uploading" class="hidden max-w-md w-full bg-slate-900/90 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center z-10">
-            <div class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center mx-auto mb-4 animate-bounce">
-                <span class="material-symbols-outlined text-3xl animate-spin">progress_activity</span>
-            </div>
-            <h2 class="text-xl font-black text-white">Mengunggah Video...</h2>
-            <p class="text-xs text-slate-400 mt-1 mb-6">Video sedang disimpan secara aman ke server lokal dan disiapkan ke Google Drive.</p>
-
-            <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden border border-white/10">
-                <div id="upload-bar" class="bg-gradient-to-r from-rose-500 to-orange-500 h-full w-1/4 rounded-full transition-all duration-300"></div>
-            </div>
-            <p id="upload-status-text" class="text-xs text-slate-400 mt-2 font-mono">0%</p>
-        </section>
-
-        <!-- Stage 4: Thank You & Success Screen -->
-        <section id="stage-success" class="hidden max-w-md w-full bg-slate-900/90 border border-emerald-500/20 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center z-10">
-            <div class="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/20">
-                <span class="material-symbols-outlined text-4xl">favorite</span>
-            </div>
-            <h2 class="text-2xl font-black text-white">Terima Kasih! 🎉</h2>
-            <p class="text-sm text-slate-300 mt-2">
-                Video ucapan dan harapanmu telah berhasil tersimpan dan akan ditayangkan di galeri Pilketos!
-            </p>
-
-            <div class="mt-8 p-4 rounded-2xl bg-white/5 border border-white/10">
-                <p class="text-xs text-slate-400">
-                    Bilik Kiosk akan otomatis siap untuk siswa berikutnya dalam
-                </p>
-                <div id="reset-counter" class="text-2xl font-black text-rose-400 mt-1 font-mono">5</div>
-            </div>
-
-            <button type="button" id="btn-next-now"
-                class="mt-6 w-full py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm rounded-2xl transition">
-                Siswa Berikutnya Sekarang
-            </button>
-        </section>
-    </main>
-
-    <!-- Footer Bar -->
-    <footer class="px-6 py-3 border-t border-white/10 bg-black/30 backdrop-blur-md flex items-center justify-between text-[11px] text-slate-500 z-20">
-        <div>
-            MPK &amp; OSIS SMK NIBA Business School &bull; Kiosk Recording Station
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span class="text-slate-400 font-semibold">Bilik Video Siap</span>
-        </div>
-    </footer>
-
-    <!-- CSS mirror mode for camera -->
-    <style>
-        .mirror-mode {
-            transform: scaleX(-1);
-        }
-    </style>
-
-    <!-- Kiosk Script -->
-    <script>
-        let stream = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let recordedBlob = null;
-        let recordingTimer = null;
-        let recordingSeconds = 0;
-        const maxSeconds = 30; // Max 30 seconds recording per student
-
-        // DOM elements
-        const stageSetup = document.getElementById('stage-setup');
-        const stageCamera = document.getElementById('stage-camera');
-        const stageUploading = document.getElementById('stage-uploading');
-        const stageSuccess = document.getElementById('stage-success');
-
-        const setupForm = document.getElementById('setup-form');
-        const inputName = document.getElementById('input-name');
-        const inputClass = document.getElementById('input-class');
-        const inputMessage = document.getElementById('input-message');
-        const displayIdentity = document.getElementById('display-identity');
-
-        const liveVideo = document.getElementById('live-video');
-        const playbackVideo = document.getElementById('playback-video');
-
-        const countdownOverlay = document.getElementById('countdown-overlay');
-        const countdownNumber = document.getElementById('countdown-number');
-        const recIndicator = document.getElementById('rec-indicator');
-        const timerDisplay = document.getElementById('timer-display');
-
-        const controlsReady = document.getElementById('controls-ready');
-        const controlsRecording = document.getElementById('controls-recording');
-        const controlsReview = document.getElementById('controls-review');
-
-        const btnCancelCam = document.getElementById('btn-cancel-cam');
-        const btnStartRecord = document.getElementById('btn-start-record');
-        const btnStopRecord = document.getElementById('btn-stop-record');
-        const btnRetryRecord = document.getElementById('btn-retry-record');
-        const btnSubmitVideo = document.getElementById('btn-submit-video');
-        const btnNextNow = document.getElementById('btn-next-now');
-        const resetCounter = document.getElementById('reset-counter');
-
-        const uploadBar = document.getElementById('upload-bar');
-        const uploadStatusText = document.getElementById('upload-status-text');
-
-        // Fullscreen Toggle
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        fullscreenBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen().catch(() => {});
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title>{{.Title}}</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+            rel="stylesheet" />
+        <style>
+            * {
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                -webkit-tap-highlight-color: transparent;
             }
-        });
 
-        // Stage 1: Setup Form Submit
-        setupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = inputName.value.trim();
-            const className = inputClass.value.trim();
-            if (!name || !className) return;
-
-            displayIdentity.textContent = `${name} (${className})`;
-
-            try {
-                // Request camera & microphone
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        facingMode: "user"
-                    },
-                    audio: true
-                });
-
-                liveVideo.srcObject = stream;
-                liveVideo.classList.remove('hidden');
-                playbackVideo.classList.add('hidden');
-
-                // Switch to Camera Stage
-                stageSetup.classList.add('hidden');
-                stageCamera.classList.remove('hidden');
-                setCameraControls('ready');
-            } catch (err) {
-                alert('Gagal mengakses kamera dan mikrofon: ' + err.message + '\nPastikan izin kamera dan mikrofon telah diizinkan di browser.');
+            .material-symbols-outlined {
+                font-family: 'Material Symbols Outlined';
+                font-size: 24px;
+                line-height: 1;
+                font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+                display: inline-block;
+                vertical-align: middle;
             }
-        });
 
-        // Return from camera stage to name input
-        btnCancelCam.addEventListener('click', () => {
-            stopStream();
-            stageCamera.classList.add('hidden');
-            stageSetup.classList.remove('hidden');
-        });
-
-        // Start Recording with 3s countdown
-        btnStartRecord.addEventListener('click', () => {
-            controlsReady.classList.add('hidden');
-            countdownOverlay.classList.remove('hidden');
-            let count = 3;
-            countdownNumber.textContent = count;
-
-            const interval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownNumber.textContent = count;
-                } else {
-                    clearInterval(interval);
-                    countdownOverlay.classList.add('hidden');
-                    startRecording();
+            @keyframes pulse-ring {
+                0% {
+                    transform: scale(0.95);
+                    opacity: 0.8;
                 }
-            }, 1000);
-        });
 
-        function startRecording() {
-            recordedChunks = [];
-            recordedBlob = null;
+                50% {
+                    transform: scale(1.1);
+                    opacity: 0.3;
+                }
 
-            // Preferred MIME types supported by modern browsers
-            let options = { mimeType: 'video/webm;codecs=vp9,opus' };
-            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                options = { mimeType: 'video/webm;codecs=vp8,opus' };
+                100% {
+                    transform: scale(0.95);
+                    opacity: 0.8;
+                }
+            }
+
+            .recording-pulse {
+                animation: pulse-ring 2s infinite ease-in-out;
+            }
+        </style>
+    </head>
+
+    <body class="h-full flex flex-col justify-between overflow-hidden bg-radial from-slate-900 to-slate-950">
+
+        <!-- Top Bar -->
+        <header
+            class="px-6 py-4 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-md z-20">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/20">
+                    <span class="material-symbols-outlined text-2xl">videocam</span>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
+                        Bilik Video Harapan &amp; Kesan
+                        <span
+                            class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30">Kiosk
+                            Booth</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Pemilihan Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Fullscreen Toggle Button -->
+                <button type="button" id="fullscreen-btn"
+                    class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition">
+                    <span class="material-symbols-outlined text-sm">fullscreen</span>
+                    <span>Layar Penuh</span>
+                </button>
+                <a href="/"
+                    class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 flex items-center gap-1.5 transition">
+                    <span class="material-symbols-outlined text-sm">home</span>
+                    <span>Beranda</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content Stage Area -->
+        <main class="flex-1 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+
+            <!-- Stage 1: Setup & Identity Form -->
+            <section id="stage-setup"
+                class="max-w-md w-full bg-slate-900/90 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl z-10 transition-all duration-300">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                        <span class="material-symbols-outlined text-3xl">sentiment_satisfied</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-white">Sampaikan Harapanmu!</h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">Rekam pesan singkat, kesan, atau harapan terbaikmu
+                        untuk masa depan OSIS SMK NIBA.</p>
+                </div>
+
+                <form id="setup-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Nama
+                            Lengkap / Panggilan <span class="text-rose-400">*</span></label>
+                        <input type="text" id="input-name" required placeholder="Contoh: Ahmad Rizki"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Kelas /
+                            Jurusan <span class="text-rose-400">*</span></label>
+                        <input type="text" id="input-class" required placeholder="Contoh: XII AKL 1"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Kesan
+                            Singkat (Opsional)</label>
+                        <input type="text" id="input-message"
+                            placeholder="Contoh: Semoga OSIS tahun ini makin keren dan seru!"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white placeholder-slate-500 focus:bg-white/10 focus:border-rose-500 focus:outline-none transition" />
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="w-full py-4 bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 text-white font-extrabold text-base rounded-2xl shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2 transition active:scale-[0.98]">
+                            <span class="material-symbols-outlined text-xl">camera_alt</span>
+                            Siapkan Kamera &amp; Mulai
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Stage 2: Camera Viewport & Recording Controls (Hidden by default) -->
+            <section id="stage-camera"
+                class="hidden flex flex-col items-center justify-center w-full max-w-4xl h-full max-h-[720px] relative">
+                <div
+                    class="relative w-full h-full rounded-3xl overflow-hidden bg-black border border-white/10 shadow-2xl flex items-center justify-center">
+                    <!-- Live Webcam View -->
+                    <video id="live-video" autoplay playsinline muted
+                        class="w-full h-full object-cover mirror-mode"></video>
+                    <!-- Playback Review Video -->
+                    <video id="playback-video" controls playsinline class="w-full h-full object-contain hidden"></video>
+
+                    <!-- Status Badges Overlay (Top) -->
+                    <div
+                        class="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-none">
+                        <div id="voter-badge"
+                            class="px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-xs font-bold text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span id="display-identity">Nama Siswa</span>
+                        </div>
+
+                        <!-- Live Recording Indicator -->
+                        <div id="rec-indicator"
+                            class="hidden px-3.5 py-1.5 rounded-full bg-rose-600/90 backdrop-blur-md border border-rose-400/40 text-xs font-extrabold text-white flex items-center gap-2 shadow-lg shadow-rose-600/50">
+                            <span class="w-2.5 h-2.5 rounded-full bg-white animate-ping"></span>
+                            <span>MEREKAM: <span id="timer-display" class="font-mono">00:00</span> / 00:30</span>
+                        </div>
+                    </div>
+
+                    <!-- Countdown Overlay (3..2..1) -->
+                    <div id="countdown-overlay"
+                        class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center z-20 hidden">
+                        <div id="countdown-number"
+                            class="text-8xl sm:text-9xl font-black text-rose-500 scale-125 transition-transform duration-300">
+                            3
+                        </div>
+                        <p class="text-sm font-bold text-slate-300 mt-4 tracking-wider uppercase">Tersenyumlah ke
+                            kamera...</p>
+                    </div>
+
+                    <!-- Bottom Floating Controls Overlay -->
+                    <div class="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-4 z-10 px-4">
+                        <!-- State: Ready to Record -->
+                        <div id="controls-ready" class="flex items-center gap-3">
+                            <button type="button" id="btn-cancel-cam"
+                                class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
+                                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                                Ganti Nama
+                            </button>
+
+                            <button type="button" id="btn-start-record"
+                                class="px-8 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-rose-600/50 flex items-center gap-2.5 transition">
+                                <span class="w-4 h-4 rounded-full bg-white"></span>
+                                Mulai Merekam (Maks. 30 dtk)
+                            </button>
+                        </div>
+
+                        <!-- State: Currently Recording -->
+                        <div id="controls-recording" class="hidden flex items-center gap-3">
+                            <button type="button" id="btn-stop-record"
+                                class="px-8 py-3.5 rounded-2xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-2xl shadow-rose-600/60 flex items-center gap-2.5 transition animate-pulse">
+                                <span class="material-symbols-outlined text-xl">stop</span>
+                                Selesai Merekam
+                            </button>
+                        </div>
+
+                        <!-- State: Review & Submit -->
+                        <div id="controls-review" class="hidden flex items-center gap-3 flex-wrap justify-center">
+                            <button type="button" id="btn-retry-record"
+                                class="px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-white flex items-center gap-2 transition">
+                                <span class="material-symbols-outlined text-lg">replay</span>
+                                Ulangi Rekam
+                            </button>
+
+                            <button type="button" id="btn-submit-video"
+                                class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-95 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-500/40 flex items-center gap-2.5 transition">
+                                <span class="material-symbols-outlined text-xl">send</span>
+                                Kirim &amp; Simpan Video
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stage 3: Uploading Progress -->
+            <section id="stage-uploading"
+                class="hidden max-w-md w-full bg-slate-900/90 border border-white/10 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center z-10">
+                <div
+                    class="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-500 border border-rose-500/20 flex items-center justify-center mx-auto mb-4 animate-bounce">
+                    <span class="material-symbols-outlined text-3xl animate-spin">progress_activity</span>
+                </div>
+                <h2 class="text-xl font-black text-white">Mengunggah Video...</h2>
+                <p class="text-xs text-slate-400 mt-1 mb-6">Video sedang disimpan secara aman ke server lokal dan
+                    disiapkan ke Google Drive.</p>
+
+                <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden border border-white/10">
+                    <div id="upload-bar"
+                        class="bg-gradient-to-r from-rose-500 to-orange-500 h-full w-1/4 rounded-full transition-all duration-300">
+                    </div>
+                </div>
+                <p id="upload-status-text" class="text-xs text-slate-400 mt-2 font-mono">0%</p>
+            </section>
+
+            <!-- Stage 4: Thank You & Success Screen -->
+            <section id="stage-success"
+                class="hidden max-w-md w-full bg-slate-900/90 border border-emerald-500/20 rounded-3xl p-8 backdrop-blur-xl shadow-2xl text-center z-10">
+                <div
+                    class="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto mb-4 shadow-xl shadow-emerald-500/20">
+                    <span class="material-symbols-outlined text-4xl">favorite</span>
+                </div>
+                <h2 class="text-2xl font-black text-white">Terima Kasih! 🎉</h2>
+                <p class="text-sm text-slate-300 mt-2">
+                    Video ucapan dan harapanmu telah berhasil tersimpan dan akan ditayangkan di galeri Pilketos!
+                </p>
+
+                <div class="mt-8 p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <p class="text-xs text-slate-400">
+                        Bilik Kiosk akan otomatis siap untuk siswa berikutnya dalam
+                    </p>
+                    <div id="reset-counter" class="text-2xl font-black text-rose-400 mt-1 font-mono">5</div>
+                </div>
+
+                <button type="button" id="btn-next-now"
+                    class="mt-6 w-full py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm rounded-2xl transition">
+                    Siswa Berikutnya Sekarang
+                </button>
+            </section>
+        </main>
+
+        <!-- Footer Bar -->
+        <footer
+            class="px-6 py-3 border-t border-white/10 bg-black/30 backdrop-blur-md flex items-center justify-between text-[11px] text-slate-500 z-20">
+            <div>
+                MPK &amp; OSIS SMK NIBA Business School &bull; Kiosk Recording Station
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-slate-400 font-semibold">Bilik Video Siap</span>
+            </div>
+        </footer>
+
+        <!-- CSS mirror mode for camera -->
+        <style>
+            .mirror-mode {
+                transform: scaleX(-1);
+            }
+        </style>
+
+        <!-- Kiosk Script -->
+        <script>
+            let stream = null;
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let recordedBlob = null;
+            let recordingTimer = null;
+            let recordingSeconds = 0;
+            const maxSeconds = 30; // Max 30 seconds recording per student
+
+            // DOM elements
+            const stageSetup = document.getElementById('stage-setup');
+            const stageCamera = document.getElementById('stage-camera');
+            const stageUploading = document.getElementById('stage-uploading');
+            const stageSuccess = document.getElementById('stage-success');
+
+            const setupForm = document.getElementById('setup-form');
+            const inputName = document.getElementById('input-name');
+            const inputClass = document.getElementById('input-class');
+            const inputMessage = document.getElementById('input-message');
+            const displayIdentity = document.getElementById('display-identity');
+
+            const liveVideo = document.getElementById('live-video');
+            const playbackVideo = document.getElementById('playback-video');
+
+            const countdownOverlay = document.getElementById('countdown-overlay');
+            const countdownNumber = document.getElementById('countdown-number');
+            const recIndicator = document.getElementById('rec-indicator');
+            const timerDisplay = document.getElementById('timer-display');
+
+            const controlsReady = document.getElementById('controls-ready');
+            const controlsRecording = document.getElementById('controls-recording');
+            const controlsReview = document.getElementById('controls-review');
+
+            const btnCancelCam = document.getElementById('btn-cancel-cam');
+            const btnStartRecord = document.getElementById('btn-start-record');
+            const btnStopRecord = document.getElementById('btn-stop-record');
+            const btnRetryRecord = document.getElementById('btn-retry-record');
+            const btnSubmitVideo = document.getElementById('btn-submit-video');
+            const btnNextNow = document.getElementById('btn-next-now');
+            const resetCounter = document.getElementById('reset-counter');
+
+            const uploadBar = document.getElementById('upload-bar');
+            const uploadStatusText = document.getElementById('upload-status-text');
+
+            // Fullscreen Toggle
+            const fullscreenBtn = document.getElementById('fullscreen-btn');
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => { });
+                } else {
+                    document.exitFullscreen().catch(() => { });
+                }
+            });
+
+            // Stage 1: Setup Form Submit
+            setupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = inputName.value.trim();
+                const className = inputClass.value.trim();
+                if (!name || !className) return;
+
+                displayIdentity.textContent = `${name} (${className})`;
+
+                try {
+                    // Request camera & microphone
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 },
+                            facingMode: "user"
+                        },
+                        audio: true
+                    });
+
+                    liveVideo.srcObject = stream;
+                    liveVideo.classList.remove('hidden');
+                    playbackVideo.classList.add('hidden');
+
+                    // Switch to Camera Stage
+                    stageSetup.classList.add('hidden');
+                    stageCamera.classList.remove('hidden');
+                    setCameraControls('ready');
+                } catch (err) {
+                    alert('Gagal mengakses kamera dan mikrofon: ' + err.message + '\nPastikan izin kamera dan mikrofon telah diizinkan di browser.');
+                }
+            });
+
+            // Return from camera stage to name input
+            btnCancelCam.addEventListener('click', () => {
+                stopStream();
+                stageCamera.classList.add('hidden');
+                stageSetup.classList.remove('hidden');
+            });
+
+            // Start Recording with 3s countdown
+            btnStartRecord.addEventListener('click', () => {
+                controlsReady.classList.add('hidden');
+                countdownOverlay.classList.remove('hidden');
+                let count = 3;
+                countdownNumber.textContent = count;
+
+                const interval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdownNumber.textContent = count;
+                    } else {
+                        clearInterval(interval);
+                        countdownOverlay.classList.add('hidden');
+                        startRecording();
+                    }
+                }, 1000);
+            });
+
+            function startRecording() {
+                recordedChunks = [];
+                recordedBlob = null;
+
+                // Preferred MIME types supported by modern browsers
+                let options = { mimeType: 'video/webm;codecs=vp9,opus' };
                 if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                    options = { mimeType: 'video/webm' };
+                    options = { mimeType: 'video/webm;codecs=vp8,opus' };
                     if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options = { mimeType: 'video/mp4' };
+                        options = { mimeType: 'video/webm' };
+                        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                            options = { mimeType: 'video/mp4' };
+                        }
                     }
                 }
-            }
 
-            try {
-                mediaRecorder = new MediaRecorder(stream, options);
-            } catch (e) {
-                mediaRecorder = new MediaRecorder(stream);
-            }
-
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data && e.data.size > 0) {
-                    recordedChunks.push(e.data);
+                try {
+                    mediaRecorder = new MediaRecorder(stream, options);
+                } catch (e) {
+                    mediaRecorder = new MediaRecorder(stream);
                 }
-            };
 
-            mediaRecorder.onstop = () => {
-                const mime = mediaRecorder.mimeType || 'video/webm';
-                recordedBlob = new Blob(recordedChunks, { type: mime });
-                playbackVideo.src = URL.createObjectURL(recordedBlob);
-                liveVideo.classList.add('hidden');
-                playbackVideo.classList.remove('hidden');
-                playbackVideo.play().catch(() => {});
-                setCameraControls('review');
-            };
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data && e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
 
-            mediaRecorder.start(200); // Collect data every 200ms
+                mediaRecorder.onstop = () => {
+                    const mime = mediaRecorder.mimeType || 'video/webm';
+                    recordedBlob = new Blob(recordedChunks, { type: mime });
+                    playbackVideo.src = URL.createObjectURL(recordedBlob);
+                    liveVideo.classList.add('hidden');
+                    playbackVideo.classList.remove('hidden');
+                    playbackVideo.play().catch(() => { });
+                    setCameraControls('review');
+                };
 
-            recordingSeconds = 0;
-            updateTimerDisplay();
-            recIndicator.classList.remove('hidden');
-            setCameraControls('recording');
+                mediaRecorder.start(200); // Collect data every 200ms
 
-            recordingTimer = setInterval(() => {
-                recordingSeconds++;
+                recordingSeconds = 0;
                 updateTimerDisplay();
-                if (recordingSeconds >= maxSeconds) {
-                    stopRecording();
-                }
-            }, 1000);
-        }
+                recIndicator.classList.remove('hidden');
+                setCameraControls('recording');
 
-        function updateTimerDisplay() {
-            const sec = recordingSeconds % 60;
-            const strSec = sec < 10 ? '0' + sec : sec;
-            timerDisplay.textContent = `00:${strSec}`;
-        }
-
-        function stopRecording() {
-            clearInterval(recordingTimer);
-            recIndicator.classList.add('hidden');
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
+                recordingTimer = setInterval(() => {
+                    recordingSeconds++;
+                    updateTimerDisplay();
+                    if (recordingSeconds >= maxSeconds) {
+                        stopRecording();
+                    }
+                }, 1000);
             }
-        }
 
-        btnStopRecord.addEventListener('click', stopRecording);
+            function updateTimerDisplay() {
+                const sec = recordingSeconds % 60;
+                const strSec = sec < 10 ? '0' + sec : sec;
+                timerDisplay.textContent = `00:${strSec}`;
+            }
 
-        // Retry Recording
-        btnRetryRecord.addEventListener('click', () => {
-            playbackVideo.pause();
-            playbackVideo.src = '';
-            playbackVideo.classList.add('hidden');
-            liveVideo.classList.remove('hidden');
-            setCameraControls('ready');
-        });
+            function stopRecording() {
+                clearInterval(recordingTimer);
+                recIndicator.classList.add('hidden');
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+            }
 
-        // Submit Video
-        btnSubmitVideo.addEventListener('click', async () => {
-            if (!recordedBlob) return;
+            btnStopRecord.addEventListener('click', stopRecording);
 
-            // Switch to Uploading Stage
-            stageCamera.classList.add('hidden');
-            stageUploading.classList.remove('hidden');
-            uploadBar.style.width = '20%';
-            uploadStatusText.textContent = 'Menyiapkan berkas...';
+            // Retry Recording
+            btnRetryRecord.addEventListener('click', () => {
+                playbackVideo.pause();
+                playbackVideo.src = '';
+                playbackVideo.classList.add('hidden');
+                liveVideo.classList.remove('hidden');
+                setCameraControls('ready');
+            });
 
-            const ext = recordedBlob.type.includes('mp4') ? 'mp4' : 'webm';
-            const formData = new FormData();
-            formData.append('name', inputName.value.trim());
-            formData.append('class_name', inputClass.value.trim());
-            formData.append('message', inputMessage.value.trim());
-            formData.append('video', recordedBlob, `kiosk_video.${ext}`);
+            // Submit Video
+            btnSubmitVideo.addEventListener('click', async () => {
+                if (!recordedBlob) return;
 
-            try {
-                uploadBar.style.width = '60%';
-                uploadStatusText.textContent = 'Menyimpan ke server lokal...';
+                // Switch to Uploading Stage
+                stageCamera.classList.add('hidden');
+                stageUploading.classList.remove('hidden');
+                uploadBar.style.width = '20%';
+                uploadStatusText.textContent = 'Menyiapkan berkas...';
 
-                const response = await fetch('/api/testimonials/upload', {
-                    method: 'POST',
-                    body: formData
-                });
+                const ext = recordedBlob.type.includes('mp4') ? 'mp4' : 'webm';
+                const formData = new FormData();
+                formData.append('name', inputName.value.trim());
+                formData.append('class_name', inputClass.value.trim());
+                formData.append('message', inputMessage.value.trim());
+                formData.append('video', recordedBlob, `kiosk_video.${ext}`);
 
-                uploadBar.style.width = '90%';
-                uploadStatusText.textContent = 'Memverifikasi penyimpanan...';
+                try {
+                    uploadBar.style.width = '60%';
+                    uploadStatusText.textContent = 'Menyimpan ke server lokal...';
 
-                const result = await response.json();
+                    const response = await fetch('/api/testimonials/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
 
-                if (response.ok && result.status === 'success') {
-                    uploadBar.style.width = '100%';
-                    uploadStatusText.textContent = 'Selesai!';
-                    setTimeout(showSuccessStage, 600);
-                } else {
-                    alert('Gagal mengunggah video: ' + (result.error || 'Terjadi kesalahan sistem'));
+                    uploadBar.style.width = '90%';
+                    uploadStatusText.textContent = 'Memverifikasi penyimpanan...';
+
+                    const result = await response.json();
+
+                    if (response.ok && result.status === 'success') {
+                        uploadBar.style.width = '100%';
+                        uploadStatusText.textContent = 'Selesai!';
+                        setTimeout(showSuccessStage, 600);
+                    } else {
+                        alert('Gagal mengunggah video: ' + (result.error || 'Terjadi kesalahan sistem'));
+                        stageUploading.classList.add('hidden');
+                        stageCamera.classList.remove('hidden');
+                    }
+                } catch (err) {
+                    alert('Kesalahan koneksi saat mengunggah video: ' + err.message);
                     stageUploading.classList.add('hidden');
                     stageCamera.classList.remove('hidden');
                 }
-            } catch (err) {
-                alert('Kesalahan koneksi saat mengunggah video: ' + err.message);
+            });
+
+            let autoResetInterval = null;
+
+            function showSuccessStage() {
+                stopStream();
                 stageUploading.classList.add('hidden');
-                stageCamera.classList.remove('hidden');
+                stageSuccess.classList.remove('hidden');
+
+                let count = 5;
+                resetCounter.textContent = count;
+                autoResetInterval = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        resetCounter.textContent = count;
+                    } else {
+                        clearInterval(autoResetInterval);
+                        resetKiosk();
+                    }
+                }, 1000);
             }
-        });
 
-        let autoResetInterval = null;
+            btnNextNow.addEventListener('click', () => {
+                clearInterval(autoResetInterval);
+                resetKiosk();
+            });
 
-        function showSuccessStage() {
-            stopStream();
-            stageUploading.classList.add('hidden');
-            stageSuccess.classList.remove('hidden');
+            function resetKiosk() {
+                stopStream();
+                inputName.value = '';
+                inputClass.value = '';
+                inputMessage.value = '';
+                recordedBlob = null;
+                recordedChunks = [];
+                playbackVideo.src = '';
 
-            let count = 5;
-            resetCounter.textContent = count;
-            autoResetInterval = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    resetCounter.textContent = count;
-                } else {
-                    clearInterval(autoResetInterval);
-                    resetKiosk();
+                stageSuccess.classList.add('hidden');
+                stageUploading.classList.add('hidden');
+                stageCamera.classList.add('hidden');
+                stageSetup.classList.remove('hidden');
+            }
+
+            function setCameraControls(state) {
+                controlsReady.classList.add('hidden');
+                controlsRecording.classList.add('hidden');
+                controlsReview.classList.add('hidden');
+
+                if (state === 'ready') {
+                    controlsReady.classList.remove('hidden');
+                } else if (state === 'recording') {
+                    controlsRecording.classList.remove('hidden');
+                } else if (state === 'review') {
+                    controlsReview.classList.remove('hidden');
                 }
-            }, 1000);
-        }
-
-        btnNextNow.addEventListener('click', () => {
-            clearInterval(autoResetInterval);
-            resetKiosk();
-        });
-
-        function resetKiosk() {
-            stopStream();
-            inputName.value = '';
-            inputClass.value = '';
-            inputMessage.value = '';
-            recordedBlob = null;
-            recordedChunks = [];
-            playbackVideo.src = '';
-
-            stageSuccess.classList.add('hidden');
-            stageUploading.classList.add('hidden');
-            stageCamera.classList.add('hidden');
-            stageSetup.classList.remove('hidden');
-        }
-
-        function setCameraControls(state) {
-            controlsReady.classList.add('hidden');
-            controlsRecording.classList.add('hidden');
-            controlsReview.classList.add('hidden');
-
-            if (state === 'ready') {
-                controlsReady.classList.remove('hidden');
-            } else if (state === 'recording') {
-                controlsRecording.classList.remove('hidden');
-            } else if (state === 'review') {
-                controlsReview.classList.remove('hidden');
             }
-        }
 
-        function stopStream() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
+            function stopStream() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
             }
-        }
 
-        // Clean up stream if page is closed/navigated
-        window.addEventListener('beforeunload', stopStream);
-    </script>
-</body>
+            // Clean up stream if page is closed/navigated
+            window.addEventListener('beforeunload', stopStream);
+        </script>
+    </body>
+
 </html>
 {{end}}

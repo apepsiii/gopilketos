@@ -9,7 +9,8 @@
                 <span class="material-symbols-outlined text-rose-600 text-3xl">video_camera_front</span>
                 Video Ucapan &amp; Kesan Pesan Siswa
             </h1>
-            <p class="text-sm text-slate-500 mt-1">Daftar rekaman video bilik kiosk, status moderasi publik, dan sinkronisasi Google Drive.</p>
+            <p class="text-sm text-slate-500 mt-1">Daftar rekaman video bilik kiosk, status moderasi publik, dan
+                sinkronisasi Google Drive.</p>
         </div>
 
         <div class="flex items-center gap-3 shrink-0 flex-wrap">
@@ -90,7 +91,8 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="relative max-w-sm w-full">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                 <input type="text" id="filter-input" placeholder="Cari nama siswa, kelas, atau isi pesan..."
                     class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-rose-500 focus:outline-none">
             </div>
@@ -102,7 +104,8 @@
         {{if .Testimonials}}
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-600" id="video-table">
-                <thead class="bg-slate-50/80 border-b border-slate-200 text-xs uppercase font-bold text-slate-500 tracking-wider">
+                <thead
+                    class="bg-slate-50/80 border-b border-slate-200 text-xs uppercase font-bold text-slate-500 tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4 w-12 text-center">#</th>
                         <th class="py-3.5 px-4">Pengirim</th>
@@ -120,7 +123,8 @@
                         <td class="py-3.5 px-4 text-center text-xs text-slate-400 font-mono">{{.ID}}</td>
                         <td class="py-3.5 px-4">
                             <div class="font-bold text-slate-900">{{.Name}}</div>
-                            <span class="inline-flex items-center px-2 py-0.5 mt-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 mt-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                 {{.ClassName}}
                             </span>
                         </td>
@@ -135,11 +139,12 @@
                             {{.CreatedAt}}
                         </td>
                         <td class="py-3.5 px-4 text-center">
-                            <button type="button" onclick="toggleApproval({{.ID}})"
-                                id="status-btn-{{.ID}}"
+                            <button type="button" onclick="toggleApproval({{.ID}})" id="status-btn-{{.ID}}"
                                 class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition {{if .IsApproved}}bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100{{else}}bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200{{end}}">
-                                <span class="w-1.5 h-1.5 rounded-full {{if .IsApproved}}bg-emerald-500{{else}}bg-slate-400{{end}}"></span>
-                                <span id="status-text-{{.ID}}">{{if .IsApproved}}Ditampilkan{{else}}Disembunyikan{{end}}</span>
+                                <span
+                                    class="w-1.5 h-1.5 rounded-full {{if .IsApproved}}bg-emerald-500{{else}}bg-slate-400{{end}}"></span>
+                                <span
+                                    id="status-text-{{.ID}}">{{if .IsApproved}}Ditampilkan{{else}}Disembunyikan{{end}}</span>
                             </button>
                         </td>
                         <td class="py-3.5 px-4 text-center">
@@ -154,13 +159,16 @@
                                 </a>
                             </div>
                             {{else if eq .SyncStatus "syncing"}}
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 animate-pulse">
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 animate-pulse">
                                 <span class="material-symbols-outlined text-xs animate-spin">sync</span>
                                 Mengunggah...
                             </span>
                             {{else if eq .SyncStatus "failed"}}
                             <div class="inline-flex flex-col items-center gap-1">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200" title="{{.SyncError}}">
+                                <span
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"
+                                    title="{{.SyncError}}">
                                     <span class="material-symbols-outlined text-xs">error</span>
                                     Gagal
                                 </span>
@@ -169,7 +177,8 @@
                             </div>
                             {{else}}
                             <div class="inline-flex flex-col items-center gap-1">
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <span
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                     <span class="material-symbols-outlined text-xs">dns</span>
                                     Lokal
                                 </span>
@@ -215,7 +224,8 @@
                 <span class="material-symbols-outlined text-3xl">videocam_off</span>
             </div>
             <h3 class="text-base font-bold text-slate-900 mb-1">Belum Ada Video Kesan &amp; Pesan</h3>
-            <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">Siswa dapat merekam video kesan &amp; pesan di bilik kiosk yang tersedia.</p>
+            <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4">Siswa dapat merekam video kesan &amp; pesan di bilik
+                kiosk yang tersedia.</p>
             <a href="/kiosk" target="_blank"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition">
                 <span class="material-symbols-outlined text-base">open_in_new</span>
@@ -227,7 +237,8 @@
 </div>
 
 <!-- Video Player Modal -->
-<div id="video-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+<div id="video-modal"
+    class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl border border-slate-800/20">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
             <h3 id="modal-title" class="font-bold text-slate-900 text-sm flex items-center gap-2">
@@ -240,7 +251,8 @@
             </button>
         </div>
         <div class="bg-black aspect-video flex items-center justify-center relative">
-            <video id="modal-video-player" controls autoplay playsinline class="w-full h-full object-contain hidden"></video>
+            <video id="modal-video-player" controls autoplay playsinline
+                class="w-full h-full object-contain hidden"></video>
             <iframe id="modal-gdrive-frame" class="w-full h-full border-0 hidden" allow="autoplay"></iframe>
             <div id="modal-loading" class="text-white text-xs flex items-center gap-2">
                 <span class="material-symbols-outlined animate-spin text-lg">progress_activity</span> Memuat video...
@@ -359,7 +371,7 @@
             modalPlayer.src = localPath;
             modalPlayer.classList.remove('hidden');
             modalLoading.classList.add('hidden');
-            modalPlayer.play().catch(() => {});
+            modalPlayer.play().catch(() => { });
         } else if (gdriveUrl) {
             modalFrame.src = gdriveUrl;
             modalFrame.classList.remove('hidden');

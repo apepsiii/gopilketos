@@ -11,9 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"gopilketos/services"
+
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
-	"gopilketos/services"
 )
 
 type TestimonialView struct {
