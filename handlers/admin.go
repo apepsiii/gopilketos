@@ -62,6 +62,23 @@ type AdminCandidateFormData struct {
 	Action          string
 }
 
+type AdminCreditsData struct {
+	AdminLayoutData
+	Credits []CreditView
+}
+
+type AdminCreditFormData struct {
+	AdminLayoutData
+	ID        int
+	Name      string
+	ClassName string
+	Division  string
+	PhotoURL  string
+	Period    string
+	OrderNum  int
+	Action    string
+}
+
 type AdminVotersData struct {
 	AdminLayoutData
 	Voters        []VoterView
@@ -579,6 +596,141 @@ func AdminCandidateDeleteHandler(db *sql.DB) echo.HandlerFunc {
 			return c.String(http.StatusInternalServerError, "Gagal menghapus kandidat")
 		}
 		return c.Redirect(http.StatusSeeOther, "/admin/candidates")
+	}
+}
+
+func AdminCreditsHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		rows, err := db.Query("SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits ORDER BY order_num ASC, id ASC")
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Gagal memuat daftar demisioner")
+		}
+		defer rows.Close()
+
+		credits := []CreditView{}
+		for rows.Next() {
+			var cr CreditView
+			if err := rows.Scan(&cr.ID, &cr.Name, &cr.ClassName, &cr.Division, &cr.PhotoURL, &cr.Period, &cr.OrderNum); err != nil {
+				return c.String(http.StatusInternalServerError, "Gagal memproses data demisioner")
+			}
+			credits = append(credits, cr)
+		}
+
+		return c.Render(http.StatusOK, "admin_credits.html", AdminCreditsData{
+			AdminLayoutData: adminLayout("Demisioner OSIS | OSIS Admin", "Kredit Demisioner OSIS", "Kelola daftar pengurus OSIS periode sebelumnya untuk apresiasi dan dokumentasi.", "admin_credits_content", "credits"),
+			Credits:         credits,
+		})
+	}
+}
+
+func AdminCreditFormHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		idStr := c.QueryParam("id")
+		if idStr == "" {
+			idStr = c.Param("id")
+		}
+		form := AdminCreditFormData{
+			AdminLayoutData: adminLayout("Tambah Demisioner | OSIS Admin", "Tambah Pengurus Demisioner", "Tambahkan profil anggota OSIS dari kepengurusan periode sebelumnya.", "admin_credit_form_content", "credits"),
+			OrderNum:        1,
+			Action:          "Tambah Anggota",
+		}
+		if idStr != "" {
+			id, err := strconv.Atoi(idStr)
+			if err == nil {
+				var photoURL, period string
+				_ = db.QueryRow("SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits WHERE id = ?", id).Scan(
+					&form.ID, &form.Name, &form.ClassName, &form.Division, &photoURL, &period, &form.OrderNum)
+				form.PhotoURL = photoURL
+				form.Period = period
+				form.Action = "Simpan Perubahan"
+				form.AdminLayoutData = adminLayout("Edit Demisioner | OSIS Admin", "Edit Pengurus Demisioner", "Perbarui profil anggota OSIS dari kepengurusan periode sebelumnya.", "admin_credit_form_content", "credits")
+			}
+		}
+		return c.Render(http.StatusOK, "admin_credit_form.html", form)
+	}
+}
+
+func AdminCreditCreateHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		name := strings.TrimSpace(c.FormValue("name"))
+		className := strings.TrimSpace(c.FormValue("class_name"))
+		division := strings.TrimSpace(c.FormValue("division"))
+		period := strings.TrimSpace(c.FormValue("period"))
+		orderNumStr := c.FormValue("order_num")
+		orderNum, _ := strconv.Atoi(orderNumStr)
+		if orderNum <= 0 {
+			orderNum = 1
+		}
+		photoURL := strings.TrimSpace(c.FormValue("photo_url"))
+
+		if name == "" || className == "" || division == "" {
+			return c.String(http.StatusBadRequest, "Nama, kelas, dan divisi/jabatan wajib diisi")
+		}
+
+		if file, err := c.FormFile("photo"); err == nil && file != nil {
+			uploaded, err := saveCandidatePhoto(file)
+			if err == nil {
+				photoURL = uploaded
+			}
+		}
+		photoURL = normalizeCandidatePhotoURL(photoURL)
+
+		_, err := db.Exec("INSERT INTO credits (name, class_name, division, photo_url, period, order_num) VALUES (?, ?, ?, ?, ?, ?)", name, className, division, photoURL, period, orderNum)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Gagal menyimpan data demisioner: "+err.Error())
+		}
+		return c.Redirect(http.StatusSeeOther, "/admin/credits")
+	}
+}
+
+func AdminCreditUpdateHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil || id <= 0 {
+			return c.String(http.StatusBadRequest, "ID demisioner tidak valid")
+		}
+		name := strings.TrimSpace(c.FormValue("name"))
+		className := strings.TrimSpace(c.FormValue("class_name"))
+		division := strings.TrimSpace(c.FormValue("division"))
+		period := strings.TrimSpace(c.FormValue("period"))
+		orderNumStr := c.FormValue("order_num")
+		orderNum, _ := strconv.Atoi(orderNumStr)
+		if orderNum <= 0 {
+			orderNum = 1
+		}
+		photoURL := strings.TrimSpace(c.FormValue("photo_url"))
+
+		if name == "" || className == "" || division == "" {
+			return c.String(http.StatusBadRequest, "Nama, kelas, dan divisi/jabatan wajib diisi")
+		}
+
+		if file, err := c.FormFile("photo"); err == nil && file != nil {
+			uploaded, err := saveCandidatePhoto(file)
+			if err == nil {
+				photoURL = uploaded
+			}
+		}
+		photoURL = normalizeCandidatePhotoURL(photoURL)
+
+		_, err = db.Exec("UPDATE credits SET name = ?, class_name = ?, division = ?, photo_url = ?, period = ?, order_num = ? WHERE id = ?", name, className, division, photoURL, period, orderNum, id)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Gagal memperbarui data demisioner: "+err.Error())
+		}
+		return c.Redirect(http.StatusSeeOther, "/admin/credits")
+	}
+}
+
+func AdminCreditDeleteHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil || id <= 0 {
+			return c.String(http.StatusBadRequest, "ID demisioner tidak valid")
+		}
+		_, err = db.Exec("DELETE FROM credits WHERE id = ?", id)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Gagal menghapus data demisioner")
+		}
+		return c.Redirect(http.StatusSeeOther, "/admin/credits")
 	}
 }
 

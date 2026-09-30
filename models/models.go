@@ -43,3 +43,14 @@ type Vote struct {
 	ViceChairmanID uint
 	VotedAt        string
 }
+
+type Credit struct {
+	ID        uint
+	Name      string
+	ClassName string
+	Division  string
+	PhotoURL  string
+	Period    string
+	OrderNum  int
+	CreatedAt string
+}

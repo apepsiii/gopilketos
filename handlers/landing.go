@@ -14,6 +14,17 @@ type LandingPageData struct {
 	Participation          int
 	ChairmanCandidates     []CandidateView
 	ViceChairmanCandidates []CandidateView
+	Credits                []CreditView
+}
+
+type CreditView struct {
+	ID        int
+	Name      string
+	ClassName string
+	Division  string
+	PhotoURL  string
+	Period    string
+	OrderNum  int
 }
 
 type CandidateView struct {
@@ -72,6 +83,18 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			}
 		}
 
+		credits := []CreditView{}
+		rows3, err3 := db.Query("SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits ORDER BY order_num ASC, id ASC")
+		if err3 == nil {
+			defer rows3.Close()
+			for rows3.Next() {
+				var cr CreditView
+				if err := rows3.Scan(&cr.ID, &cr.Name, &cr.ClassName, &cr.Division, &cr.PhotoURL, &cr.Period, &cr.OrderNum); err == nil {
+					credits = append(credits, cr)
+				}
+			}
+		}
+
 		data := LandingPageData{
 			Announcement:           announcement,
 			TotalVoters:            totalVoters,
@@ -79,6 +102,7 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			Participation:          participation,
 			ChairmanCandidates:     chairmen,
 			ViceChairmanCandidates: vice,
+			Credits:                credits,
 		}
 		return c.Render(http.StatusOK, "landing.html", data)
 	}

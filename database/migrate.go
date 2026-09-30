@@ -50,6 +50,16 @@ func Migrate(db *sql.DB) error {
 			FOREIGN KEY (chairman_id) REFERENCES candidates(id),
 			FOREIGN KEY (vice_chairman_id) REFERENCES candidates(id)
 		);`,
+		`CREATE TABLE IF NOT EXISTS credits (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL,
+			class_name TEXT NOT NULL,
+			division TEXT NOT NULL,
+			photo_url TEXT,
+			period TEXT DEFAULT '',
+			order_num INTEGER DEFAULT 1,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
 	}
 	for _, q := range queries {
 		if _, err := db.Exec(q); err != nil {
