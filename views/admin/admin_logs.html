@@ -5,7 +5,8 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
             <h1 class="text-3xl font-bold tracking-tight text-slate-900">Log Audit</h1>
-            <p class="text-slate-500 max-w-lg">Catatan permanen dari semua ballot yang masuk. Lingkungan ini hanya-baca untuk menjaga integritas pemilu.</p>
+            <p class="text-slate-500 max-w-lg">Catatan permanen dari semua ballot yang masuk. Lingkungan ini hanya-baca
+                untuk menjaga integritas pemilu.</p>
         </div>
         <div class="bg-white p-6 rounded-3xl shadow-sm min-w-[240px] border border-slate-200/70">
             <div class="flex items-center justify-between mb-2">
@@ -14,41 +15,57 @@
             </div>
             <div class="flex items-baseline gap-2">
                 <span class="text-4xl font-bold text-indigo-900">{{len .Logs}}</span>
-                <span class="text-xs font-medium text-emerald-600 flex items-center gap-1"><span class="material-symbols-outlined text-sm">trending_up</span>Real-time</span>
+                <span class="text-xs font-medium text-emerald-600 flex items-center gap-1"><span
+                        class="material-symbols-outlined text-sm">trending_up</span>Real-time</span>
             </div>
         </div>
     </div>
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-sm">calendar_month</span>
-                <input class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600" readonly type="text" value="Hari Ini" />
+                <span
+                    class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-sm">calendar_month</span>
+                <input class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600"
+                    readonly type="text" value="Hari Ini" />
             </div>
-            <button class="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-xl text-sm font-semibold"><span class="material-symbols-outlined text-sm">filter_list</span>Filter</button>
+            <button class="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-xl text-sm font-semibold"><span
+                    class="material-symbols-outlined text-sm">filter_list</span>Filter</button>
         </div>
-        <button class="flex items-center gap-2 px-5 py-2 border border-[#3525CD] text-[#3525CD] text-sm font-bold rounded-xl"><span class="material-symbols-outlined text-sm">download</span>Export</button>
+        <button
+            class="flex items-center gap-2 px-5 py-2 border border-[#3525CD] text-[#3525CD] text-sm font-bold rounded-xl"><span
+                class="material-symbols-outlined text-sm">download</span>Export</button>
     </div>
     <section class="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200/70">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50">
-                        <th class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">Waktu</th>
-                        <th class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">UUID Disamarkan</th>
-                        <th class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">Ketua Terpilih</th>
-                        <th class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">Wakil Terpilih</th>
+                        <th
+                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
+                            Waktu</th>
+                        <th
+                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
+                            No. Surat Suara (Ballot ID)</th>
+                        <th
+                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
+                            Ketua Terpilih</th>
+                        <th
+                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
+                            Wakil Terpilih</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     {{range .Logs}}
                     <tr class="hover:bg-slate-50 transition-colors duration-200">
                         <td class="px-6 py-4 text-sm text-slate-600">{{.VotedAt}}</td>
-                        <td class="px-6 py-4 font-mono text-xs text-slate-400">{{.MaskedUUID}}</td>
+                        <td class="px-6 py-4 font-mono text-xs font-semibold text-slate-600">{{.MaskedUUID}}</td>
                         <td class="px-6 py-4 text-slate-700">{{.ChairmanName}}</td>
                         <td class="px-6 py-4 text-slate-700">{{.ViceName}}</td>
                     </tr>
                     {{else}}
-                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Belum ada log audit.</td></tr>
+                    <tr>
+                        <td colspan="4" class="px-6 py-8 text-center text-slate-500">Belum ada log audit.</td>
+                    </tr>
                     {{end}}
                 </tbody>
             </table>

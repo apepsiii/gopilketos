@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 	"gopilketos/services"
 )
@@ -24,11 +25,10 @@ type VoteResponse struct {
 	Message string `json:"message"`
 }
 
-func maskUUID(uuid string) string {
-	if len(uuid) < 8 {
-		return uuid
-	}
-	return uuid[:8] + strings.Repeat("*", len(uuid)-8)
+// generateBallotReceipt creates an independent, anonymous ballot receipt
+// that cannot be linked back to the voter's identity or UUID, ensuring secret voting (LUBER).
+func generateBallotReceipt() string {
+	return "BLT-" + strings.ToUpper(uuid.NewString()[:8])
 }
 
 func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
@@ -85,8 +85,8 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, VoteResponse{"error", "Kandidat ID kedua bukan vice chairman"})
 		}
 
-		masked := maskUUID(req.UUID)
-		_, err = tx.Exec(`INSERT INTO votes (masked_uuid, chairman_id, vice_chairman_id, voted_at) VALUES (?, ?, ?, ?)`, masked, req.ChairmanID, req.ViceChairmanID, time.Now())
+		ballotReceipt := generateBallotReceipt()
+		_, err = tx.Exec(`INSERT INTO votes (masked_uuid, chairman_id, vice_chairman_id, voted_at) VALUES (?, ?, ?, ?)`, ballotReceipt, req.ChairmanID, req.ViceChairmanID, time.Now())
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, VoteResponse{"error", "Gagal simpan suara"})
 		}

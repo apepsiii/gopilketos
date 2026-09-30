@@ -1,3 +1,13 @@
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const uuid = params.get('uuid');
@@ -11,8 +21,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const summary = document.getElementById('summary');
     const submitButton = document.getElementById('submit-btn');
     const restartButton = document.getElementById('restart-btn');
+    const mobileSubmitButton = document.getElementById('mobile-submit-btn');
+    const mobileRestartButton = document.getElementById('mobile-restart-btn');
 
-    summary.innerHTML = '<p>Memuat ringkasan pilihan...</p>';
+    summary.innerHTML = '<p class="text-slate-400 text-center py-6">Memuat ringkasan pilihan...</p>';
 
     try {
         const [chairmanResponse, viceResponse] = await Promise.all([
@@ -20,66 +32,106 @@ document.addEventListener('DOMContentLoaded', async () => {
             fetch('/api/candidate?id=' + encodeURIComponent(viceId)),
         ]);
         if (!chairmanResponse.ok || !viceResponse.ok) {
-            summary.innerHTML = '<p class="error">Tidak dapat memuat ringkasan pilihan.</p>';
+            summary.innerHTML = '<p class="text-red-500 text-center py-4 font-semibold">Tidak dapat memuat ringkasan pilihan.</p>';
             return;
         }
 
         const chairman = await chairmanResponse.json();
         const vice = await viceResponse.json();
 
-summary.innerHTML = `
-            <div class="p-6 rounded-xl bg-primary-container/30 border border-primary/20">
-                <p class="text-xs font-bold uppercase tracking-widest text-primary mb-3">Ketua Terpilih</p>
+        summary.innerHTML = `
+            <div class="p-6 rounded-2xl bg-blue-50/70 border border-blue-200/80">
+                <p class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-3">Ketua Terpilih</p>
                 <div class="flex items-center gap-4">
-                    <img src="${chairman.photo_url || '/static/images/default-profile.svg'}" alt="${chairman.name}" class="w-16 h-16 rounded-full object-cover border-2 border-primary/30" />
+                    <img src="${chairman.photo_url ? encodeURI(chairman.photo_url) : '/static/images/default-profile.svg'}" 
+                         alt="${escapeHTML(chairman.name)}" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-300 shadow-sm" />
                     <div>
-                        <p class="font-bold text-lg text-on-surface">${chairman.name}</p>
-                        <p class="text-sm text-on-surface-variant">${chairman.class_name}</p>
+                        <p class="font-bold text-lg text-slate-900">${escapeHTML(chairman.name)}</p>
+                        <p class="text-xs text-slate-500">${escapeHTML(chairman.class_name)}</p>
                     </div>
                 </div>
-                <div class="mt-4 p-4 bg-white/50 rounded-lg">
-                    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Visi</p>
-                    <p class="text-sm text-on-surface">${chairman.vision}</p>
+                <div class="mt-4 p-3.5 bg-white rounded-xl border border-blue-100 shadow-xs">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Visi</p>
+                    <p class="text-xs text-slate-700 line-clamp-2">${escapeHTML(chairman.vision || '-')}</p>
                 </div>
             </div>
-            <div class="p-6 rounded-xl bg-secondary-container/30 border border-secondary/20">
-                <p class="text-xs font-bold uppercase tracking-widest text-secondary mb-3">Wakil Ketua Terpilih</p>
+
+            <div class="p-6 rounded-2xl bg-indigo-50/70 border border-indigo-200/80">
+                <p class="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-3">Wakil Ketua Terpilih</p>
                 <div class="flex items-center gap-4">
-                    <img src="${vice.photo_url || '/static/images/default-profile.svg'}" alt="${vice.name}" class="w-16 h-16 rounded-full object-cover border-2 border-secondary/30" />
+                    <img src="${vice.photo_url ? encodeURI(vice.photo_url) : '/static/images/default-profile.svg'}" 
+                         alt="${escapeHTML(vice.name)}" class="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-300 shadow-sm" />
                     <div>
-                        <p class="font-bold text-lg text-on-surface">${vice.name}</p>
-                        <p class="text-sm text-on-surface-variant">${vice.class_name}</p>
+                        <p class="font-bold text-lg text-slate-900">${escapeHTML(vice.name)}</p>
+                        <p class="text-xs text-slate-500">${escapeHTML(vice.class_name)}</p>
                     </div>
                 </div>
-                <div class="mt-4 p-4 bg-white/50 rounded-lg">
-                    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Visi</p>
-                    <p class="text-sm text-on-surface">${vice.vision}</p>
+                <div class="mt-4 p-3.5 bg-white rounded-xl border border-indigo-100 shadow-xs">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Visi</p>
+                    <p class="text-xs text-slate-700 line-clamp-2">${escapeHTML(vice.vision || '-')}</p>
                 </div>
             </div>
         `;
 
-        submitButton.onclick = async () => {
-            submitButton.disabled = true;
-            submitButton.textContent = 'Mengirim...';
-            const response = await fetch('/submit-vote', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uuid, chairman_id: parseInt(chairmanId, 10), vice_chairman_id: parseInt(viceId, 10) })
-            });
-            const result = await response.json();
-            if (response.ok && result.status === 'success') {
-                window.location.href = '/vote/success';
-            } else {
-                summary.innerHTML += `<p class="error">${result.message || 'Gagal menyimpan vote.'}</p>`;
-                submitButton.disabled = false;
-                submitButton.textContent = 'Kirim Pilihan';
+        async function submitVote() {
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Mengirim Suara...';
             }
-        };
+            if (mobileSubmitButton) {
+                mobileSubmitButton.disabled = true;
+                mobileSubmitButton.querySelector('span:last-child').textContent = 'Mengirim...';
+            }
 
-        restartButton.onclick = () => {
-            window.location.href = '/vote?uuid=' + encodeURIComponent(uuid);
-        };
+            try {
+                const response = await fetch('/submit-vote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uuid,
+                        chairman_id: parseInt(chairmanId, 10),
+                        vice_chairman_id: parseInt(viceId, 10)
+                    })
+                });
+                const result = await response.json();
+                if (response.ok && result.status === 'success') {
+                    window.location.href = '/vote/success';
+                } else {
+                    alert(result.message || 'Gagal menyimpan suara.');
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Kirim Suara';
+                    }
+                    if (mobileSubmitButton) {
+                        mobileSubmitButton.disabled = false;
+                        mobileSubmitButton.querySelector('span:last-child').textContent = 'Kirim Suara';
+                    }
+                }
+            } catch (err) {
+                alert('Terjadi kesalahan jaringan.');
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Kirim Suara';
+                }
+                if (mobileSubmitButton) {
+                    mobileSubmitButton.disabled = false;
+                    mobileSubmitButton.querySelector('span:last-child').textContent = 'Kirim Suara';
+                }
+            }
+        }
+
+        function restartVote() {
+            if (confirm('Apakah Anda yakin ingin membatalkan dan mengulang pemilihan?')) {
+                window.location.href = '/vote?uuid=' + encodeURIComponent(uuid);
+            }
+        }
+
+        if (submitButton) submitButton.onclick = submitVote;
+        if (mobileSubmitButton) mobileSubmitButton.onclick = submitVote;
+        if (restartButton) restartButton.onclick = restartVote;
+        if (mobileRestartButton) mobileRestartButton.onclick = restartVote;
+
     } catch (error) {
-        summary.innerHTML = '<p class="error">Terjadi kesalahan saat memproses ringkasan.</p>';
+        summary.innerHTML = '<p class="text-red-500 text-center py-4 font-semibold">Terjadi kesalahan saat memproses data kandidat.</p>';
     }
 });

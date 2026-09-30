@@ -49,6 +49,16 @@
     </main>
 
     <script>
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         const params = new URLSearchParams(window.location.search);
         const uuid = params.get('uuid');
@@ -70,16 +80,16 @@
 
             list.innerHTML = candidates.map(c => `
                 <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300 hover:shadow-lg transition-all cursor-pointer"
-                     onclick="window.location.href='/vote/step2?uuid=${encodeURIComponent(uuid)}&chairman_id=${c.id}'">
+                     onclick="window.location.href='/vote/step2?uuid=${encodeURIComponent(uuid)}&chairman_id=${encodeURIComponent(c.id)}'">
                     <div class="flex flex-col items-center text-center">
-                        <img src="${c.photo_url || '/static/images/default-profile.svg'}" alt="${c.name}"
+                        <img src="${c.photo_url ? encodeURI(c.photo_url) : '/static/images/default-profile.svg'}" alt="${escapeHTML(c.name)}"
                              class="w-24 h-24 rounded-full object-cover bg-neutral-100 mb-4" />
-                        <h3 class="font-semibold text-neutral-900">${c.name}</h3>
-                        <p class="text-xs text-neutral-500 mb-4">${c.class_name}</p>
+                        <h3 class="font-semibold text-neutral-900">${escapeHTML(c.name)}</h3>
+                        <p class="text-xs text-neutral-500 mb-4">${escapeHTML(c.class_name)}</p>
                         <div class="w-full pt-4 border-t border-neutral-100 text-left space-y-2">
                             <div>
                                 <p class="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">Visi</p>
-                                <p class="text-sm text-neutral-600 line-clamp-2">${c.vision}</p>
+                                <p class="text-sm text-neutral-600 line-clamp-2">${escapeHTML(c.vision)}</p>
                             </div>
                         </div>
                     </div>

@@ -11,10 +11,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	"gopilketos/database"
 	"gopilketos/handlers"
+
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"gopkg.in/yaml.v3"
 )
 
@@ -206,9 +207,9 @@ func main() {
 	adminGroup.POST("/attendance/mark", handlers.AdminMarkAttendanceHandler(db))
 
 	e.POST("/submit-vote", handlers.SubmitVoteHandler(db))
-	e.GET("/vote", handlers.VoteStep1Handler())
-	e.GET("/vote/step2", handlers.VoteStep2Handler())
-	e.GET("/vote/confirm", handlers.VoteConfirmationHandler())
+	e.GET("/vote", handlers.VoteStep1Handler(db))
+	e.GET("/vote/step2", handlers.VoteStep2Handler(db))
+	e.GET("/vote/confirm", handlers.VoteConfirmationHandler(db))
 	e.GET("/vote/success", handlers.VoteSuccessHandler())
 
 	e.GET("/sw.js", func(c *echo.Context) error {

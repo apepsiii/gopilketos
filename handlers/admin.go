@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -119,6 +120,14 @@ type AdminLoginData struct {
 	Error string
 }
 
+type AdminAttendanceData struct {
+	AdminLayoutData
+	Voters     []VoterView
+	TotalHadir int
+	TotalBelum int
+	Total      int
+}
+
 type VoteExport struct {
 	ID               int    `json:"id"`
 	MaskedUUID       string `json:"masked_uuid"`
@@ -153,24 +162,39 @@ func adminLayout(title, pageTitle, pageSubtitle, contentTemplate, activeTab stri
 	}
 }
 
+const AdminSessionDuration = 4 * time.Hour
+
 func createAdminSessionValue(username, secret string) string {
+	expiresAt := time.Now().Add(AdminSessionDuration).Unix()
+	msg := fmt.Sprintf("%s:%d", username, expiresAt)
 	h := hmac.New(sha256.New, []byte(secret))
-	h.Write([]byte(username))
-	return username + "|" + fmt.Sprintf("%x", h.Sum(nil))
+	h.Write([]byte(msg))
+	return fmt.Sprintf("%s:%x", msg, h.Sum(nil))
 }
 
 func validateAdminSessionValue(value, secret, expectedUser string) bool {
-	parts := strings.SplitN(value, "|", 2)
-	if len(parts) != 2 {
+	parts := strings.SplitN(value, ":", 3)
+	if len(parts) != 3 {
 		return false
 	}
-	if parts[0] != expectedUser {
+	username := parts[0]
+	expiryStr := parts[1]
+	sig := parts[2]
+
+	if username != expectedUser {
 		return false
 	}
+
+	expiry, err := strconv.ParseInt(expiryStr, 10, 64)
+	if err != nil || time.Now().Unix() > expiry {
+		return false
+	}
+
+	msg := fmt.Sprintf("%s:%s", username, expiryStr)
 	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(parts[0]))
+	mac.Write([]byte(msg))
 	expectedSig := fmt.Sprintf("%x", mac.Sum(nil))
-	return hmac.Equal([]byte(parts[1]), []byte(expectedSig))
+	return hmac.Equal([]byte(sig), []byte(expectedSig))
 }
 
 func AdminSessionMiddleware(secret, expectedUser string) echo.MiddlewareFunc {
@@ -194,18 +218,69 @@ func AdminLoginPageHandler(secret, expectedUser string) echo.HandlerFunc {
 	}
 }
 
+var (
+	loginAttemptsMu sync.Mutex
+	loginAttempts   = make(map[string][]time.Time)
+)
+
+const (
+	maxLoginAttempts     = 5
+	loginLockoutDuration = 5 * time.Minute
+)
+
+func isLoginRateLimited(ip string) bool {
+	loginAttemptsMu.Lock()
+	defer loginAttemptsMu.Unlock()
+
+	now := time.Now()
+	cutoff := now.Add(-loginLockoutDuration)
+
+	var valid []time.Time
+	for _, t := range loginAttempts[ip] {
+		if t.After(cutoff) {
+			valid = append(valid, t)
+		}
+	}
+	loginAttempts[ip] = valid
+	return len(valid) >= maxLoginAttempts
+}
+
+func recordFailedLogin(ip string) {
+	loginAttemptsMu.Lock()
+	defer loginAttemptsMu.Unlock()
+	loginAttempts[ip] = append(loginAttempts[ip], time.Now())
+}
+
+func recordSuccessfulLogin(ip string) {
+	loginAttemptsMu.Lock()
+	defer loginAttemptsMu.Unlock()
+	delete(loginAttempts, ip)
+}
+
 func AdminLoginHandler(adminUser, adminPass, secret string) echo.HandlerFunc {
 	return func(c *echo.Context) error {
+		ip := c.RealIP()
+		if isLoginRateLimited(ip) {
+			return c.Render(http.StatusTooManyRequests, "admin_login.html", AdminLoginData{
+				Error: "Terlalu banyak percobaan login gagal. Akun dikunci sementara selama 5 menit untuk keamanan.",
+			})
+		}
+
 		username := c.FormValue("username")
 		password := c.FormValue("password")
 		if username != adminUser || password != adminPass {
+			recordFailedLogin(ip)
 			return c.Render(http.StatusUnauthorized, "admin_login.html", AdminLoginData{Error: "Username atau kata sandi salah."})
 		}
+
+		recordSuccessfulLogin(ip)
 		cookie := new(http.Cookie)
 		cookie.Name = "admin_session"
 		cookie.Value = createAdminSessionValue(adminUser, secret)
 		cookie.Path = "/"
 		cookie.HttpOnly = true
+		cookie.MaxAge = int(AdminSessionDuration.Seconds())
+		cookie.Expires = time.Now().Add(AdminSessionDuration)
 		cookie.SameSite = http.SameSiteLaxMode
 		c.SetCookie(cookie)
 		return c.Redirect(http.StatusSeeOther, "/admin")
@@ -395,13 +470,39 @@ func AdminCandidateUpdateHandler(db *sql.DB) echo.HandlerFunc {
 }
 
 func saveCandidatePhoto(file *multipart.FileHeader) (string, error) {
+	const maxPhotoSize = 2 * 1024 * 1024 // 2MB
+	if file.Size > maxPhotoSize {
+		return "", fmt.Errorf("ukuran file melebihi batas 2MB")
+	}
+
+	ext := strings.ToLower(filepath.Ext(file.Filename))
+	switch ext {
+	case ".jpg", ".jpeg", ".png", ".webp":
+	default:
+		return "", fmt.Errorf("format file tidak didukung: %s (hanya .jpg, .jpeg, .png, .webp)", ext)
+	}
+
 	src, err := file.Open()
 	if err != nil {
 		return "", err
 	}
 	defer src.Close()
-	filename := fmt.Sprintf("%s_%s", uuid.NewString(), filepath.Base(file.Filename))
 
+	// Sniff MIME type from the first 512 bytes
+	buf := make([]byte, 512)
+	n, err := src.Read(buf)
+	if err != nil && err != io.EOF {
+		return "", err
+	}
+	mimeType := http.DetectContentType(buf[:n])
+	if !strings.HasPrefix(mimeType, "image/") {
+		return "", fmt.Errorf("file bukan gambar yang valid (tipe: %s)", mimeType)
+	}
+	if _, err := src.Seek(0, io.SeekStart); err != nil {
+		return "", err
+	}
+
+	filename := fmt.Sprintf("%s%s", uuid.NewString(), ext)
 	uploadsDir := findUploadsDir()
 	destPath := filepath.Join(uploadsDir, filename)
 	if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
@@ -646,6 +747,11 @@ func AdminVoterImportHandler(db *sql.DB) echo.HandlerFunc {
 		formFile, err := c.FormFile("import_file")
 		if err != nil || formFile == nil {
 			return c.Redirect(http.StatusSeeOther, "/admin/voters?import_status="+url.QueryEscape("Pilih file Excel atau CSV untuk diimpor."))
+		}
+
+		const maxImportFileSize = 10 * 1024 * 1024 // 10MB
+		if formFile.Size > maxImportFileSize {
+			return c.Redirect(http.StatusSeeOther, "/admin/voters?import_status="+url.QueryEscape("Ukuran file melebihi batas maksimal 10MB."))
 		}
 
 		file, err := formFile.Open()
@@ -1186,22 +1292,11 @@ func AdminAttendanceListHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		defer rows.Close()
 
-		type AttendanceView struct {
-			ID             int
-			UUID           string
-			Name           string
-			ClassName      string
-			PhoneNumber    string
-			HasVoted       string
-			PresenceStatus int
-			AttendedAt     string
-		}
-
-		voters := []AttendanceView{}
+		voters := []VoterView{}
 		totalHadir := 0
 		totalBelum := 0
 		for rows.Next() {
-			var v AttendanceView
+			var v VoterView
 			var hasVoted, presenceStatus int
 			var attendedAt sql.NullTime
 			if err := rows.Scan(&v.ID, &v.UUID, &v.Name, &v.ClassName, &v.PhoneNumber, &hasVoted, &presenceStatus, &attendedAt); err != nil {
@@ -1224,18 +1319,12 @@ func AdminAttendanceListHandler(db *sql.DB) echo.HandlerFunc {
 			voters = append(voters, v)
 		}
 
-		type AttendancePageData struct {
-			Voters     []AttendanceView
-			TotalHadir int
-			TotalBelum int
-			Total      int
-		}
-
-		return c.Render(http.StatusOK, "admin_attendance.html", AttendancePageData{
-			Voters:     voters,
-			TotalHadir: totalHadir,
-			TotalBelum: totalBelum,
-			Total:      totalHadir + totalBelum,
+		return c.Render(http.StatusOK, "admin_attendance.html", AdminAttendanceData{
+			AdminLayoutData: adminLayout("Kehadiran Pemilih | OSIS Admin", "Kehadiran Pemilih", "Monitoring presensi kehadiran pemilih DPT.", "admin_attendance_content", "attendance"),
+			Voters:          voters,
+			TotalHadir:      totalHadir,
+			TotalBelum:      totalBelum,
+			Total:           totalHadir + totalBelum,
 		})
 	}
 }

@@ -1,141 +1,220 @@
 {{define "admin_voters.html"}}{{template "admin_layout" .}}{{end}}
 
 {{define "admin_voters_content"}}
-<section class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
-    <div>
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Manajemen Pemilih (DPT)</h1>
-        <p class="text-slate-500 mt-1">Kelola catatan pemilih dan verifikasi status partisipasi.</p>
-    </div>
-    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-        <a href="/admin/voters/new" class="px-5 py-2 bg-blue-600 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-blue-700 transition">
-            <span class="material-symbols-outlined text-lg">add</span>Tambah
-        </a>
-        <a href="/admin/voters/import" class="px-5 py-2 bg-emerald-600 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-emerald-700 transition">
-            <span class="material-symbols-outlined text-lg">upload_file</span>Import
-        </a>
-        <a href="/admin/voters/cards" class="px-5 py-2 bg-slate-700 text-white rounded-xl font-semibold shadow-md flex items-center gap-2 hover:bg-slate-800 transition" target="_blank">
-            <span class="material-symbols-outlined text-lg">print</span>Cetak Kartu
-        </a>
-    </div>
-</section>
-
-{{if .ImportMessage}}
-<div class="mb-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-4 text-emerald-900">
-    {{.ImportMessage}}
-</div>
-{{end}}
-
-<section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-        <div class="flex items-center gap-4">
-            <label class="flex items-center gap-2 text-sm text-slate-600">
-                <input type="checkbox" id="select-all" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                Pilih Semua
-            </label>
-            <span id="selected-count" class="text-sm text-slate-500">0 dipilih</span>
+<section class="space-y-6">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Manajemen Pemilih (DPT)</h1>
+            <p class="text-slate-500 mt-1">Kelola data Daftar Pemilih Tetap dan pantau status partisipasi.</p>
         </div>
-        <div id="bulk-actions" class="hidden flex items-center gap-3">
-            <button type="button" id="delete-selected" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition flex items-center gap-2">
-                <span class="material-symbols-outlined text-lg">delete</span>
-                Hapus Terpilih
-            </button>
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="/admin/voters/new"
+                class="px-4 py-2.5 bg-blue-600 text-white rounded-xl font-semibold shadow-xs flex items-center gap-2 hover:bg-blue-700 transition text-sm">
+                <span class="material-symbols-outlined text-lg">add</span>Tambah Pemilih
+            </a>
+            <a href="/admin/voters/import"
+                class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold shadow-xs flex items-center gap-2 hover:bg-emerald-700 transition text-sm">
+                <span class="material-symbols-outlined text-lg">upload_file</span>Import Data
+            </a>
+            <a href="/admin/voters/cards"
+                class="px-4 py-2.5 bg-slate-800 text-white rounded-xl font-semibold shadow-xs flex items-center gap-2 hover:bg-slate-900 transition text-sm"
+                target="_blank">
+                <span class="material-symbols-outlined text-lg">print</span>Cetak Kartu
+            </a>
         </div>
     </div>
-    
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse" id="voters-table">
-            <thead>
-                <tr class="bg-slate-50">
-                    <th class="px-4 py-3 w-10">
-                        <span class="sr-only">Pilih</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="id">
-                        ID <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="uuid">
-                        UUID <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="name">
-                        Nama <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="class_name">
-                        Kelas <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="phone_number">
-                        No. HP <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="presence_status">
-                        Hadir <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable" data-sort="has_voted">
-                        Vote <span class="sort-icon">↕</span>
-                    </th>
-                    <th class="px-4 py-3 text-right text-xs uppercase tracking-widest font-bold text-slate-500">
-                        Aksi
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100" id="voters-tbody">
-                {{range .Voters}}
-                <tr class="hover:bg-slate-50 transition-colors" data-id="{{.ID}}" data-uuid="{{.UUID}}">
-                    <td class="px-4 py-3">
-                        <input type="checkbox" class="voter-checkbox w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" value="{{.ID}}" />
-                    </td>
-                    <td class="px-4 py-3 font-mono text-xs text-slate-400">#{{.ID}}</td>
-                    <td class="px-4 py-3 font-mono text-xs text-slate-500">{{.UUID}}</td>
-                    <td class="px-4 py-3 font-semibold text-slate-900">{{.Name}}</td>
-                    <td class="px-4 py-3 text-slate-600">{{.ClassName}}</td>
-                    <td class="px-4 py-3 text-slate-600">{{.PhoneNumber}}</td>
-                    <td class="px-4 py-3">
-                        {{if .PresenceStatus}}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-                            <span class="material-symbols-outlined text-sm">check_circle</span>
-                            Hadir
-                        </span>
-                        {{else}}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
-                            <span class="material-symbols-outlined text-sm">schedule</span>
-                            Belum
-                        </span>
-                        {{end}}
-                    </td>
-                    <td class="px-4 py-3">
-                        {{if eq .HasVoted "Sudah"}}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-                            <span class="material-symbols-outlined text-sm">how_to_vote</span>
-                            Sudah
-                        </span>
-                        {{else}}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
-                            <span class="material-symbols-outlined text-sm">pending</span>
-                            Belum
-                        </span>
-                        {{end}}
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <a href="/admin/voters/{{.ID}}/edit" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
-                                <span class="material-symbols-outlined">edit</span>
+
+    {{if .ImportMessage}}
+    <div class="rounded-2xl border border-emerald-100 bg-emerald-50 px-6 py-4 text-emerald-900 text-sm">
+        {{.ImportMessage}}
+    </div>
+    {{end}}
+
+    <section class="bg-white rounded-2xl shadow-xs border border-slate-200/80 overflow-hidden">
+        <!-- Search and Filter Bar -->
+        <div class="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+                <div class="relative flex-1 min-w-[200px] max-w-md">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                    <input type="text" id="voter-search" placeholder="Cari nama, kelas, HP, atau UUID..."
+                        class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:border-blue-500" />
+                </div>
+                <select id="voter-class-filter"
+                    class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:outline-none focus:border-blue-500">
+                    <option value="">Semua Kelas</option>
+                </select>
+                <select id="voter-presence-filter"
+                    class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:outline-none focus:border-blue-500">
+                    <option value="">Semua Kehadiran</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Belum">Belum Hadir</option>
+                </select>
+                <select id="voter-vote-filter"
+                    class="py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:outline-none focus:border-blue-500">
+                    <option value="">Semua Status Vote</option>
+                    <option value="Sudah">Sudah Memilih</option>
+                    <option value="Belum">Belum Memilih</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-slate-500">
+                <span>Baris:</span>
+                <select id="voter-page-size"
+                    class="py-1.5 px-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:bg-white">
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                    <option value="all">Semua</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bulk Selection Bar -->
+        <div class="flex items-center justify-between px-6 py-3 bg-slate-50/50 border-b border-slate-100">
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer">
+                    <input type="checkbox" id="select-all"
+                        class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    Pilih Semua di Halaman Ini
+                </label>
+                <span id="selected-count" class="text-xs text-slate-400">0 dipilih</span>
+            </div>
+            <div id="bulk-actions" class="hidden flex items-center gap-3">
+                <button type="button" id="delete-selected"
+                    class="px-3.5 py-1.5 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                    Hapus Terpilih
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="voters-table">
+                <thead>
+                    <tr class="bg-slate-50/80 border-b border-slate-200">
+                        <th class="px-4 py-3.5 w-10">
+                            <span class="sr-only">Pilih</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="id">
+                            ID <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="uuid">
+                            UUID <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="name">
+                            Nama <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="class_name">
+                            Kelas <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="phone_number">
+                            No. HP <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="presence_status">
+                            Hadir <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-xs uppercase tracking-widest font-bold text-slate-500 cursor-pointer hover:text-slate-700 sortable"
+                            data-sort="has_voted">
+                            Vote <span class="sort-icon">↕</span>
+                        </th>
+                        <th class="px-4 py-3.5 text-right text-xs uppercase tracking-widest font-bold text-slate-500">
+                            Aksi
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="voters-tbody">
+                    {{range .Voters}}
+                    <tr class="hover:bg-slate-50 transition-colors voter-row" data-id="{{.ID}}" data-uuid="{{.UUID}}"
+                        data-name="{{.Name}}" data-class="{{.ClassName}}" data-phone="{{.PhoneNumber}}"
+                        data-presence="{{if eq .PresenceStatus 1}}Hadir{{else}}Belum{{end}}" data-vote="{{.HasVoted}}">
+                        <td class="px-4 py-3">
+                            <input type="checkbox"
+                                class="voter-checkbox w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                value="{{.ID}}" />
+                        </td>
+                        <td class="px-4 py-3 font-mono text-xs text-slate-400">#{{.ID}}</td>
+                        <td class="px-4 py-3 font-mono text-xs text-slate-500 max-w-[120px] truncate" title="{{.UUID}}">
+                            {{.UUID}}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-900 text-sm">{{.Name}}</td>
+                        <td class="px-4 py-3 text-slate-600 text-sm">{{.ClassName}}</td>
+                        <td class="px-4 py-3 text-slate-600 font-mono text-xs">{{.PhoneNumber}}</td>
+                        <td class="px-4 py-3">
+                            {{if eq .PresenceStatus 1}}
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                                <span class="material-symbols-outlined text-sm">check_circle</span>
+                                Hadir
+                            </span>
+                            {{else}}
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                                <span class="material-symbols-outlined text-sm">schedule</span>
+                                Belum
+                            </span>
+                            {{end}}
+                        </td>
+                        <td class="px-4 py-3">
+                            {{if eq .HasVoted "Sudah"}}
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                <span class="material-symbols-outlined text-sm">how_to_vote</span>
+                                Sudah
+                            </span>
+                            {{else}}
+                            <span
+                                class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                                <span class="material-symbols-outlined text-sm">pending</span>
+                                Belum
+                            </span>
+                            {{end}}
+                        </td>
+                        <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                            <a href="/admin/voters/{{.ID}}/edit"
+                                class="p-1.5 text-slate-400 hover:text-blue-600 inline-block" title="Edit">
+                                <span class="material-symbols-outlined text-lg">edit</span>
                             </a>
-                            <form action="/admin/voters/{{.ID}}/delete" method="POST" class="inline" onsubmit="return confirm('Yakin hapus pemilih ini?')">
-                                <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
-                                    <span class="material-symbols-outlined">delete</span>
+                            <form action="/admin/voters/{{.ID}}/delete" method="POST" class="inline"
+                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus pemilih ini?');">
+                                <button type="submit" class="p-1.5 text-slate-400 hover:text-red-600 inline-block"
+                                    title="Hapus">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
                                 </button>
                             </form>
-                        </div>
-                    </td>
-                </tr>
-                {{else}}
-                <tr>
-                    <td colspan="9" class="px-4 py-12 text-center text-slate-400">
-                        <span class="material-symbols-outlined text-5xl">person_off</span>
-                        <p class="mt-2">Tidak ada pemilih.</p>
-                    </td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
-    </div>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr>
+                        <td colspan="9" class="px-4 py-12 text-center text-slate-400">
+                            <span class="material-symbols-outlined text-5xl">person_off</span>
+                            <p class="mt-2 text-sm">Tidak ada data pemilih.</p>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div
+            class="px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+            <div id="voter-summary">Memuat rekap...</div>
+            <div class="flex items-center gap-2">
+                <button id="voter-prev-page"
+                    class="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold">Sebelumnya</button>
+                <span id="voter-page-info" class="text-xs font-medium">Halaman 1</span>
+                <button id="voter-next-page"
+                    class="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold">Selanjutnya</button>
+            </div>
+        </div>
+    </section>
 </section>
 
 <form id="bulk-delete-form" action="/admin/voters/bulk-delete" method="POST" class="hidden">
@@ -143,124 +222,183 @@
 </form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var selectAll = document.getElementById('select-all');
-    var checkboxes = document.querySelectorAll('.voter-checkbox');
-    var selectedCount = document.getElementById('selected-count');
-    var bulkActions = document.getElementById('bulk-actions');
-    var deleteSelected = document.getElementById('delete-selected');
-    var bulkIds = document.getElementById('bulk-ids');
-    var bulkDeleteForm = document.getElementById('bulk-delete-form');
-    var tbody = document.getElementById('voters-tbody');
-    
-    var sortColumn = 'id';
-    var sortDirection = 'desc';
-    
-    function updateSelectedCount() {
-        var checked = document.querySelectorAll('.voter-checkbox:checked');
-        var count = checked.length;
-        selectedCount.textContent = count + ' dipilih';
-        if (count === 0) {
-            bulkActions.classList.add('hidden');
-        } else {
-            bulkActions.classList.remove('hidden');
-        }
-    }
-    
-    selectAll.addEventListener('change', function() {
-        checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
-        updateSelectedCount();
-    });
-    
-    checkboxes.forEach(function(cb) {
-        cb.addEventListener('change', updateSelectedCount);
-    });
-    
-    deleteSelected.addEventListener('click', function() {
-        var checked = document.querySelectorAll('.voter-checkbox:checked');
-        if (checked.length === 0) return;
-        if (!confirm('Yakin hapus ' + checked.length + ' pemilih?')) return;
-        
-        var ids = Array.from(checked).map(function(cb) { return cb.value; }).join(',');
-        bulkIds.value = ids;
-        bulkDeleteForm.submit();
-    });
-    
-    document.querySelectorAll('.sortable').forEach(function(th) {
-        th.addEventListener('click', function() {
-            var col = this.dataset.sort;
-            if (sortColumn === col) {
-                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortColumn = col;
-                sortDirection = 'asc';
-            }
-            updateSortIcons();
-            sortTable();
-        });
-    });
-    
-    function updateSortIcons() {
-        document.querySelectorAll('.sortable').forEach(function(th) {
-            var icon = th.querySelector('.sort-icon');
-            if (th.dataset.sort === sortColumn) {
-                icon.textContent = sortDirection === 'asc' ? '↑' : '↓';
-            } else {
-                icon.textContent = '↕';
-            }
-        });
-    }
-    
-    function sortTable() {
-        var rows = Array.from(tbody.querySelectorAll('tr[data-id]'));
-        rows.sort(function(a, b) {
-            var aVal, bVal;
-            switch(sortColumn) {
-                case 'id':
-                    aVal = parseInt(a.dataset.id);
-                    bVal = parseInt(b.dataset.id);
-                    break;
-                case 'uuid':
-                    aVal = a.dataset.uuid.toLowerCase();
-                    bVal = b.dataset.uuid.toLowerCase();
-                    break;
-                case 'name':
-                    aVal = a.cells[3].textContent.toLowerCase();
-                    bVal = b.cells[3].textContent.toLowerCase();
-                    break;
-                case 'class_name':
-                    aVal = a.cells[4].textContent.toLowerCase();
-                    bVal = b.cells[4].textContent.toLowerCase();
-                    break;
-                case 'phone_number':
-                    aVal = a.cells[5].textContent.toLowerCase();
-                    bVal = b.cells[5].textContent.toLowerCase();
-                    break;
-                case 'presence_status':
-                    aVal = a.cells[6].textContent.trim().toLowerCase();
-                    bVal = b.cells[6].textContent.trim().toLowerCase();
-                    break;
-                case 'has_voted':
-                    aVal = a.cells[7].textContent.trim().toLowerCase();
-                    bVal = b.cells[7].textContent.trim().toLowerCase();
-                    break;
-                default:
-                    aVal = a.dataset.id;
-                    bVal = b.dataset.id;
-            }
-            if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-            if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-            return 0;
-        });
-        rows.forEach(function(row) { tbody.appendChild(row); });
-    }
-    
-    updateSortIcons();
-});
-</script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const rows = Array.from(document.querySelectorAll('#voters-tbody .voter-row'));
+        const selectAll = document.getElementById('select-all');
+        const selectedCount = document.getElementById('selected-count');
+        const bulkActions = document.getElementById('bulk-actions');
+        const deleteSelected = document.getElementById('delete-selected');
+        const bulkIds = document.getElementById('bulk-ids');
+        const bulkDeleteForm = document.getElementById('bulk-delete-form');
+        const tbody = document.getElementById('voters-tbody');
 
-<style>
-.sort-icon { font-size: 10px; opacity: 0.5; }
-.sortable:hover .sort-icon { opacity: 1; }
-</style>
+        const searchInput = document.getElementById('voter-search');
+        const classFilter = document.getElementById('voter-class-filter');
+        const presenceFilter = document.getElementById('voter-presence-filter');
+        const voteFilter = document.getElementById('voter-vote-filter');
+        const pageSizeSelect = document.getElementById('voter-page-size');
+        const prevBtn = document.getElementById('voter-prev-page');
+        const nextBtn = document.getElementById('voter-next-page');
+        const pageInfo = document.getElementById('voter-page-info');
+        const summary = document.getElementById('voter-summary');
+
+        // Populate class filter dynamically
+        const classes = [...new Set(rows.map(r => r.dataset.class).filter(Boolean))].sort();
+        classes.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            classFilter.appendChild(opt);
+        });
+
+        let currentPage = 1;
+        let filteredRows = [...rows];
+        let sortColumn = 'id';
+        let sortDirection = 'desc';
+
+        function updateSelectedCount() {
+            const checked = document.querySelectorAll('.voter-checkbox:checked');
+            const count = checked.length;
+            selectedCount.textContent = count + ' dipilih';
+            if (count === 0) {
+                bulkActions.classList.add('hidden');
+            } else {
+                bulkActions.classList.remove('hidden');
+            }
+        }
+
+        selectAll.addEventListener('change', function () {
+            // Only select currently visible rows
+            filteredRows.forEach(r => {
+                if (r.style.display !== 'none') {
+                    const cb = r.querySelector('.voter-checkbox');
+                    if (cb) cb.checked = selectAll.checked;
+                }
+            });
+            updateSelectedCount();
+        });
+
+        tbody.addEventListener('change', function (e) {
+            if (e.target.classList.contains('voter-checkbox')) {
+                updateSelectedCount();
+            }
+        });
+
+        deleteSelected.addEventListener('click', function () {
+            const checked = document.querySelectorAll('.voter-checkbox:checked');
+            if (checked.length === 0) return;
+            if (!confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' pemilih yang dipilih?')) return;
+
+            const ids = Array.from(checked).map(cb => cb.value).join(',');
+            bulkIds.value = ids;
+            bulkDeleteForm.submit();
+        });
+
+        function applyFilters() {
+            const query = (searchInput.value || '').toLowerCase().trim();
+            const selClass = classFilter.value;
+            const selPresence = presenceFilter.value;
+            const selVote = voteFilter.value;
+
+            filteredRows = rows.filter(r => {
+                const name = (r.dataset.name || '').toLowerCase();
+                const cls = r.dataset.class || '';
+                const phone = (r.dataset.phone || '').toLowerCase();
+                const uuid = (r.dataset.uuid || '').toLowerCase();
+                const presence = r.dataset.presence || '';
+                const vote = r.dataset.vote || '';
+
+                const matchQuery = !query || name.includes(query) || cls.toLowerCase().includes(query) || phone.includes(query) || uuid.includes(query);
+                const matchClass = !selClass || cls === selClass;
+                const matchPresence = !selPresence || presence === selPresence;
+                const matchVote = !selVote || vote === selVote;
+
+                return matchQuery && matchClass && matchPresence && matchVote;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderTable() {
+            const pageSizeVal = pageSizeSelect.value;
+            const pageSize = pageSizeVal === 'all' ? filteredRows.length : parseInt(pageSizeVal, 10);
+            const totalItems = filteredRows.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / (pageSize || 1)));
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = pageSizeVal === 'all' ? totalItems : Math.min(startIndex + pageSize, totalItems);
+
+            rows.forEach(r => r.style.display = 'none');
+            filteredRows.slice(startIndex, endIndex).forEach(r => r.style.display = '');
+
+            summary.textContent = totalItems === 0
+                ? 'Tidak ada pemilih yang sesuai kriteria.'
+                : `Menampilkan ${startIndex + 1} - ${endIndex} dari ${totalItems} pemilih (${rows.length} total DPT)`;
+
+            pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+            selectAll.checked = false;
+            updateSelectedCount();
+        }
+
+        searchInput.addEventListener('input', applyFilters);
+        classFilter.addEventListener('change', applyFilters);
+        presenceFilter.addEventListener('change', applyFilters);
+        voteFilter.addEventListener('change', applyFilters);
+        pageSizeSelect.addEventListener('change', () => { currentPage = 1; renderTable(); });
+
+        prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderTable(); } });
+        nextBtn.addEventListener('click', () => { currentPage++; renderTable(); });
+
+        // Sorting
+        document.querySelectorAll('.sortable').forEach(th => {
+            th.addEventListener('click', function () {
+                const col = this.dataset.sort;
+                if (sortColumn === col) {
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                } else {
+                    sortColumn = col;
+                    sortDirection = 'asc';
+                }
+                updateSortIcons();
+                sortTable();
+            });
+        });
+
+        function updateSortIcons() {
+            document.querySelectorAll('.sortable').forEach(th => {
+                const icon = th.querySelector('.sort-icon');
+                if (th.dataset.sort === sortColumn) {
+                    icon.textContent = sortDirection === 'asc' ? '↑' : '↓';
+                } else {
+                    icon.textContent = '↕';
+                }
+            });
+        }
+
+        function sortTable() {
+            filteredRows.sort((a, b) => {
+                let valA = a.dataset[sortColumn] || a.querySelector(`[data-sort="${sortColumn}"]`)?.textContent || '';
+                let valB = b.dataset[sortColumn] || b.querySelector(`[data-sort="${sortColumn}"]`)?.textContent || '';
+
+                if (sortColumn === 'id') {
+                    return sortDirection === 'asc' ? (parseInt(valA) - parseInt(valB)) : (parseInt(valB) - parseInt(valA));
+                }
+                return sortDirection === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            });
+
+            // Re-append sorted rows in DOM
+            filteredRows.forEach(r => tbody.appendChild(r));
+            renderTable();
+        }
+
+        applyFilters();
+    });
+</script>
+{{end}}
 {{end}}

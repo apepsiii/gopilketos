@@ -5,75 +5,125 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Scanner Kehadiran - OSIS E-Voting</title>
     <style>
         * { font-family: 'Inter', sans-serif; }
         .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 24px; line-height: 1; display: inline-block; -webkit-font-smoothing: antialiased; }
+        #qr-reader {
+            width: 100%;
+            min-height: 260px;
+            background: #0f172a;
+        }
+        #qr-reader video {
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 12px;
+        }
+        #qr-reader__scan_region {
+            background: transparent !important;
+        }
+        #qr-reader__dashboard {
+            display: none !important;
+        }
+        #qr-reader__header_message {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
     <nav class="bg-white border-b border-slate-200 px-6 py-4">
         <div class="max-w-lg mx-auto flex items-center justify-between">
             <a href="/admin" class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow">
                     <span class="material-symbols-outlined">how_to_vote</span>
                 </div>
-                <span class="font-bold text-slate-900">SMK NIBA</span>
+                <div>
+                    <span class="font-bold text-slate-900 block leading-tight">Presensi Pemilih</span>
+                    <span class="text-xs text-slate-500">Scanner Kehadiran TPS</span>
+                </div>
             </a>
-            <a href="/admin/attendance" class="px-4 py-2 text-slate-600 hover:text-slate-900 flex items-center gap-2">
-                <span class="material-symbols-outlined">arrow_back</span>
-                Kembali
+            <a href="/admin/attendance" class="px-4 py-2 text-slate-600 hover:text-slate-900 flex items-center gap-2 font-medium text-sm">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                Daftar Hadir
             </a>
         </div>
     </nav>
 
-    <main class="max-w-lg mx-auto p-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-            <h1 class="text-xl font-bold text-slate-900 mb-1">Input Kehadiran Voter</h1>
-            <p class="text-sm text-slate-500 mb-6">Masukkan UUID voter yang hadir</p>
-            
-            <div class="flex gap-2">
-                <input type="text" id="uuid-input" placeholder="Masukkan UUID voter" 
-                       class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-blue-500 focus:outline-none font-mono text-sm" />
-                <button id="submit-btn" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors">
-                    <span class="material-symbols-outlined">check</span>
+    <main class="max-w-lg mx-auto p-4 sm:p-6 space-y-4">
+        <!-- Scanner Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-600 text-lg">qr_code_scanner</span>
+                    <span class="font-semibold text-slate-800 text-sm">Pemindai Kamera / Barcode</span>
+                </div>
+                <button id="toggle-camera-btn" type="button" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">
+                    <span class="material-symbols-outlined text-sm">videocam</span>
+                    <span id="camera-btn-text">Nyalakan Kamera</span>
                 </button>
             </div>
+
+            <!-- Camera View (Initially Hidden) -->
+            <div id="camera-container" class="hidden relative p-4 bg-slate-900">
+                <div id="qr-reader" class="rounded-xl overflow-hidden"></div>
+                <p id="camera-status" class="text-xs text-slate-400 text-center mt-2">Arahkan kamera ke QR kartu pemilih</p>
+            </div>
+
+            <!-- Manual & USB Barcode Scanner Input -->
+            <div class="p-5 space-y-3">
+                <label for="uuid-input" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Scan Barcode / Input UUID
+                </label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">barcode_scanner</span>
+                        <input type="text" id="uuid-input" autofocus placeholder="Scan barcode kartu atau tempel UUID..." 
+                               class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none font-mono text-xs sm:text-sm" />
+                    </div>
+                    <button id="submit-btn" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors flex items-center justify-center shadow-sm">
+                        <span class="material-symbols-outlined text-lg">send</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400">Otomatis terhubung dengan USB Barcode Scanner (tekan Enter otomatis).</p>
+            </div>
         </div>
 
+        <!-- Result Card -->
         <div id="result-card" class="hidden">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div id="result-header" class="p-6 pb-4">
+                <div id="result-header" class="p-5 pb-3">
                     <div class="flex items-center gap-4">
-                        <div id="result-icon" class="w-16 h-16 rounded-full flex items-center justify-center">
-                            <span class="material-symbols-outlined text-3xl"></span>
+                        <div id="result-icon" class="w-12 h-12 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-2xl"></span>
                         </div>
-                        <div>
-                            <h2 id="result-name" class="text-xl font-bold text-slate-900"></h2>
-                            <p id="result-class" class="text-sm text-slate-500"></p>
+                        <div class="flex-1">
+                            <h2 id="result-name" class="text-base font-bold text-slate-900 leading-tight"></h2>
+                            <p id="result-class" class="text-xs text-slate-500 mt-0.5"></p>
                         </div>
                     </div>
                 </div>
-                <div class="px-6 pb-6">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-slate-50 rounded-xl p-4 text-center">
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Status Hadir</p>
-                            <p id="result-presence" class="font-bold text-lg"></p>
+                <div class="px-5 pb-5 pt-2">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Status Hadir</p>
+                            <p id="result-presence" class="font-bold text-sm"></p>
                         </div>
-                        <div class="bg-slate-50 rounded-xl p-4 text-center">
-                            <p class="text-xs text-slate-500 uppercase tracking-wider mb-1">Status Vote</p>
-                            <p id="result-voted" class="font-bold text-lg"></p>
+                        <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Status Vote</p>
+                            <p id="result-voted" class="font-bold text-sm"></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-6 text-center">
-            <a href="/admin/attendance" class="text-sm text-slate-500 hover:text-slate-700">
-                Lihat Daftar Kehadiran
+        <div class="text-center pt-2">
+            <a href="/admin/attendance" class="text-xs font-semibold text-slate-500 hover:text-indigo-600 inline-flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">view_list</span>
+                Lihat Rekap Seluruh Kehadiran
             </a>
         </div>
     </main>
@@ -82,6 +132,29 @@
     const uuidInput = document.getElementById('uuid-input');
     const submitBtn = document.getElementById('submit-btn');
     const resultCard = document.getElementById('result-card');
+    const toggleCameraBtn = document.getElementById('toggle-camera-btn');
+    const cameraContainer = document.getElementById('camera-container');
+    const cameraBtnText = document.getElementById('camera-btn-text');
+    const cameraStatus = document.getElementById('camera-status');
+
+    let html5QrCode = null;
+    let cameraRunning = false;
+    let isProcessing = false;
+
+    function playBeep(success) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = success ? 880 : 330;
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+        } catch (e) {}
+    }
 
     function showResult(success, data) {
         resultCard.classList.remove('hidden');
@@ -93,14 +166,18 @@
         const presence = document.getElementById('result-presence');
         const voted = document.getElementById('result-voted');
 
+        playBeep(success);
+
         if (!success) {
-            header.className = 'p-6 pb-4 bg-red-50';
-            icon.className = 'w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-red-600';
+            header.className = 'p-5 pb-3 bg-red-50';
+            icon.className = 'w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600';
             iconSpan.textContent = 'error';
-            name.textContent = 'Error';
-            classEl.textContent = data;
+            name.textContent = 'Gagal';
+            classEl.textContent = typeof data === 'string' ? data : 'Terjadi kesalahan sistem';
             presence.textContent = '-';
+            presence.className = 'font-bold text-sm text-slate-400';
             voted.textContent = '-';
+            voted.className = 'font-bold text-sm text-slate-400';
             return;
         }
 
@@ -108,24 +185,26 @@
         classEl.textContent = data.class || '-';
 
         if (data.status === 'already_marked') {
-            header.className = 'p-6 pb-4 bg-amber-50';
-            icon.className = 'w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-600';
+            header.className = 'p-5 pb-3 bg-amber-50';
+            icon.className = 'w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600';
             iconSpan.textContent = 'schedule';
-            presence.textContent = data.presence === 1 ? 'Hadir' : 'Belum';
-            presence.className = 'font-bold text-lg ' + (data.presence === 1 ? 'text-emerald-600' : 'text-amber-600');
+            presence.textContent = data.presence === 1 ? 'Sudah Hadir' : 'Belum';
+            presence.className = 'font-bold text-sm ' + (data.presence === 1 ? 'text-emerald-600' : 'text-amber-600');
         } else {
-            header.className = 'p-6 pb-4 bg-emerald-50';
-            icon.className = 'w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600';
+            header.className = 'p-5 pb-3 bg-emerald-50';
+            icon.className = 'w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600';
             iconSpan.textContent = 'check_circle';
-            presence.textContent = 'Hadir';
-            presence.className = 'font-bold text-lg text-emerald-600';
+            presence.textContent = 'Hadir (Baru)';
+            presence.className = 'font-bold text-sm text-emerald-600';
         }
 
-        voted.textContent = data.voted === 1 ? 'Sudah' : 'Belum';
-        voted.className = 'font-bold text-lg ' + (data.voted === 1 ? 'text-emerald-600' : 'text-slate-400');
+        voted.textContent = data.voted === 1 ? 'Sudah Vote' : 'Belum Vote';
+        voted.className = 'font-bold text-sm ' + (data.voted === 1 ? 'text-emerald-600' : 'text-slate-400');
     }
 
     function markAttendance(uuid) {
+        if (isProcessing) return;
+        isProcessing = true;
         fetch('/admin/attendance/mark', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -136,24 +215,65 @@
             if (data.status === 'success' || data.status === 'already_marked') {
                 showResult(true, data.data);
             } else {
-                showResult(false, data.error || 'Terjadi kesalahan');
+                showResult(false, data.error || 'Voter tidak ditemukan');
             }
         })
-        .catch(err => showResult(false, err.message));
+        .catch(err => showResult(false, err.message))
+        .finally(() => {
+            uuidInput.value = '';
+            uuidInput.focus();
+            setTimeout(() => { isProcessing = false; }, 1200);
+        });
     }
 
     submitBtn.addEventListener('click', function() {
         const uuid = uuidInput.value.trim();
-        if (!uuid) {
-            alert('Masukkan UUID voter');
-            return;
-        }
+        if (!uuid) return;
         markAttendance(uuid);
     });
 
     uuidInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') submitBtn.click();
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitBtn.click();
+        }
     });
+
+    function toggleCamera() {
+        if (cameraRunning) {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    cameraContainer.classList.add('hidden');
+                    cameraBtnText.textContent = 'Nyalakan Kamera';
+                    cameraRunning = false;
+                }).catch(err => console.error(err));
+            }
+        } else {
+            cameraContainer.classList.remove('hidden');
+            cameraBtnText.textContent = 'Matikan Kamera';
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("qr-reader");
+            }
+            const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    if (!isProcessing) {
+                        markAttendance(decodedText.trim());
+                    }
+                },
+                () => {}
+            ).then(() => {
+                cameraRunning = true;
+                cameraStatus.textContent = 'Kamera aktif. Arahkan ke QR code kartu pemilih.';
+            }).catch(err => {
+                cameraStatus.textContent = 'Gagal mengakses kamera: ' + err;
+            });
+        }
+    }
+
+    toggleCameraBtn.addEventListener('click', toggleCamera);
     </script>
 </body>
 </html>
