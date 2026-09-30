@@ -1,51 +1,72 @@
 {{define "vote_step1.html"}}
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <title>Pilih Ketua OSIS | SMK NIBA E-Voting</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
         .material-symbols-outlined {
             font-family: 'Material Symbols Outlined';
-            font-size: 24px;
+            font-size: 20px;
             line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
+            font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
             display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            -webkit-font-smoothing: antialiased;
+            vertical-align: middle;
         }
     </style>
 </head>
-<body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen">
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-neutral-200/50">
-        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white">
-                    <span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+<body class="bg-slate-50/70 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+    <!-- Navbar with Step Progression -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+                    <span class="material-symbols-outlined text-lg">how_to_vote</span>
                 </div>
-                <span class="font-semibold text-sm">SMK NIBA</span>
+                <div>
+                    <span class="font-bold text-sm text-slate-900 leading-tight block">Bilik Suara</span>
+                    <span class="text-[10px] text-slate-400">SMK NIBA</span>
+                </div>
             </div>
-            <span class="text-xs text-neutral-400">Langkah 1 dari 3</span>
-        </div>
-    </nav>
 
-    <main class="pt-24 pb-16 px-6">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-10">
-                <p class="text-xs font-medium text-neutral-400 uppercase tracking-widest mb-2">Langkah 1</p>
-                <h1 class="text-3xl font-semibold text-neutral-900 mb-2">Pilih Ketua OSIS</h1>
-                <p class="text-neutral-500 text-sm">Pilih kandidat ketua OSIS untuk periode selanjutnya</p>
+            <!-- Stepper Indicator -->
+            <div class="flex items-center gap-2 sm:gap-3 text-xs">
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-bold border border-indigo-200/60">
+                    <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">1</span>
+                    <span>Pilih Ketua</span>
+                </div>
+                <span class="text-slate-300">→</span>
+                <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 font-medium">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px]">2</span>
+                    <span>Pilih Wakil</span>
+                </div>
+                <span class="hidden sm:inline text-slate-300">→</span>
+                <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-400 font-medium">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px]">3</span>
+                    <span>Konfirmasi</span>
+                </div>
             </div>
-            <div id="candidates-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div class="text-center max-w-xl mx-auto mb-10">
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-2">
+                <span class="material-symbols-outlined text-sm">stars</span>
+                <span>Langkah 1 dari 3</span>
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Tentukan Calon Ketua OSIS</h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1.5">Klik tombol pilih pada salah satu kandidat di bawah untuk melanjutkan.</p>
+        </div>
+
+        <!-- Candidate Cards Container -->
+        <div id="candidates-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </main>
 
     <script>
@@ -68,39 +89,55 @@
         }
 
         const list = document.getElementById('candidates-list');
-        list.innerHTML = '<div class="col-span-full text-center py-12 text-neutral-400">Memuat kandidat...</div>';
+        list.innerHTML = '<div class="col-span-full text-center py-16 text-slate-400 text-sm">Memuat daftar kandidat ketua...</div>';
 
         try {
             const response = await fetch('/api/candidates?position=CHAIRMAN');
             const candidates = await response.json();
             if (!response.ok || candidates.length === 0) {
-                list.innerHTML = '<div class="col-span-full text-center py-12 text-neutral-400">Tidak ada kandidat ketua.</div>';
+                list.innerHTML = '<div class="col-span-full text-center py-16 text-slate-400 text-sm">Tidak ada kandidat ketua yang tersedia.</div>';
                 return;
             }
 
             list.innerHTML = candidates.map(c => `
-                <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-neutral-300 hover:shadow-lg transition-all cursor-pointer"
-                     onclick="window.location.href='/vote/step2?uuid=${encodeURIComponent(uuid)}&chairman_id=${encodeURIComponent(c.id)}'">
-                    <div class="flex flex-col items-center text-center">
-                        <img src="${c.photo_url ? encodeURI(c.photo_url) : '/static/images/default-profile.svg'}" alt="${escapeHTML(c.name)}"
-                             class="w-24 h-24 rounded-full object-cover bg-neutral-100 mb-4" />
-                        <h3 class="font-semibold text-neutral-900">${escapeHTML(c.name)}</h3>
-                        <p class="text-xs text-neutral-500 mb-4">${escapeHTML(c.class_name)}</p>
-                        <div class="w-full pt-4 border-t border-neutral-100 text-left space-y-2">
-                            <div>
-                                <p class="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">Visi</p>
-                                <p class="text-sm text-neutral-600 line-clamp-2">${escapeHTML(c.vision)}</p>
-                            </div>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all duration-200 overflow-hidden flex flex-col justify-between group">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-mono text-xs font-bold">
+                                No. ${encodeURIComponent(c.id)}
+                            </span>
+                            <span class="text-xs font-medium text-slate-400">${escapeHTML(c.class_name)}</span>
+                        </div>
+
+                        <div class="flex flex-col items-center text-center">
+                            <img src="${c.photo_url ? encodeURI(c.photo_url) : '/static/images/default-profile.svg'}" 
+                                 alt="${escapeHTML(c.name)}"
+                                 class="w-28 h-28 rounded-2xl object-cover border-2 border-slate-100 shadow-xs mb-4 group-hover:scale-105 transition-transform duration-200" 
+                                 onerror="this.src='/static/images/default-profile.svg'" />
+                            <h3 class="text-lg font-bold text-slate-900 leading-tight">${escapeHTML(c.name)}</h3>
+                            <p class="text-xs font-semibold text-indigo-600 mt-0.5">Calon Ketua OSIS</p>
+                        </div>
+
+                        <div class="mt-5 p-3.5 bg-slate-50 rounded-xl border border-slate-100/80">
+                            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Visi</p>
+                            <p class="text-xs text-slate-600 line-clamp-3 italic leading-relaxed">
+                                "${escapeHTML(c.vision || '-')}"
+                            </p>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-center gap-2 text-xs font-medium text-blue-600 group-hover:text-blue-700">
-                        <span>Pilih</span>
-                        <span class="material-symbols-outlined text-base" style="font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;">arrow_forward</span>
+
+                    <div class="p-4 bg-slate-50/50 border-t border-slate-100">
+                        <button type="button" 
+                                onclick="window.location.href='/vote/step2?uuid=${encodeURIComponent(uuid)}&chairman_id=${encodeURIComponent(c.id)}'"
+                                class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-xs group-hover:bg-indigo-700">
+                            <span>Pilih ${escapeHTML(c.name.split(' ')[0])}</span>
+                            <span class="material-symbols-outlined text-base">arrow_forward</span>
+                        </button>
                     </div>
                 </div>
             `).join('');
         } catch (error) {
-            list.innerHTML = '<div class="col-span-full text-center py-12 text-red-400">Gagal memuat kandidat.</div>';
+            list.innerHTML = '<div class="col-span-full text-center py-16 text-red-500 text-sm">Gagal memuat kandidat ketua.</div>';
         }
     });
     </script>

@@ -1,75 +1,108 @@
 {{define "admin_logs.html"}}{{template "admin_layout" .}}{{end}}
 
 {{define "admin_logs_content"}}
-<section class="space-y-6">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Log Audit</h1>
-            <p class="text-slate-500 max-w-lg">Catatan permanen dari semua ballot yang masuk. Lingkungan ini hanya-baca
-                untuk menjaga integritas pemilu.</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Log Audit Surat Suara</h1>
+            <p class="text-xs text-slate-500 mt-1">Catatan permanen dan terenkripsi dari seluruh surat suara yang masuk
+                ke sistem.</p>
         </div>
-        <div class="bg-white p-6 rounded-3xl shadow-sm min-w-[240px] border border-slate-200/70">
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] uppercase tracking-widest text-slate-400">Total Ballot Valid</span>
-                <span class="material-symbols-outlined text-primary text-lg">verified</span>
-            </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-4xl font-bold text-indigo-900">{{len .Logs}}</span>
-                <span class="text-xs font-medium text-emerald-600 flex items-center gap-1"><span
-                        class="material-symbols-outlined text-sm">trending_up</span>Real-time</span>
-            </div>
-        </div>
-    </div>
-    <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-            <div class="relative">
-                <span
-                    class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-sm">calendar_month</span>
-                <input class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-600"
-                    readonly type="text" value="Hari Ini" />
+            <div class="bg-white px-4 py-2.5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-lg">verified</span>
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Surat Suara
+                        Sah</span>
+                    <span class="text-lg font-bold text-slate-900 leading-none">{{len .Logs}}</span>
+                </div>
             </div>
-            <button class="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-xl text-sm font-semibold"><span
-                    class="material-symbols-outlined text-sm">filter_list</span>Filter</button>
+            <a href="/admin/settings/report"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-base">download</span>
+                <span>Export CSV</span>
+            </a>
         </div>
-        <button
-            class="flex items-center gap-2 px-5 py-2 border border-[#3525CD] text-[#3525CD] text-sm font-bold rounded-xl"><span
-                class="material-symbols-outlined text-sm">download</span>Export</button>
     </div>
-    <section class="bg-white rounded-3xl shadow-sm overflow-hidden border border-slate-200/70">
+
+    <!-- Table Container -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <!-- Search bar -->
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between gap-3">
+            <div class="relative flex-1 max-w-sm">
+                <span
+                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                <input type="text" id="log-search" placeholder="Cari No. Ballot atau Nama..."
+                    class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:border-indigo-600 focus:outline-none" />
+            </div>
+            <span class="text-xs text-slate-400 font-medium" id="log-count">Menampilkan {{len .Logs}} log</span>
+        </div>
+
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse" id="logs-table">
                 <thead>
-                    <tr class="bg-slate-50">
-                        <th
-                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
-                            Waktu</th>
-                        <th
-                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
-                            No. Surat Suara (Ballot ID)</th>
-                        <th
-                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
-                            Ketua Terpilih</th>
-                        <th
-                            class="px-6 py-4 text-[11px] uppercase tracking-widest text-slate-400 border-b border-slate-200/70">
-                            Wakil Terpilih</th>
+                    <tr class="bg-slate-50/70 border-b border-slate-200">
+                        <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Waktu
+                            Pencoblosan</th>
+                        <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">No. Surat
+                            Suara (Ballot ID)</th>
+                        <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Ketua Terpilih
+                        </th>
+                        <th class="px-6 py-3.5 text-xs font-bold text-slate-500 uppercase tracking-wider">Wakil Terpilih
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100" id="logs-tbody">
                     {{range .Logs}}
-                    <tr class="hover:bg-slate-50 transition-colors duration-200">
-                        <td class="px-6 py-4 text-sm text-slate-600">{{.VotedAt}}</td>
-                        <td class="px-6 py-4 font-mono text-xs font-semibold text-slate-600">{{.MaskedUUID}}</td>
-                        <td class="px-6 py-4 text-slate-700">{{.ChairmanName}}</td>
-                        <td class="px-6 py-4 text-slate-700">{{.ViceName}}</td>
+                    <tr class="hover:bg-slate-50/80 transition-colors log-row" data-ballot="{{.MaskedUUID}}"
+                        data-chairman="{{.ChairmanName}}" data-vice="{{.ViceName}}">
+                        <td class="px-6 py-4 text-xs text-slate-500 font-mono">{{.VotedAt}}</td>
+                        <td class="px-6 py-4 font-mono text-xs font-bold text-indigo-700">
+                            <span class="px-2 py-1 rounded-md bg-indigo-50 border border-indigo-100/60 inline-block">
+                                {{.MaskedUUID}}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm font-semibold text-slate-800">{{.ChairmanName}}</td>
+                        <td class="px-6 py-4 text-sm font-semibold text-slate-800">{{.ViceName}}</td>
                     </tr>
                     {{else}}
                     <tr>
-                        <td colspan="4" class="px-6 py-8 text-center text-slate-500">Belum ada log audit.</td>
+                        <td colspan="4" class="px-6 py-12 text-center text-slate-400">
+                            <span class="material-symbols-outlined text-4xl mb-2">receipt_long</span>
+                            <p class="text-sm">Belum ada surat suara yang masuk.</p>
+                        </td>
                     </tr>
                     {{end}}
                 </tbody>
             </table>
         </div>
-    </section>
-</section>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('log-search');
+        const rows = Array.from(document.querySelectorAll('#logs-tbody .log-row'));
+        const countEl = document.getElementById('log-count');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase().trim();
+                let visible = 0;
+                rows.forEach(r => {
+                    const ballot = (r.dataset.ballot || '').toLowerCase();
+                    const chairman = (r.dataset.chairman || '').toLowerCase();
+                    const vice = (r.dataset.vice || '').toLowerCase();
+                    const match = !query || ballot.includes(query) || chairman.includes(query) || vice.includes(query);
+                    r.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+                if (countEl) countEl.textContent = `Menampilkan ${visible} dari ${rows.length} log`;
+            });
+        }
+    });
+</script>
 {{end}}

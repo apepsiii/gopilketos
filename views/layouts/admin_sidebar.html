@@ -1,33 +1,91 @@
 {{define "admin_sidebar"}}
-<aside class="fixed left-0 top-0 h-screen w-72 bg-slate-50 p-6 flex flex-col gap-6 shadow-sm">
-    <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg"><span
-                class="material-symbols-outlined">account_balance</span></div>
-        <div>
-            <h2 class="text-xl font-bold text-indigo-700">OSIS Registry</h2>
-            <p class="text-[10px] uppercase tracking-widest text-slate-500">Autoritas Institusi</p>
+<aside
+    class="fixed left-0 top-0 h-screen w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between z-30 select-none">
+    <div>
+        <!-- Brand Header -->
+        <div class="px-6 py-5 border-b border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+                <span class="material-symbols-outlined text-xl">how_to_vote</span>
+            </div>
+            <div>
+                <h1 class="text-base font-bold text-slate-900 leading-tight">Gopilketos</h1>
+                <p class="text-[11px] font-medium text-slate-400">SMK NIBA Business School</p>
+            </div>
         </div>
+
+        <!-- Navigation Menu -->
+        <nav class="p-3 space-y-1">
+            <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Menu Utama</div>
+
+            <a href="/admin"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "dashboard"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "dashboard"}}text-indigo-600{{else}}text-slate-400{{end}}">space_dashboard</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="/admin/candidates"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "candidates"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "candidates"}}text-indigo-600{{else}}text-slate-400{{end}}">group</span>
+                <span>Kandidat</span>
+            </a>
+
+            <a href="/admin/voters"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "voters"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "voters"}}text-indigo-600{{else}}text-slate-400{{end}}">badge</span>
+                <span>Daftar Pemilih</span>
+            </a>
+
+            <a href="/admin/attendance"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "attendance"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "attendance"}}text-indigo-600{{else}}text-slate-400{{end}}">checklist_rtl</span>
+                <span>Kehadiran TPS</span>
+            </a>
+
+            <div class="pt-4 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Integritas &amp;
+                Sistem</div>
+
+            <a href="/admin/logs"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "logs"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "logs"}}text-indigo-600{{else}}text-slate-400{{end}}">receipt_long</span>
+                <span>Log Audit Surat Suara</span>
+            </a>
+
+            <a href="/admin/settings"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150 {{if eq .ActiveTab "settings"}}bg-indigo-50 text-indigo-700 font-semibold{{else}}text-slate-600 hover:text-slate-900 hover:bg-slate-50{{end}}">
+                <span
+                    class="material-symbols-outlined text-xl {{if eq .ActiveTab "settings"}}text-indigo-600{{else}}text-slate-400{{end}}">tune</span>
+                <span>Pengaturan</span>
+            </a>
+        </nav>
     </div>
-    <nav class="space-y-2 flex-1">
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "dashboard"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "candidates"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin/candidates"><span
-                class="material-symbols-outlined">person_search</span><span>Kandidat</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "voters"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin/voters"><span class="material-symbols-outlined">how_to_reg</span><span>Pemilih</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "attendance"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin/attendance"><span class="material-symbols-outlined">fact_check</span><span>Kehadiran</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "logs"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin/logs"><span class="material-symbols-outlined">history_edu</span><span>Log Audit</span></a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg font-semibold {{if eq .ActiveTab "settings"}}bg-gradient-to-br from-[#3525CD] to-[#4F46E5] text-white{{else}}text-slate-600 hover:bg-white{{end}}"
-            href="/admin/settings"><span class="material-symbols-outlined">campaign</span><span>Pengumuman</span></a>
-    </nav>
-    <div class="pt-6 border-t border-slate-200">
-        <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-white rounded-lg"><span
-                class="material-symbols-outlined">contact_support</span>Bantuan</a>
-        <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg"><span
-                class="material-symbols-outlined">logout</span>Keluar</a>
+
+    <!-- User / Footer Info -->
+    <div class="p-3 border-t border-slate-100">
+        <div
+            class="px-3 py-2.5 bg-slate-50 rounded-xl border border-slate-200/60 flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div
+                    class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0 font-bold text-xs">
+                    AD
+                </div>
+                <div class="truncate">
+                    <p class="text-xs font-bold text-slate-800 leading-tight">Admin OSIS</p>
+                    <p class="text-[10px] text-slate-400 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                        Online
+                    </p>
+                </div>
+            </div>
+            <a href="/admin/logout" title="Keluar"
+                class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                <span class="material-symbols-outlined text-lg">logout</span>
+            </a>
+        </div>
     </div>
 </aside>
 {{end}}

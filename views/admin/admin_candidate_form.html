@@ -1,61 +1,157 @@
 {{define "admin_candidate_form.html"}}{{template "admin_layout" .}}{{end}}
 
 {{define "admin_candidate_form_content"}}
-<section class="max-w-4xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200/70 p-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div class="max-w-3xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-bold text-slate-900">{{.Action}}</h1>
-            <p class="text-slate-500">Isi detail kandidat dan terbitkan ke daftar ballot.</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">{{.Action}}</h1>
+            <p class="text-xs text-slate-500 mt-1">Lengkapi data profil calon untuk ditampilkan pada bilik suara.</p>
         </div>
-        <a href="/admin/candidates" class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200">Kembali ke Kandidat</a>
+        <a href="/admin/candidates"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            <span>Kembali</span>
+        </a>
     </div>
-    <form method="POST" action="{{if .ID}}/admin/candidates/{{.ID}}{{else}}/admin/candidates{{end}}" enctype="multipart/form-data" class="space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Nama Kandidat</span>
-                <input type="text" name="name" value="{{.Name}}" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
-            </label>
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Kelas</span>
-                <input type="text" name="class_name" value="{{.ClassName}}" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
-            </label>
-        </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Posisi</span>
-                <select name="position" required class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">
-                    <option value="">Pilih posisi</option>
-                    <option value="CHAIRMAN" {{if eq .Position "CHAIRMAN"}}selected{{end}}>Ketua</option>
-                    <option value="VICE_CHAIRMAN" {{if eq .Position "VICE_CHAIRMAN"}}selected{{end}}>Wakil Ketua</option>
-                </select>
-            </label>
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Foto Kandidat</span>
-                <input type="file" name="photo" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3" />
-            </label>
-        </div>
-        <label class="block">
-            <span class="text-sm font-semibold text-slate-700">URL Foto</span>
-            <input type="text" name="photo_url" value="{{.PhotoURL}}" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none" />
-        </label>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Visi</span>
-                <textarea name="vision" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Vision}}</textarea>
-            </label>
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Misi</span>
-                <textarea name="mission" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Mission}}</textarea>
-            </label>
-            <label class="block">
-                <span class="text-sm font-semibold text-slate-700">Program Kerja</span>
-                <textarea name="program" rows="3" class="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 focus:border-indigo-500 focus:outline-none">{{.Program}}</textarea>
-            </label>
-        </div>
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 pt-4 border-t border-slate-200">
-            <a href="/admin/candidates" class="px-6 py-3 rounded-3xl border border-slate-300 text-slate-700 hover:bg-slate-100">Batal</a>
-            <button type="submit" class="px-6 py-3 rounded-3xl bg-[#3525CD] text-white font-semibold hover:bg-[#2c1fa9]">Simpan</button>
-        </div>
-    </form>
-</section>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
+        <form method="POST" action="{{if .ID}}/admin/candidates/{{.ID}}{{else}}/admin/candidates{{end}}"
+            enctype="multipart/form-data" class="space-y-6">
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="name">
+                        Nama Lengkap Kandidat *
+                    </label>
+                    <input type="text" id="name" name="name" value="{{.Name}}" required
+                        placeholder="Contoh: Muhammad Rizky"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none" />
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
+                        for="class_name">
+                        Kelas &amp; Jurusan *
+                    </label>
+                    <input type="text" id="class_name" name="class_name" value="{{.ClassName}}" required
+                        placeholder="Contoh: XI RPL 1"
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none" />
+                </div>
+            </div>
+
+            <!-- Position & Photo Upload -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5"
+                        for="position">
+                        Posisi Pemilihan *
+                    </label>
+                    <select id="position" name="position" required
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none">
+                        <option value="">-- Pilih Posisi --</option>
+                        <option value="CHAIRMAN" {{if eq .Position "CHAIRMAN"}}selected{{end}}>Ketua OSIS</option>
+                        <option value="VICE_CHAIRMAN" {{if eq .Position "VICE_CHAIRMAN"}}selected{{end}}>Wakil Ketua
+                            OSIS</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="photo">
+                        Upload Foto (Maks. 2MB)
+                    </label>
+                    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp"
+                        class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs focus:bg-white focus:border-indigo-600 focus:outline-none file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                </div>
+            </div>
+
+            <!-- Photo URL (Optional) & Preview -->
+            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <img id="photo-preview"
+                    src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
+                    alt="Preview Foto"
+                    class="w-16 h-16 rounded-xl object-cover border border-slate-200 bg-white shrink-0 shadow-xs"
+                    onerror="this.src='/static/images/default-profile.svg'" />
+                <div class="flex-1">
+                    <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1"
+                        for="photo_url">
+                        Atau Gunakan URL Gambar Langsung (Opsional)
+                    </label>
+                    <input type="text" id="photo_url" name="photo_url" value="{{.PhotoURL}}"
+                        placeholder="https://... atau /static/uploads/..."
+                        class="w-full px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs focus:border-indigo-600 focus:outline-none font-mono" />
+                </div>
+            </div>
+
+            <!-- Vision, Mission & Program -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="vision">
+                        Visi Kandidat
+                    </label>
+                    <textarea id="vision" name="vision" rows="2" placeholder="Tuliskan visi kandidat..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none">{{.Vision}}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="mission">
+                        Misi Kandidat
+                    </label>
+                    <textarea id="mission" name="mission" rows="3" placeholder="Tuliskan butir-butir misi..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none">{{.Mission}}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5" for="program">
+                        Program Kerja Unggulan
+                    </label>
+                    <textarea id="program" name="program" rows="3"
+                        placeholder="Tuliskan rencana program kerja unggulan..."
+                        class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-sm focus:bg-white focus:border-indigo-600 focus:outline-none">{{.Program}}</textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <a href="/admin/candidates"
+                    class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors">
+                    Batal
+                </a>
+                <button type="submit"
+                    class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors duration-150 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">save</span>
+                    <span>Simpan Kandidat</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const photoInput = document.getElementById('photo');
+        const photoUrlInput = document.getElementById('photo_url');
+        const preview = document.getElementById('photo-preview');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        preview.src = evt.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (photoUrlInput) {
+            photoUrlInput.addEventListener('input', function () {
+                if (this.value.trim()) {
+                    preview.src = this.value.trim();
+                }
+            });
+        }
+    });
+</script>
 {{end}}

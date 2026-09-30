@@ -1,542 +1,435 @@
 {{define "landing.html"}}
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full scroll-smooth">
 
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
             rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-        <title>SMK NIBA - Pemilihan OSIS</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+            rel="stylesheet" />
+        <title>SMK NIBA Business School - E-Voting Pilketos</title>
         <style>
             * {
-                font-family: 'Inter', sans-serif;
+                font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             }
 
             .material-symbols-outlined {
                 font-family: 'Material Symbols Outlined';
-                font-size: 24px;
+                font-size: 20px;
                 line-height: 1;
-                letter-spacing: normal;
-                text-transform: none;
+                font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
                 display: inline-block;
-                white-space: nowrap;
-                word-wrap: normal;
-                direction: ltr;
-                -webkit-font-smoothing: antialiased;
+                vertical-align: middle;
             }
 
-            .slider {
-                position: relative;
-                overflow: hidden;
-            }
-
-            .slider-track {
-                display: flex;
-                transition: transform 0.5s ease-in-out;
-            }
-
-            .slide {
-                min-width: 100%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .slider-dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.4);
-                cursor: pointer;
-                transition: all 0.3s;
-            }
-
-            .slider-dot.active {
-                background: white;
-                width: 24px;
-                border-radius: 4px;
-            }
-
-            .modal-overlay {
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-            }
-
-            .modal-enter {
-                animation: modalEnter 0.3s ease-out;
-            }
-
-            .modal-leave {
-                animation: modalLeave 0.2s ease-in forwards;
-            }
-
-            @keyframes modalEnter {
-                from {
-                    opacity: 0;
-                    transform: scale(0.95);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: scale(1);
-                }
-            }
-
-            @keyframes modalLeave {
-                from {
-                    opacity: 1;
-                    transform: scale(1);
-                }
-
-                to {
-                    opacity: 0;
-                    transform: scale(0.95);
-                }
+            .modal-blur {
+                backdrop-filter: blur(8px);
+                background: rgba(15, 23, 42, 0.55);
             }
         </style>
     </head>
 
-    <body class="bg-white text-slate-900 antialiased">
-        <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-            <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <body
+        class="bg-slate-50/60 text-slate-800 antialiased min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+        <!-- Navbar -->
+        <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <a href="/" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-                        <span class="material-symbols-outlined"
-                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
+                    <div
+                        class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-xs">
+                        <span class="material-symbols-outlined text-xl">how_to_vote</span>
                     </div>
-                    <span class="font-semibold text-sm">SMK NIBA</span>
+                    <div>
+                        <span class="text-base font-bold text-slate-900 leading-tight block">Pilketos NIBA</span>
+                        <span class="text-[11px] font-medium text-slate-400">SMK NIBA Business School</span>
+                    </div>
                 </a>
-                <div class="flex items-center gap-6">
-                    <a href="#kandidat"
-                        class="text-sm text-slate-600 hover:text-blue-600 transition-colors">Kandidat</a>
+
+                <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+                    <a href="#kandidat" class="hover:text-indigo-600 transition-colors">Daftar Kandidat</a>
+                    <a href="#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
+                    <a href="#partisipasi" class="hover:text-indigo-600 transition-colors">Partisipasi</a>
+                </nav>
+
+                <div class="flex items-center gap-3">
                     <a href="/scanner"
-                        class="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Mulai
-                        Voting</a>
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition-colors duration-150">
+                        <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+                        <span>Bilik Suara</span>
+                    </a>
                 </div>
             </div>
-        </nav>
+        </header>
 
-        <main class="pt-16">
+        <!-- Main Content -->
+        <main class="flex-1">
+            <!-- Hero Section -->
             <section
-                class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
-                <div class="absolute inset-0 opacity-10">
-                    <div class="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl"></div>
-                    <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
-                </div>
+                class="relative overflow-hidden py-16 lg:py-24 border-b border-slate-200/80 bg-gradient-to-b from-white to-slate-50/50">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+                    <div
+                        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold mb-6">
+                        <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                        <span>Pemilihan OSIS Periode 2026/2027</span>
+                    </div>
 
-                <div class="relative max-w-6xl mx-auto px-6 py-20">
-                    <div class="grid lg:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <div
-                                class="inline-flex items-center gap-2 bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-medium mb-6">
-                                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                                Voting Sedang Aktif
-                            </div>
-                            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-4">
-                                Pemilihan<br /><span class="text-blue-200">OSIS 2026</span>
-                            </h1>
+                    <h1
+                        class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                        Suara Anda Menentukan <br class="hidden sm:inline" />
+                        <span class="text-indigo-600">Masa Depan Organisasi</span>
+                    </h1>
 
-                            <div class="grid grid-cols-3 gap-6 mb-8">
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold">{{.TotalVoters}}</div>
-                                    <div class="text-xs text-blue-200 mt-1">Total Pemilih</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold">{{.TotalVotes}}</div>
-                                    <div class="text-xs text-blue-200 mt-1">Suara Masuk</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-3xl font-bold text-emerald-400">{{.Participation}}%</div>
-                                    <div class="text-xs text-blue-200 mt-1">Partisipasi</div>
-                                </div>
-                            </div>
+                    <p class="mt-5 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                        Sistem pemungutan suara digital independen SMK NIBA Business School. Luber, jurdil, dan
+                        terenkripsi aman tanpa melacak identitas pilihan suara Anda.
+                    </p>
 
-                            <a href="/scanner"
-                                class="inline-flex items-center gap-2 bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg">
-                                <span class="material-symbols-outlined text-lg"
-                                    style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">qr_code_scanner</span>
-                                Scan QR untuk Vote
-                            </a>
+                    <!-- Hero CTA Buttons -->
+                    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                        <a href="/scanner"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md shadow-indigo-600/20 transition-all duration-150">
+                            <span class="material-symbols-outlined text-xl">qr_code_scanner</span>
+                            <span>Scan Kartu &amp; Mulai Vote</span>
+                        </a>
+                        <a href="#kandidat"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-xs transition-colors duration-150">
+                            <span class="material-symbols-outlined text-xl">visibility</span>
+                            <span>Kenali Calon Kandidat</span>
+                        </a>
+                    </div>
+
+                    <!-- Stats Badges -->
+                    <div id="partisipasi" class="mt-14 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl mx-auto">
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center">
+                            <p class="text-2xl sm:text-3xl font-extrabold text-slate-900">{{.TotalVoters}}</p>
+                            <p
+                                class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1">
+                                Total DPT</p>
                         </div>
-
-                        <div class="slider" id="heroSlider">
-                            <div class="slider-track" id="sliderTrack">
-                                {{range .ChairmanCandidates}}
-                                <div class="slide">
-                                    <div class="bg-white/15 backdrop-blur-lg rounded-3xl p-8 w-full max-w-sm border border-white/20 cursor-pointer"
-                                        onclick="openModal('chairman', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
-                                        <div class="flex flex-col items-center text-center">
-                                            <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
-                                                alt="{{.Name}}"
-                                                class="w-32 h-32 rounded-full object-cover border-4 border-white/30 mb-4" />
-                                            <span
-                                                class="text-xs font-medium text-blue-200 uppercase tracking-wider mb-1">Ketua
-                                                OSIS</span>
-                                            <h3 class="text-xl font-bold mb-1">{{.Name}}</h3>
-                                            <p class="text-sm text-blue-200 mb-4">{{.ClassName}}</p>
-                                            <p class="text-sm text-white/90 line-clamp-3 italic">"{{.Vision}}"</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{end}}
-                                {{range .ViceChairmanCandidates}}
-                                <div class="slide">
-                                    <div class="bg-white/15 backdrop-blur-lg rounded-3xl p-8 w-full max-w-sm border border-white/20 cursor-pointer"
-                                        onclick="openModal('vice', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
-                                        <div class="flex flex-col items-center text-center">
-                                            <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
-                                                alt="{{.Name}}"
-                                                class="w-32 h-32 rounded-full object-cover border-4 border-white/30 mb-4" />
-                                            <span
-                                                class="text-xs font-medium text-blue-200 uppercase tracking-wider mb-1">Wakil
-                                                Ketua OSIS</span>
-                                            <h3 class="text-xl font-bold mb-1">{{.Name}}</h3>
-                                            <p class="text-sm text-blue-200 mb-4">{{.ClassName}}</p>
-                                            <p class="text-sm text-white/90 line-clamp-3 italic">"{{.Vision}}"</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{end}}
-                            </div>
-                            <div class="flex justify-center gap-2 mt-6" id="sliderDots"></div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center">
+                            <p class="text-2xl sm:text-3xl font-extrabold text-emerald-600">{{.TotalVotes}}</p>
+                            <p
+                                class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1">
+                                Suara Masuk</p>
+                        </div>
+                        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs text-center">
+                            <p class="text-2xl sm:text-3xl font-extrabold text-indigo-600">{{.Participation}}%</p>
+                            <p
+                                class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mt-1">
+                                Partisipasi</p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- Announcement Banner (if any) -->
             {{if .Announcement}}
-            <section class="bg-blue-50 border-b border-blue-100">
-                <div class="max-w-6xl mx-auto px-6 py-6">
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white flex-shrink-0">
-                            <span class="material-symbols-outlined"
-                                style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">campaign</span>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-blue-900 mb-1">Pengumuman</h3>
-                            <p class="text-sm text-blue-800">{{.Announcement}}</p>
-                        </div>
+            <section class="max-w-5xl mx-auto px-4 sm:px-6 -mt-6 relative z-10">
+                <div class="p-4 sm:p-5 rounded-2xl bg-white border border-indigo-100 shadow-sm flex items-start gap-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-xl">campaign</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-700">Pengumuman Panitia</h3>
+                        <p class="text-xs sm:text-sm text-slate-700 mt-0.5 leading-relaxed">{{.Announcement}}</p>
                     </div>
                 </div>
             </section>
             {{end}}
 
-            <section id="kandidat" class="py-20 bg-white">
-                <div class="max-w-6xl mx-auto px-6">
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Kandidat Pemilihan</h2>
-                        <p class="text-slate-500">Calon Ketua dan Wakil Ketua OSIS SMK NIBA Business School</p>
+            <!-- Candidate Showcase -->
+            <section id="kandidat" class="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+                <!-- Chairman Section -->
+                <div>
+                    <div class="text-center max-w-xl mx-auto mb-10">
+                        <div
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold mb-2">
+                            <span class="material-symbols-outlined text-sm">stars</span>
+                            <span>Pemilihan Tahap 1</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Kandidat Ketua OSIS
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-2">Daftar calon ketua OSIS yang siap memimpin
+                            program inovatif sekolah.</p>
                     </div>
 
-                    {{if or .ChairmanCandidates .ViceChairmanCandidates}}
-                    <div class="space-y-12">
-                        {{if .ChairmanCandidates}}
-                        <div>
-                            <div class="flex items-center gap-3 mb-6">
-                                <div
-                                    class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
-                                    <span class="material-symbols-outlined"
-                                        style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">person</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {{range .ChairmanCandidates}}
+                        <article
+                            class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all duration-200 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-6">
+                                <!-- Card Header: Tag & Photo -->
+                                <div class="flex items-center justify-between gap-3 mb-5">
+                                    <span
+                                        class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-mono text-xs font-bold">
+                                        No. {{.ID}}
+                                    </span>
+                                    <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
                                 </div>
-                                <h3 class="text-xl font-semibold">Kandidat Ketua OSIS</h3>
-                            </div>
-                            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {{range .ChairmanCandidates}}
-                                <div class="group bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer"
-                                    onclick="openModal('chairman', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
-                                    <div class="flex flex-col items-center text-center">
-                                        <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
-                                            alt="{{.Name}}"
-                                            class="w-24 h-24 rounded-full object-cover bg-slate-200 mb-4" />
-                                        <h4 class="font-semibold text-slate-900">{{.Name}}</h4>
-                                        <p class="text-xs text-slate-500 mb-3">{{.ClassName}}</p>
-                                        <div class="w-full pt-4 border-t border-slate-200 text-left">
-                                            <p
-                                                class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-                                                Visi</p>
-                                            <p class="text-sm text-slate-600 line-clamp-2">{{.Vision}}</p>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="mt-4 flex items-center justify-center gap-1 text-xs font-medium text-blue-600 group-hover:text-blue-700">
-                                        <span>Lihat Detail</span>
-                                        <span class="material-symbols-outlined text-base">open_in_new</span>
-                                    </div>
-                                </div>
-                                {{end}}
-                            </div>
-                        </div>
-                        {{end}}
 
-                        {{if .ViceChairmanCandidates}}
-                        <div>
-                            <div class="flex items-center gap-3 mb-6">
-                                <div
-                                    class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
-                                    <span class="material-symbols-outlined"
-                                        style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">groups</span>
+                                <div class="flex flex-col items-center text-center">
+                                    <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
+                                        alt="{{.Name}}"
+                                        class="w-28 h-28 rounded-2xl object-cover border-2 border-slate-100 shadow-xs mb-4 group-hover:scale-105 transition-transform duration-200"
+                                        onerror="this.src='/static/images/default-profile.svg'" />
+                                    <h3 class="text-lg font-bold text-slate-900 leading-tight">{{.Name}}</h3>
+                                    <p class="text-xs font-semibold text-indigo-600 mt-0.5">Calon Ketua OSIS</p>
                                 </div>
-                                <h3 class="text-xl font-semibold">Kandidat Wakil Ketua OSIS</h3>
-                            </div>
-                            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {{range .ViceChairmanCandidates}}
-                                <div class="group bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-indigo-200 hover:shadow-lg transition-all cursor-pointer"
-                                    onclick="openModal('vice', {{.ID}}, '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')">
-                                    <div class="flex flex-col items-center text-center">
-                                        <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
-                                            alt="{{.Name}}"
-                                            class="w-24 h-24 rounded-full object-cover bg-slate-200 mb-4" />
-                                        <h4 class="font-semibold text-slate-900">{{.Name}}</h4>
-                                        <p class="text-xs text-slate-500 mb-3">{{.ClassName}}</p>
-                                        <div class="w-full pt-4 border-t border-slate-200 text-left">
-                                            <p
-                                                class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-1">
-                                                Visi</p>
-                                            <p class="text-sm text-slate-600 line-clamp-2">{{.Vision}}</p>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="mt-4 flex items-center justify-center gap-1 text-xs font-medium text-indigo-600 group-hover:text-indigo-700">
-                                        <span>Lihat Detail</span>
-                                        <span class="material-symbols-outlined text-base">open_in_new</span>
-                                    </div>
+
+                                <!-- Vision Preview -->
+                                <div class="mt-5 p-3.5 bg-slate-50 rounded-xl border border-slate-100/80">
+                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Visi
+                                    </p>
+                                    <p class="text-xs text-slate-600 line-clamp-3 italic leading-relaxed">
+                                        "{{if .Vision}}{{.Vision}}{{else}}-{{end}}"
+                                    </p>
                                 </div>
-                                {{end}}
                             </div>
+
+                            <div class="p-4 bg-slate-50/50 border-t border-slate-100">
+                                <button type="button"
+                                    onclick="openModal('Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')"
+                                    class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
+                                    <span>Lihat Visi, Misi &amp; Program</span>
+                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                </button>
+                            </div>
+                        </article>
+                        {{else}}
+                        <div class="col-span-full text-center py-12 text-slate-400">Belum ada kandidat ketua terdaftar.
                         </div>
                         {{end}}
                     </div>
-                    {{else}}
-                    <div class="text-center py-16 text-slate-400">
-                        <span class="material-symbols-outlined text-5xl mb-4">person_off</span>
-                        <p>Belum ada kandidat</p>
+                </div>
+
+                <!-- Vice Chairman Section -->
+                <div>
+                    <div class="text-center max-w-xl mx-auto mb-10">
+                        <div
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold mb-2">
+                            <span class="material-symbols-outlined text-sm">verified</span>
+                            <span>Pemilihan Tahap 2</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Kandidat Wakil Ketua
+                            OSIS</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-2">Daftar calon wakil ketua OSIS pendamping
+                            kepengurusan.</p>
                     </div>
-                    {{end}}
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {{range .ViceChairmanCandidates}}
+                        <article
+                            class="bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-purple-300 transition-all duration-200 overflow-hidden flex flex-col justify-between group">
+                            <div class="p-6">
+                                <!-- Card Header: Tag & Photo -->
+                                <div class="flex items-center justify-between gap-3 mb-5">
+                                    <span
+                                        class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-mono text-xs font-bold">
+                                        No. {{.ID}}
+                                    </span>
+                                    <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
+                                </div>
+
+                                <div class="flex flex-col items-center text-center">
+                                    <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
+                                        alt="{{.Name}}"
+                                        class="w-28 h-28 rounded-2xl object-cover border-2 border-slate-100 shadow-xs mb-4 group-hover:scale-105 transition-transform duration-200"
+                                        onerror="this.src='/static/images/default-profile.svg'" />
+                                    <h3 class="text-lg font-bold text-slate-900 leading-tight">{{.Name}}</h3>
+                                    <p class="text-xs font-semibold text-purple-600 mt-0.5">Calon Wakil Ketua OSIS</p>
+                                </div>
+
+                                <!-- Vision Preview -->
+                                <div class="mt-5 p-3.5 bg-slate-50 rounded-xl border border-slate-100/80">
+                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1">Visi
+                                    </p>
+                                    <p class="text-xs text-slate-600 line-clamp-3 italic leading-relaxed">
+                                        "{{if .Vision}}{{.Vision}}{{else}}-{{end}}"
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-slate-50/50 border-t border-slate-100">
+                                <button type="button"
+                                    onclick="openModal('Wakil Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')"
+                                    class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
+                                    <span>Lihat Visi, Misi &amp; Program</span>
+                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                </button>
+                            </div>
+                        </article>
+                        {{else}}
+                        <div class="col-span-full text-center py-12 text-slate-400">Belum ada kandidat wakil ketua
+                            terdaftar.</div>
+                        {{end}}
+                    </div>
                 </div>
             </section>
 
-            <section class="py-20 bg-slate-50 border-t border-slate-200">
-                <div class="max-w-6xl mx-auto px-6">
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Cara Voting</h2>
-                        <p class="text-slate-500">Ikuti langkah-langkah berikut untuk menyalurkan suara Anda</p>
+            <!-- How it works (Tata Cara Memilih) -->
+            <section id="tata-cara" class="py-16 bg-white border-y border-slate-200/80">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6">
+                    <div class="text-center max-w-md mx-auto mb-12">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Tata Cara Memberikan
+                            Suara</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-2">Hanya membutuhkan 3 langkah mudah untuk
+                            menentukan pilihan Anda.</p>
                     </div>
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
-                            <div
-                                class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">
-                                1</div>
-                            <h3 class="text-lg font-semibold mb-2">Scan QR Code</h3>
-                            <p class="text-sm text-slate-500">Buka scanner dan arahkan kamera ke QR Code di kartu
-                                pemilih Anda</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
-                            <div
-                                class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">
-                                2</div>
-                            <h3 class="text-lg font-semibold mb-2">Pilih Kandidat</h3>
-                            <p class="text-sm text-slate-500">Pilih kandidat Ketua dan Wakil Ketua OSIS pilihan Anda</p>
-                        </div>
-                        <div class="bg-white rounded-2xl p-8 border border-slate-200 text-center">
-                            <div
-                                class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-xl font-bold mx-auto mb-4 text-white">
-                                3</div>
-                            <h3 class="text-lg font-semibold mb-2">Konfirmasi</h3>
-                            <p class="text-sm text-slate-500">Periksa pilihan Anda dan kirim suara untuk direkam</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <section class="py-16 bg-white border-t border-slate-200">
-                <div class="max-w-6xl mx-auto px-6">
-                    <div class="bg-blue-50 rounded-2xl p-8 border border-blue-100">
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-900">
-                                    <span class="material-symbols-outlined"
-                                        style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">verified</span>
-                                    Keamanan Terjamin
-                                </h3>
-                                <ul class="space-y-3 text-sm text-slate-600">
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Identitas terpisah dari suara voting
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Setiap UUID hanya dapat digunakan sekali
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Data terenkripsi dalam database
-                                    </li>
-                                </ul>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div
+                            class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg mb-4 shadow-xs">
+                                1
                             </div>
-                            <div>
-                                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2 text-blue-900">
-                                    <span class="material-symbols-outlined"
-                                        style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">balance</span>
-                                    Prinsip Luber Jurdil
-                                </h3>
-                                <ul class="space-y-3 text-sm text-slate-600">
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Langsung - Pemilih berhak memilih sendiri
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Umum - Seluruh siswa berhak memilih
-                                    </li>
-                                    <li class="flex items-start gap-2">
-                                        <span class="material-symbols-outlined text-blue-600 text-lg"
-                                            style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">check</span>
-                                        Rahasia - Suara tidak bisa ditelusuri
-                                    </li>
-                                </ul>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">Pindai Kartu Pemilih</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Bawa kartu pemilih Anda ke bilik suara dan arahkan QR Code atau Barcode ke kamera
+                                scanner.
+                            </p>
+                        </div>
+
+                        <div
+                            class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg mb-4 shadow-xs">
+                                2
                             </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">Tentukan Pilihan</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Pilih Calon Ketua OSIS pada langkah 1, lalu tentukan Calon Wakil Ketua OSIS pada langkah
+                                2.
+                            </p>
+                        </div>
+
+                        <div
+                            class="flex flex-col items-center text-center p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg mb-4 shadow-xs">
+                                3
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 mb-2">Konfirmasi &amp; Selesai</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Periksa kembali ringkasan pilihan dan tekan tombol Kirim Suara. Bukti suara terkirim
+                                aman.
+                            </p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <footer class="bg-blue-600 text-white py-12">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="flex items-center justify-between mb-8">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                            <span class="material-symbols-outlined"
-                                style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
-                        </div>
-                        <div>
-                            <span class="font-semibold">SMK NIBA</span>
-                            <p class="text-xs text-blue-200">E-Voting OSIS</p>
-                        </div>
-                    </div>
-                    <a href="/scanner"
-                        class="bg-white text-blue-600 px-6 py-2 rounded-lg font-medium hover:bg-blue-50 transition-colors">
-                        Mulai Voting
-                    </a>
+        <!-- Footer -->
+        <footer class="bg-white border-t border-slate-200/80 py-8">
+            <div
+                class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-700">OSIS SMK NIBA Business School</span>
+                    <span>•</span>
+                    <span>Sistem E-Voting Pilketos</span>
                 </div>
-                <div class="border-t border-blue-500 pt-8 text-center text-sm text-blue-200">
-                    © 2026 SMK NIBA Business School Bogor. Hak Cipta Dilindungi.
+                <div class="flex items-center gap-4">
+                    <a href="/admin/login"
+                        class="text-slate-500 hover:text-indigo-600 transition-colors font-medium flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">lock</span>
+                        <span>Portal Admin</span>
+                    </a>
                 </div>
             </div>
         </footer>
 
-        <div id="candidateModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
-            <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
-            <div class="flex items-start justify-center min-h-full p-4 py-8">
-                <div
-                    class="modal-enter bg-white rounded-3xl shadow-2xl w-full max-w-lg relative z-10 overflow-hidden my-auto">
-                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 text-white">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined"
-                                    style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;">how_to_vote</span>
-                                <span id="modalPosition" class="text-sm font-medium uppercase tracking-wider"></span>
-                            </div>
-                            <button onclick="closeModal()"
-                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
-                                <span class="material-symbols-outlined text-lg">close</span>
-                            </button>
+        <!-- Candidate Detail Modal -->
+        <div id="candidateModal" class="fixed inset-0 z-50 hidden modal-blur flex items-center justify-center p-4">
+            <div
+                class="bg-white rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
+                <!-- Modal Header -->
+                <div class="p-6 bg-slate-900 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300">
+                            <span class="material-symbols-outlined text-xl">person</span>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold leading-tight" id="modalPosition">-</h3>
+                            <p class="text-xs text-slate-400">Profil Lengkap Calon</p>
                         </div>
                     </div>
-                    <div class="p-6 max-h-[60vh] overflow-y-auto">
-                        <div class="flex flex-col items-center text-center mb-6">
-                            <img id="modalPhoto" src="/static/images/default-profile.svg" alt=""
-                                class="w-32 h-32 rounded-full object-cover border-4 border-slate-100 mb-4" />
-                            <h3 id="modalName" class="text-xl font-bold text-slate-900"></h3>
-                            <p id="modalClass" class="text-sm text-slate-500"></p>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="bg-slate-50 rounded-xl p-4">
-                                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Visi</p>
-                                <p id="modalVision" class="text-sm text-slate-700"></p>
-                            </div>
-                            <div class="bg-slate-50 rounded-xl p-4">
-                                <p class="text-[10px] font-medium text-slate-400 uppercase tracking-wider mb-2">Misi</p>
-                                <p id="modalMission" class="text-sm text-slate-700"></p>
-                            </div>
-                            <div class="bg-blue-50 rounded-xl p-4">
-                                <p class="text-[10px] font-medium text-blue-600 uppercase tracking-wider mb-2">Program
-                                    Kerja</p>
-                                <p id="modalProgram" class="text-sm text-slate-700"></p>
-                            </div>
+                    <button type="button" onclick="closeModal()"
+                        class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+                        <span class="material-symbols-outlined text-lg">close</span>
+                    </button>
+                </div>
+
+                <!-- Modal Content (Scrollable) -->
+                <div class="p-6 overflow-y-auto space-y-5">
+                    <div class="flex items-center gap-4">
+                        <img id="modalPhoto" src="/static/images/default-profile.svg" alt=""
+                            class="w-20 h-20 rounded-2xl object-cover border border-slate-200 shrink-0 shadow-xs" />
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900" id="modalName">-</h4>
+                            <p class="text-xs font-semibold text-indigo-600" id="modalClass">-</p>
                         </div>
                     </div>
+
+                    <div class="space-y-4 pt-2">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                            <h5 class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Visi</h5>
+                            <p class="text-xs text-slate-700 leading-relaxed" id="modalVision">-</p>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                            <h5 class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">Misi</h5>
+                            <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line" id="modalMission">-
+                            </p>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100">
+                            <h5 class="text-[10px] uppercase font-bold tracking-wider text-indigo-600 mb-1">Program
+                                Kerja Unggulan</h5>
+                            <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line" id="modalProgram">-
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-4 border-t border-slate-100 bg-slate-50/80 flex justify-end">
+                    <button type="button" onclick="closeModal()"
+                        class="px-5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors">
+                        Tutup
+                    </button>
                 </div>
             </div>
         </div>
 
         <script>
-            function openModal(type, id, name, className, photoUrl, vision, mission, program) {
-                const modal = document.getElementById('candidateModal');
-                document.getElementById('modalPosition').textContent = type === 'chairman' ? 'Ketua OSIS' : 'Wakil Ketua OSIS';
+            function openModal(position, name, className, photoUrl, vision, mission, program) {
+                document.getElementById('modalPosition').textContent = position;
                 document.getElementById('modalName').textContent = name;
                 document.getElementById('modalClass').textContent = className;
                 document.getElementById('modalPhoto').src = photoUrl || '/static/images/default-profile.svg';
-                document.getElementById('modalVision').textContent = vision || '-';
-                document.getElementById('modalMission').textContent = mission || '-';
-                document.getElementById('modalProgram').textContent = program || '-';
-                modal.classList.remove('hidden');
+                document.getElementById('modalVision').textContent = vision || 'Tidak ada visi yang dicantumkan.';
+                document.getElementById('modalMission').textContent = mission || 'Tidak ada misi yang dicantumkan.';
+                document.getElementById('modalProgram').textContent = program || 'Tidak ada program kerja yang dicantumkan.';
+
+                document.getElementById('candidateModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
             }
 
             function closeModal() {
-                const modal = document.getElementById('candidateModal');
-                modal.querySelector('.bg-white').classList.remove('modal-enter');
-                modal.querySelector('.bg-white').classList.add('modal-leave');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modal.querySelector('.bg-white').classList.remove('modal-leave');
-                    modal.querySelector('.bg-white').classList.add('modal-enter');
-                    document.body.style.overflow = '';
-                }, 200);
+                document.getElementById('candidateModal').classList.add('hidden');
+                document.body.style.overflow = '';
             }
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') closeModal();
-            });
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const track = document.getElementById('sliderTrack');
-                const dotsContainer = document.getElementById('sliderDots');
-                const slides = track ? track.querySelectorAll('.slide') : [];
-
-                if (slides.length > 0) {
-                    let currentSlide = 0;
-
-                    slides.forEach((_, index) => {
-                        const dot = document.createElement('button');
-                        dot.className = 'slider-dot' + (index === 0 ? ' active' : '');
-                        dot.onclick = () => goToSlide(index);
-                        dotsContainer.appendChild(dot);
-                    });
-
-                    function goToSlide(index) {
-                        currentSlide = index;
-                        track.style.transform = `translateX(-${index * 100}%)`;
-                        dotsContainer.querySelectorAll('.slider-dot').forEach((dot, i) => {
-                            dot.className = 'slider-dot' + (i === index ? ' active' : '');
-                        });
-                    }
-
-                    setInterval(() => {
-                        currentSlide = (currentSlide + 1) % slides.length;
-                        goToSlide(currentSlide);
-                    }, 4000);
-                }
             });
         </script>
     </body>

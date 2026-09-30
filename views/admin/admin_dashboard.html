@@ -3,121 +3,209 @@
 {{define "admin_dashboard_content"}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                <span class="material-symbols-outlined text-lg">groups</span>
-            </div>
-            <span class="text-xs font-medium text-slate-500">Total Pemilih</span>
+<div class="space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Dashboard Pemilihan</h1>
+            <p class="text-xs text-slate-500 mt-1">Pemantauan data partisipasi pemilih dan rekapitulasi suara secara
+                real-time.</p>
         </div>
-        <p class="text-3xl font-bold text-slate-900">{{.TotalVoters}}</p>
-        <p class="text-xs text-slate-400 mt-1">DPT</p>
-    </div>
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="p-2 bg-green-50 text-green-600 rounded-lg">
-                <span class="material-symbols-outlined text-lg">how_to_vote</span>
-            </div>
-            <span class="text-xs font-medium text-slate-500">Sudah Vote</span>
-        </div>
-        <p class="text-3xl font-bold text-slate-900">{{.VotesCast}}</p>
-        <p class="text-xs text-slate-400 mt-1">Suara Masuk</p>
-    </div>
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
-                <span class="material-symbols-outlined text-lg">pending</span>
-            </div>
-            <span class="text-xs font-medium text-slate-500">Belum Vote</span>
-        </div>
-        <p class="text-3xl font-bold text-slate-900">{{.NotVoted}}</p>
-        <p class="text-xs text-slate-400 mt-1">Belum Melihat</p>
-    </div>
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
-                <span class="material-symbols-outlined text-lg">trending_up</span>
-            </div>
-            <span class="text-xs font-medium text-slate-500">Partisipasi</span>
-        </div>
-        <p class="text-3xl font-bold text-slate-900">{{.Participation}}</p>
-        <p class="text-xs text-slate-400 mt-1">Tingkat Partisipasi</p>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h3 class="text-sm font-semibold text-slate-900 mb-4">Status Voting</h3>
-        <div class="relative h-64 flex items-center justify-center">
-            <canvas id="statusChart"></canvas>
+        <div class="flex items-center gap-2.5">
+            <button onclick="window.location.reload()"
+                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200/80 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                <span>Refresh Data</span>
+            </button>
+            <a href="/admin/attendance/scanner"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-700 transition-colors shadow-xs">
+                <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+                <span>Scanner Presensi</span>
+            </a>
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
-        <h3 class="text-sm font-semibold text-slate-900 mb-4">Perolehan Suara Ketua</h3>
-        <div class="h-64">
-            <canvas id="chairmanChart"></canvas>
+    <!-- 4 KPI Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-2xl">groups</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total DPT</p>
+                <h3 class="text-2xl font-bold text-slate-900 leading-tight mt-0.5">{{.TotalVoters}}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Pemilih Terdaftar</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-2xl">how_to_vote</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Suara Masuk</p>
+                <h3 class="text-2xl font-bold text-slate-900 leading-tight mt-0.5">{{.VotesCast}}</h3>
+                <p class="text-[11px] text-emerald-600 font-medium mt-0.5">Tervalidasi di TPS</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-2xl">pending</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Belum Memilih</p>
+                <h3 class="text-2xl font-bold text-slate-900 leading-tight mt-0.5">{{.NotVoted}}</h3>
+                <p class="text-[11px] text-amber-600 font-medium mt-0.5">Menunggu Giliran</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-2xl">trending_up</span>
+            </div>
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Partisipasi</p>
+                <h3 class="text-2xl font-bold text-indigo-600 leading-tight mt-0.5">{{.Participation}}</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Persentase Pemilih</p>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h3 class="text-sm font-semibold text-slate-900 mb-4">Perolehan Suara Wakil Ketua</h3>
-        <div class="h-64">
-            <canvas id="viceChairmanChart"></canvas>
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Participation Doughnut Chart -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">Rasio Partisipasi</h2>
+                        <p class="text-xs text-slate-400">Status suara pemilih DPT</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-400 text-lg">pie_chart</span>
+                </div>
+                <div class="relative h-56 flex items-center justify-center">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-slate-100 text-center">
+                <div class="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                    <p class="text-[10px] uppercase font-bold text-emerald-700">Sudah</p>
+                    <p class="text-base font-bold text-emerald-800">{{.VotesCast}}</p>
+                </div>
+                <div class="p-2 rounded-xl bg-amber-50/70 border border-amber-100">
+                    <p class="text-[10px] uppercase font-bold text-amber-700">Belum</p>
+                    <p class="text-base font-bold text-amber-800">{{.NotVoted}}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chairman Vote Count -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs lg:col-span-2">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900">Perolehan Suara: Calon Ketua</h2>
+                    <p class="text-xs text-slate-400">Distribusi suara calon Ketua OSIS</p>
+                </div>
+                <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-semibold">
+                    <span class="material-symbols-outlined text-sm">how_to_vote</span>
+                    Ketua
+                </span>
+            </div>
+            <div class="h-64">
+                <canvas id="chairmanChart"></canvas>
+            </div>
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h3 class="text-sm font-semibold text-slate-900 mb-4">Pengumuman</h3>
-        <div class="p-4 bg-slate-50 rounded-xl">
-            <p class="text-sm text-slate-600">{{if .Announcement}}{{.Announcement}}{{else}}<span class="text-slate-400 italic">Belum ada pengumuman.</span>{{end}}</p>
+    <!-- Secondary Row: Vice Chairman & Announcement -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Vice Chairman Vote Count -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs lg:col-span-2">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900">Perolehan Suara: Calon Wakil Ketua</h2>
+                    <p class="text-xs text-slate-400">Distribusi suara calon Wakil Ketua OSIS</p>
+                </div>
+                <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 text-xs font-semibold">
+                    <span class="material-symbols-outlined text-sm">how_to_vote</span>
+                    Wakil Ketua
+                </span>
+            </div>
+            <div class="h-64">
+                <canvas id="viceChairmanChart"></canvas>
+            </div>
         </div>
-        <a href="/admin/settings" class="inline-flex items-center gap-2 mt-4 text-sm text-blue-600 hover:text-blue-700">
-            <span class="material-symbols-outlined text-base">edit</span>
-            Edit Pengumuman
-        </a>
+
+        <!-- Public Announcement Card -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-900">Pengumuman Aktif</h2>
+                    <span class="material-symbols-outlined text-indigo-600 text-lg">campaign</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-3">Teks ini tampil pada beranda bilik suara &amp; landing page.</p>
+                <div
+                    class="p-4 bg-slate-50/80 rounded-xl border border-slate-100 text-xs text-slate-700 leading-relaxed min-h-[90px]">
+                    {{if .Announcement}}
+                    {{.Announcement}}
+                    {{else}}
+                    <span class="text-slate-400 italic">Belum ada pengumuman yang disetel.</span>
+                    {{end}}
+                </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100">
+                <a href="/admin/settings"
+                    class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors">
+                    <span class="material-symbols-outlined text-base">edit</span>
+                    <span>Ubah Pengumuman</span>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const chartColors = {
-        blue: ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'],
-        green: ['#22c55e', '#4ade80', '#86efac', '#bbf7d0'],
-        purple: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe']
-    };
+    document.addEventListener('DOMContentLoaded', function () {
+        Chart.defaults.font.family = "'Plus Jakarta Sans', 'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
 
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Sudah Vote', 'Belum Vote'],
-            datasets: [{
-                data: [{{.VotesCast}}, {{.NotVoted}}],
-                backgroundColor: ['#22c55e', '#f59e0b'],
-                borderWidth: 0
-            }]
+        // Status Doughnut Chart
+        const statusCtx = document.getElementById('statusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sudah Vote', 'Belum Vote'],
+                datasets: [{
+                    data: [{{.VotesCast }}, {{.NotVoted }}],
+            backgroundColor: ['#10b981', '#f59e0b'],
+            borderWidth: 0,
+            hoverOffset: 4
+        }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true,
-                        font: { size: 12 }
-                    }
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    boxWidth: 10,
+                    boxHeight: 10,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    padding: 16,
+                    font: { size: 11, weight: '600' }
                 }
             }
         }
+    }
     });
 
+    // Chairman Horizontal Bar Chart
     const chairmanData = [
         {{range .ChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
     ];
@@ -127,11 +215,11 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: chairmanData.map(d => d.name),
             datasets: [{
-                label: 'Suara',
+                label: 'Jumlah Suara',
                 data: chairmanData.map(d => d.count),
-                backgroundColor: '#3b82f6',
+                backgroundColor: '#4f46e5',
                 borderRadius: 8,
-                barThickness: 40
+                barThickness: 28
             }]
         },
         options: {
@@ -141,10 +229,12 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 x: {
                     beginAtZero: true,
-                    grid: { display: false }
+                    ticks: { precision: 0 },
+                    grid: { color: '#f1f5f9' }
                 },
                 y: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { font: { weight: '600' } }
                 }
             },
             plugins: {
@@ -153,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Vice Chairman Horizontal Bar Chart
     const viceData = [
         {{range .ViceChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
     ];
@@ -162,11 +253,11 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: viceData.map(d => d.name),
             datasets: [{
-                label: 'Suara',
+                label: 'Jumlah Suara',
                 data: viceData.map(d => d.count),
-                backgroundColor: '#8b5cf6',
+                backgroundColor: '#9333ea',
                 borderRadius: 8,
-                barThickness: 40
+                barThickness: 28
             }]
         },
         options: {
@@ -176,10 +267,12 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 x: {
                     beginAtZero: true,
-                    grid: { display: false }
+                    ticks: { precision: 0 },
+                    grid: { color: '#f1f5f9' }
                 },
                 y: {
-                    grid: { display: false }
+                    grid: { display: false },
+                    ticks: { font: { weight: '600' } }
                 }
             },
             plugins: {
