@@ -51,6 +51,7 @@
                 </a>
 
                 <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
+                    <a href="#jadwal" class="hover:text-indigo-600 transition-colors">Jadwal</a>
                     <a href="#kandidat" class="hover:text-indigo-600 transition-colors">Daftar Kandidat</a>
                     <a href="#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
                     <a href="#partisipasi" class="hover:text-indigo-600 transition-colors">Partisipasi</a>
@@ -144,6 +145,150 @@
             </section>
             {{end}}
 
+            <!-- Timeline & Schedule Section -->
+            <section id="jadwal" class="py-16 lg:py-20 border-b border-slate-200/80 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center max-w-2xl mx-auto mb-12">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold mb-3 shadow-xs">
+                            <span class="material-symbols-outlined text-sm">calendar_month</span>
+                            <span>Roadmap Pemilihan 2026/2027</span>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Jadwal &amp; Tahapan Pilketos</h2>
+                        <p class="mt-3 text-sm text-slate-500 leading-relaxed">
+                            Rangkaian agenda resmi pemilihan umum Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School dari tahap penjaringan hingga pelantikan.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Step 1: Pendaftaran -->
+                        <div class="bg-slate-50/70 rounded-2xl border border-slate-200/70 p-5 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">01</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                                        <span>Selesai</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Sosialisasi &amp; Pendaftaran</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Penjaringan berkas pendaftaran bakal calon dari perwakilan kelas X dan XI.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-slate-200/50 flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>01 - 10 Agustus 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Verifikasi & Undian -->
+                        <div class="bg-slate-50/70 rounded-2xl border border-slate-200/70 p-5 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">02</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                                        <span class="material-symbols-outlined text-xs">check_circle</span>
+                                        <span>Selesai</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Verifikasi &amp; Nomor Urut</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Uji kelayakan visi misi paslon dan pengundian nomor urut resmi kandidat.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-slate-200/50 flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>15 - 20 Agustus 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Debat Terbuka (ACTIVE) -->
+                        <div class="bg-gradient-to-br from-indigo-50/60 via-white to-purple-50/40 rounded-2xl border-2 border-indigo-500 p-5 relative overflow-hidden shadow-md shadow-indigo-500/10 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">03</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shadow-xs animate-pulse">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                                        <span>Sedang Berlangsung</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Kampanye &amp; Debat Terbuka</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">
+                                    Penyampaian visi misi, video orasi di bilik digital, dan debat kandidat di hadapan seluruh siswa.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-indigo-100 flex items-center gap-1.5 text-xs text-indigo-700 font-bold">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>01 - 25 September 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Masa Tenang -->
+                        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">04</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                        <span class="material-symbols-outlined text-xs">schedule</span>
+                                        <span>Mendatang</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Masa Tenang</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Pembersihan alat kampanye dan persiapan bilik suara digital serta generator token kartu pemilih.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>26 - 29 September 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Hari-H Pemungutan Suara -->
+                        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs">05</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200/60">
+                                        <span class="material-symbols-outlined text-xs">how_to_vote</span>
+                                        <span>Hari-H Pemilihan</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Pemungutan Suara TPS</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Pencoblosan digital serentak melalui scan kartu pemilih di bilik suara SMK NIBA.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>30 September 2026 (07.30 - 13.00 WIB)</span>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Pelantikan -->
+                        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 relative overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">06</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600">
+                                        <span class="material-symbols-outlined text-xs">schedule</span>
+                                        <span>Mendatang</span>
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-bold text-slate-900 mb-1">Sidang Pleno &amp; Pelantikan</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed">
+                                    Pengesahan hasil suara dan serah terima jabatan pengurus OSIS periode baru.
+                                </p>
+                            </div>
+                            <div class="pt-3 mt-4 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                                <span class="material-symbols-outlined text-sm">event</span>
+                                <span>05 Oktober 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Candidate Showcase -->
             <section id="kandidat" class="py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
                 <!-- Chairman Section -->
@@ -171,7 +316,15 @@
                                         class="px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-mono text-xs font-bold">
                                         No. {{.CandidateNumber}}
                                     </span>
-                                    <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        {{if .VideoURL}}
+                                        <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+                                            <span class="material-symbols-outlined text-xs">smart_display</span>
+                                            <span>Video</span>
+                                        </span>
+                                        {{end}}
+                                        <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
+                                    </div>
                                 </div>
 
                                 <div class="flex flex-col items-center text-center">
@@ -195,9 +348,9 @@
 
                             <div class="p-4 bg-slate-50/50 border-t border-slate-100">
                                 <button type="button"
-                                    onclick="openModal('Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')"
+                                    onclick="openModal('Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}', '{{.VideoURL}}')"
                                     class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
-                                    <span>Lihat Visi, Misi &amp; Program</span>
+                                    <span>Lihat Profil &amp; Video</span>
                                     <span class="material-symbols-outlined text-sm">open_in_new</span>
                                 </button>
                             </div>
@@ -234,7 +387,15 @@
                                         class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-mono text-xs font-bold">
                                         No. {{.CandidateNumber}}
                                     </span>
-                                    <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        {{if .VideoURL}}
+                                        <span class="inline-flex items-center gap-0.5 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-100">
+                                            <span class="material-symbols-outlined text-xs">smart_display</span>
+                                            <span>Video</span>
+                                        </span>
+                                        {{end}}
+                                        <span class="text-xs font-medium text-slate-400">{{.ClassName}}</span>
+                                    </div>
                                 </div>
 
                                 <div class="flex flex-col items-center text-center">
@@ -258,9 +419,9 @@
 
                             <div class="p-4 bg-slate-50/50 border-t border-slate-100">
                                 <button type="button"
-                                    onclick="openModal('Wakil Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}')"
+                                    onclick="openModal('Wakil Ketua OSIS', '{{.Name}}', '{{.ClassName}}', '{{.PhotoURL}}', '{{.Vision}}', '{{.Mission}}', '{{.Program}}', '{{.VideoURL}}')"
                                     class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 text-slate-700 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-2xs">
-                                    <span>Lihat Visi, Misi &amp; Program</span>
+                                    <span>Lihat Profil &amp; Video</span>
                                     <span class="material-symbols-outlined text-sm">open_in_new</span>
                                 </button>
                             </div>
@@ -483,6 +644,19 @@
                             <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line" id="modalProgram">-
                             </p>
                         </div>
+
+                        <!-- Video Embed Section -->
+                        <div id="modalVideoSection" class="hidden">
+                            <div class="p-4 rounded-2xl bg-rose-50/50 border border-rose-100">
+                                <h5 class="text-[10px] uppercase font-bold tracking-wider text-rose-600 mb-2 flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-sm">smart_display</span>
+                                    <span>Video Orasi &amp; Debat Paslon</span>
+                                </h5>
+                                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 shadow-inner">
+                                    <iframe id="modalVideoIframe" class="w-full h-full" src="" title="Video Orasi Kandidat" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -497,7 +671,25 @@
         </div>
 
         <script>
-            function openModal(position, name, className, photoUrl, vision, mission, program) {
+            function getYouTubeEmbedUrl(url) {
+                if (!url) return '';
+                url = url.trim();
+                let videoId = '';
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                if (match && match[2].length === 11) {
+                    videoId = match[2];
+                } else if (url.includes('/shorts/')) {
+                    const parts = url.split('/shorts/');
+                    if (parts[1]) videoId = parts[1].split(/[?&#]/)[0];
+                }
+                if (videoId) {
+                    return 'https://www.youtube-nocookie.com/embed/' + videoId;
+                }
+                return '';
+            }
+
+            function openModal(position, name, className, photoUrl, vision, mission, program, videoUrl) {
                 document.getElementById('modalPosition').textContent = position;
                 document.getElementById('modalName').textContent = name;
                 document.getElementById('modalClass').textContent = className;
@@ -506,11 +698,24 @@
                 document.getElementById('modalMission').textContent = mission || 'Tidak ada misi yang dicantumkan.';
                 document.getElementById('modalProgram').textContent = program || 'Tidak ada program kerja yang dicantumkan.';
 
+                const videoSection = document.getElementById('modalVideoSection');
+                const videoIframe = document.getElementById('modalVideoIframe');
+                const embedUrl = getYouTubeEmbedUrl(videoUrl);
+                if (embedUrl) {
+                    videoIframe.src = embedUrl;
+                    videoSection.classList.remove('hidden');
+                } else {
+                    videoIframe.src = '';
+                    videoSection.classList.add('hidden');
+                }
+
                 document.getElementById('candidateModal').classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
             }
 
             function closeModal() {
+                const videoIframe = document.getElementById('modalVideoIframe');
+                if (videoIframe) videoIframe.src = '';
                 document.getElementById('candidateModal').classList.add('hidden');
                 document.body.style.overflow = '';
             }

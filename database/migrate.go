@@ -30,6 +30,7 @@ func Migrate(db *sql.DB) error {
 			mission TEXT,
 			program TEXT,
 			position TEXT NOT NULL CHECK(position IN ('CHAIRMAN', 'VICE_CHAIRMAN')),
+			video_url TEXT DEFAULT '',
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
 		`CREATE TABLE IF NOT EXISTS voters (
@@ -114,6 +115,7 @@ func Migrate(db *sql.DB) error {
 
 	candidateColumnChecks := map[string]string{
 		"candidate_number": "INTEGER DEFAULT 1",
+		"video_url":        "TEXT DEFAULT ''",
 	}
 	for col, colType := range candidateColumnChecks {
 		var dummy interface{}

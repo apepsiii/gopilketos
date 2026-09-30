@@ -198,6 +198,7 @@ func main() {
 	adminGroup.GET("/settings", handlers.AdminSettingsHandler(db))
 	adminGroup.POST("/settings/save", handlers.AdminSettingsSaveHandler(db))
 	adminGroup.POST("/settings/test-message", handlers.AdminTestMessageHandler(db))
+	adminGroup.POST("/settings/broadcast-reminder", handlers.AdminBroadcastReminderHandler(db))
 	adminGroup.POST("/settings/reset-votes", handlers.AdminResetVotesHandler(db))
 	adminGroup.GET("/settings/backup", handlers.AdminBackupHandler(db))
 	adminGroup.GET("/settings/report", handlers.AdminReportHandler(db))

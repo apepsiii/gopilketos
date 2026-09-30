@@ -55,6 +55,7 @@ type AdminCandidateFormData struct {
 	Name            string
 	ClassName       string
 	PhotoURL        string
+	VideoURL        string
 	Vision          string
 	Mission         string
 	Program         string
@@ -389,7 +390,7 @@ func fetchCandidateResults(db *sql.DB, position string, voteField string) ([]Can
 
 func AdminCandidatesHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
-		rows, err := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position FROM candidates ORDER BY position, candidate_number ASC, id ASC")
+		rows, err := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position, COALESCE(video_url, '') FROM candidates ORDER BY position, candidate_number ASC, id ASC")
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal memuat daftar kandidat")
 		}
@@ -398,7 +399,7 @@ func AdminCandidatesHandler(db *sql.DB) echo.HandlerFunc {
 		candidates := []CandidateView{}
 		for rows.Next() {
 			var candidate CandidateView
-			if err := rows.Scan(&candidate.ID, &candidate.CandidateNumber, &candidate.Name, &candidate.ClassName, &candidate.PhotoURL, &candidate.Vision, &candidate.Mission, &candidate.Program, &candidate.Position); err != nil {
+			if err := rows.Scan(&candidate.ID, &candidate.CandidateNumber, &candidate.Name, &candidate.ClassName, &candidate.PhotoURL, &candidate.Vision, &candidate.Mission, &candidate.Program, &candidate.Position, &candidate.VideoURL); err != nil {
 				return c.String(http.StatusInternalServerError, "Gagal memproses kandidat")
 			}
 			candidates = append(candidates, candidate)
@@ -425,10 +426,11 @@ func AdminCandidateFormHandler(db *sql.DB) echo.HandlerFunc {
 		if idStr != "" {
 			id, err := strconv.Atoi(idStr)
 			if err == nil {
-				var photoURL string
-				_ = db.QueryRow("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position FROM candidates WHERE id = ?", id).Scan(
-					&form.ID, &form.CandidateNumber, &form.Name, &form.ClassName, &photoURL, &form.Vision, &form.Mission, &form.Program, &form.Position)
+				var photoURL, videoURL string
+				_ = db.QueryRow("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position, COALESCE(video_url, '') FROM candidates WHERE id = ?", id).Scan(
+					&form.ID, &form.CandidateNumber, &form.Name, &form.ClassName, &photoURL, &form.Vision, &form.Mission, &form.Program, &form.Position, &videoURL)
 				form.PhotoURL = photoURL
+				form.VideoURL = videoURL
 				form.Action = "Simpan Perubahan"
 				form.AdminLayoutData = adminLayout("Edit Kandidat | OSIS Admin", "Edit Kandidat", "Create or edit candidate profiles.", "admin_candidate_form_content", "candidates")
 			}
@@ -446,6 +448,7 @@ func AdminCandidateCreateHandler(db *sql.DB) echo.HandlerFunc {
 		program := c.FormValue("program")
 		position := c.FormValue("position")
 		photoURL := c.FormValue("photo_url")
+		videoURL := strings.TrimSpace(c.FormValue("video_url"))
 		numberStr := c.FormValue("candidate_number")
 		candidateNumber, _ := strconv.Atoi(numberStr)
 		if candidateNumber < 1 || candidateNumber > 3 {
@@ -464,7 +467,7 @@ func AdminCandidateCreateHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		photoURL = normalizeCandidatePhotoURL(photoURL)
 
-		_, err := db.Exec("INSERT INTO candidates (candidate_number, name, class_name, photo_url, vision, mission, program, position) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", candidateNumber, name, className, photoURL, vision, mission, program, position)
+		_, err := db.Exec("INSERT INTO candidates (candidate_number, name, class_name, photo_url, video_url, vision, mission, program, position) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", candidateNumber, name, className, photoURL, videoURL, vision, mission, program, position)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal menyimpan kandidat")
 		}
@@ -485,6 +488,7 @@ func AdminCandidateUpdateHandler(db *sql.DB) echo.HandlerFunc {
 		program := c.FormValue("program")
 		position := c.FormValue("position")
 		photoURL := c.FormValue("photo_url")
+		videoURL := strings.TrimSpace(c.FormValue("video_url"))
 		numberStr := c.FormValue("candidate_number")
 		candidateNumber, _ := strconv.Atoi(numberStr)
 		if candidateNumber < 1 || candidateNumber > 3 {
@@ -503,7 +507,7 @@ func AdminCandidateUpdateHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		photoURL = normalizeCandidatePhotoURL(photoURL)
 
-		_, err = db.Exec("UPDATE candidates SET candidate_number = ?, name = ?, class_name = ?, photo_url = ?, vision = ?, mission = ?, program = ?, position = ? WHERE id = ?", candidateNumber, name, className, photoURL, vision, mission, program, position, id)
+		_, err = db.Exec("UPDATE candidates SET candidate_number = ?, name = ?, class_name = ?, photo_url = ?, video_url = ?, vision = ?, mission = ?, program = ?, position = ? WHERE id = ?", candidateNumber, name, className, photoURL, videoURL, vision, mission, program, position, id)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal memperbarui kandidat")
 		}
@@ -1441,6 +1445,81 @@ func AdminTestMessageHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Pesan uji coba berhasil dikirim ke " + phone})
+	}
+}
+
+func AdminBroadcastReminderHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		target := c.FormValue("target")
+		customMsg := strings.TrimSpace(c.FormValue("message"))
+
+		sender, err := services.NewWhatsAppClient(db)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal inisialisasi client WhatsApp: " + err.Error()})
+		}
+
+		query := "SELECT name, class_name, phone_number, uuid FROM voters WHERE phone_number != ''"
+		if target == "not_voted" {
+			query += " AND has_voted = 0"
+		} else if target == "not_present" {
+			query += " AND COALESCE(presence_status, 0) = 0"
+		}
+
+		rows, err := db.Query(query)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal mengambil data pemilih: " + err.Error()})
+		}
+		defer rows.Close()
+
+		type recipient struct {
+			Name      string
+			ClassName string
+			Phone     string
+			UUID      string
+		}
+
+		var recipients []recipient
+		for rows.Next() {
+			var r recipient
+			if err := rows.Scan(&r.Name, &r.ClassName, &r.Phone, &r.UUID); err == nil {
+				recipients = append(recipients, r)
+			}
+		}
+
+		if len(recipients) == 0 {
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"status":  "empty",
+				"message": "Tidak ada pemilih dengan nomor telepon yang memenuhi kriteria target broadcast.",
+				"count":   0,
+			})
+		}
+
+		// Asynchronous background delivery with gentle rate limiting
+		go func(list []recipient, templateMsg string, client *services.WhatsAppClient) {
+			for _, rec := range list {
+				msg := templateMsg
+				if msg == "" {
+					msg = fmt.Sprintf("Halo %s (%s)! 🗳️\n\n"+
+						"Mengingatkan bahwa Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.\n\n"+
+						"Gunakan hak suara Anda di bilik TPS sekarang juga.\n"+
+						"Suara Anda menentukan masa depan sekolah kita! ✨\n\n"+
+						"- Panitia Pilketos SMK NIBA", rec.Name, rec.ClassName)
+				} else {
+					msg = strings.ReplaceAll(msg, "{nama}", rec.Name)
+					msg = strings.ReplaceAll(msg, "{kelas}", rec.ClassName)
+					msg = strings.ReplaceAll(msg, "{uuid}", rec.UUID)
+				}
+
+				_ = client.SendMessage(rec.Phone, msg)
+				time.Sleep(350 * time.Millisecond) // Friendly delay between messages
+			}
+		}(recipients, customMsg, sender)
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"status":  "success",
+			"message": fmt.Sprintf("Broadcast pengingat sedang diproses untuk %d pemilih secara bertahap.", len(recipients)),
+			"count":   len(recipients),
+		})
 	}
 }
 

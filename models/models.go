@@ -19,6 +19,7 @@ type Candidate struct {
 	Name            string
 	ClassName       string
 	PhotoURL        string
+	VideoURL        string
 	Vision          string
 	Mission         string
 	Program         string

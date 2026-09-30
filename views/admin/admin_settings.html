@@ -120,6 +120,80 @@
         <div id="test-result" class="mt-4 hidden"></div>
     </section>
 
+    <!-- Broadcast WhatsApp Reminder Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-indigo-600">campaign</span>
+                    <span>Broadcast Pengingat Pemilihan WhatsApp (GOWA)</span>
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">Kirimkan pesan pengingat resmi (H-1 atau Hari-H) ke nomor WhatsApp siswa terdaftar untuk memaksimalkan kehadiran di TPS.</p>
+            </div>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+                <span>GOWA Engine</span>
+            </span>
+        </div>
+
+        <div class="space-y-4 pt-2">
+            <!-- Target Selection -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Target Penerima Broadcast</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="all" checked class="text-indigo-600 focus:ring-indigo-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Semua Pemilih (DPT)</span>
+                            <span class="text-[10px] text-slate-400">Seluruh siswa dengan nomor HP</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="not_voted" class="text-indigo-600 focus:ring-indigo-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Belum Memberikan Suara</span>
+                            <span class="text-[10px] text-slate-400">Pemilih berstatus has_voted = 0</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="not_present" class="text-indigo-600 focus:ring-indigo-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Belum Hadir di TPS</span>
+                            <span class="text-[10px] text-slate-400">Belum discan di meja absensi</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Custom Message Template -->
+            <div>
+                <label for="broadcast-message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Template Pesan Pengingat</label>
+                <textarea id="broadcast-message" rows="5"
+                    class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs sm:text-sm focus:bg-white focus:border-indigo-600 focus:outline-none leading-relaxed font-sans"
+                    placeholder="Tuliskan pesan broadcast pengingat...">Halo {nama} ({kelas})! 🗳️
+
+Mengingatkan bahwa Pemilihan Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.
+
+Gunakan hak suara Anda di bilik TPS sekarang juga!
+Suara Anda menentukan masa depan sekolah kita! ✨
+
+- Panitia Pilketos SMK NIBA</textarea>
+                <p class="text-[11px] text-slate-400 mt-1">Variabel otomatis yang didukung: <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{nama}</code>, <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{kelas}</code>, <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{uuid}</code>.</p>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <div id="broadcast-result" class="text-xs"></div>
+                <button type="button" id="broadcast-btn"
+                    class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs sm:text-sm rounded-xl hover:bg-indigo-700 transition flex items-center gap-2 shadow-sm shrink-0">
+                    <span class="material-symbols-outlined text-lg">forward_to_inbox</span>
+                    <span>Kirim Broadcast Pengingat</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Backup & Export -->
     <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
         <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
@@ -280,5 +354,56 @@
         openModalBtn.disabled = false;
         openModalBtn.innerHTML = '<span class="material-symbols-outlined text-lg">warning</span> Reset Semua Surat Suara';
     });
+
+    // Broadcast WhatsApp Reminder
+    const broadcastBtn = document.getElementById('broadcast-btn');
+    const broadcastMessage = document.getElementById('broadcast-message');
+    const broadcastResult = document.getElementById('broadcast-result');
+
+    if (broadcastBtn) {
+        broadcastBtn.addEventListener('click', async () => {
+            const selectedTarget = document.querySelector('input[name="broadcast_target"]:checked');
+            const target = selectedTarget ? selectedTarget.value : 'all';
+            const message = broadcastMessage.value.trim();
+
+            if (!confirm('Apakah Anda yakin ingin mengirim broadcast WhatsApp ke pemilih yang ditargetkan? Pengiriman akan berjalan secara bertahap di latar belakang.')) {
+                return;
+            }
+
+            broadcastBtn.disabled = true;
+            broadcastBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">progress_activity</span> Mengirim...';
+            broadcastResult.textContent = '';
+            broadcastResult.className = 'text-xs text-slate-500';
+
+            try {
+                const formData = new FormData();
+                formData.append('target', target);
+                formData.append('message', message);
+
+                const res = await fetch('/admin/settings/broadcast-reminder', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    broadcastResult.className = 'text-xs text-emerald-600 font-semibold';
+                    broadcastResult.textContent = '✅ ' + (data.message || 'Broadcast berhasil dijadwalkan.');
+                } else if (data.status === 'empty') {
+                    broadcastResult.className = 'text-xs text-amber-600 font-semibold';
+                    broadcastResult.textContent = 'ℹ️ ' + (data.message || 'Tidak ada penerima.');
+                } else {
+                    broadcastResult.className = 'text-xs text-red-600 font-semibold';
+                    broadcastResult.textContent = '❌ ' + (data.error || 'Gagal memproses broadcast.');
+                }
+            } catch (err) {
+                broadcastResult.className = 'text-xs text-red-600 font-semibold';
+                broadcastResult.textContent = '❌ Terjadi kesalahan: ' + err.message;
+            } finally {
+                broadcastBtn.disabled = false;
+                broadcastBtn.innerHTML = '<span class="material-symbols-outlined text-lg">forward_to_inbox</span><span>Kirim Broadcast Pengingat</span>';
+            }
+        });
+    }
 </script>
 {{end}}
