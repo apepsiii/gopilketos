@@ -54,7 +54,7 @@
                     <a href="#kandidat" class="hover:text-indigo-600 transition-colors">Daftar Kandidat</a>
                     <a href="#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
                     <a href="#partisipasi" class="hover:text-indigo-600 transition-colors">Partisipasi</a>
-                    {{if .Credits}}<a href="#demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>{{end}}
+                    {{if .Credits}}<a href="/demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>{{end}}
                 </nav>
 
                 <div class="flex items-center gap-3">
@@ -328,49 +328,85 @@
 
             <!-- Credits / Demisioner OSIS Section -->
             {{if .Credits}}
-            <section id="demisioner" class="py-16 lg:py-20 border-t border-slate-200/80 bg-white">
+            <section id="demisioner" class="py-16 lg:py-24 border-t border-slate-200/80 bg-gradient-to-b from-white via-indigo-50/20 to-slate-50/50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center max-w-2xl mx-auto mb-12">
-                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold mb-3">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100/80 text-indigo-700 text-xs font-bold mb-3 shadow-xs">
                             <span class="material-symbols-outlined text-sm">military_tech</span>
                             <span>Apresiasi &amp; Dedikasi</span>
                         </div>
-                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Demisioner Pengurus OSIS</h2>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Demisioner Pengurus OSIS</h2>
                         <p class="mt-3 text-sm text-slate-500 leading-relaxed">
-                            Terima kasih atas kepemimpinan, dedikasi, dan kerja keras jajaran pengurus OSIS periode sebelumnya yang telah mengabdi demi kemajuan SMK NIBA Business School.
+                            Terima kasih atas kepemimpinan, dedikasi, dan kontribusi jajaran pengurus OSIS periode sebelumnya yang telah mengabdi demi kemajuan SMK NIBA Business School.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {{range .Credits}}
-                        <div class="group bg-white rounded-2xl border border-slate-200/80 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all duration-200 overflow-hidden flex flex-col">
-                            <div class="relative aspect-square w-full bg-slate-100 overflow-hidden">
+                        <div class="group relative bg-white rounded-3xl p-3.5 border border-slate-200/80 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                            <!-- Photo Wrapper -->
+                            <div class="relative w-full aspect-[4/4.5] rounded-2xl overflow-hidden bg-gradient-to-tr from-indigo-50 via-slate-100 to-purple-50 mb-3.5 ring-1 ring-slate-100">
                                 <img src="{{if .PhotoURL}}{{.PhotoURL}}{{else}}/static/images/default-profile.svg{{end}}"
                                     alt="{{.Name}}"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                     onerror="this.src='/static/images/default-profile.svg'" />
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
                                 {{if .Period}}
-                                <div class="absolute top-3 right-3 bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-xs">
-                                    {{.Period}}
+                                <div class="absolute top-2.5 right-2.5 backdrop-blur-md bg-white/90 text-slate-800 text-[10px] font-bold px-2.5 py-1 rounded-full shadow-xs border border-white/60 inline-flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                                    <span>{{.Period}}</span>
                                 </div>
                                 {{end}}
+
+                                <div class="absolute top-2.5 left-2.5 backdrop-blur-md bg-slate-900/70 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined text-xs">military_tech</span>
+                                    <span class="text-white text-[10px]">#{{.OrderNum}}</span>
+                                </div>
                             </div>
-                            <div class="p-5 flex-1 flex flex-col justify-between">
+
+                            <!-- Member Details -->
+                            <div class="space-y-2 flex-1 flex flex-col justify-between">
                                 <div>
-                                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100 mb-2">
-                                        {{.Division}}
+                                    <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100/80 mb-1.5 max-w-full">
+                                        <span class="material-symbols-outlined text-xs">shield</span>
+                                        <span class="truncate">{{.Division}}</span>
                                     </div>
-                                    <h4 class="text-base font-bold text-slate-900 leading-snug group-hover:text-indigo-600 transition-colors">
+
+                                    <h4 class="text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug line-clamp-1">
                                         {{.Name}}
                                     </h4>
                                 </div>
-                                <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                                    <span class="font-medium">{{.ClassName}}</span>
-                                    <span class="material-symbols-outlined text-sm text-indigo-500">verified</span>
+
+                                <!-- Card Footer Strip -->
+                                <div class="pt-2.5 mt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                                    <span class="inline-flex items-center gap-1 font-medium text-slate-600">
+                                        <span class="material-symbols-outlined text-sm text-slate-400">school</span>
+                                        <span>{{.ClassName}}</span>
+                                    </span>
+                                    <span class="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                        <span class="material-symbols-outlined text-xs">verified</span>
+                                        <span>Demisioner</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                         {{end}}
+                    </div>
+
+                    <!-- View All More CTA -->
+                    <div class="mt-12 text-center">
+                        <a href="/demisioner"
+                            class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-xs sm:text-sm font-bold shadow-xs hover:border-indigo-300 hover:text-indigo-600 hover:shadow-md transition-all duration-200 group">
+                            <span>Lihat Semua Pengurus Demisioner</span>
+                            {{if gt .TotalCredits 4}}
+                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-extrabold border border-indigo-100">
+                                {{.TotalCredits}} Anggota
+                            </span>
+                            {{end}}
+                            <span class="material-symbols-outlined text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                        </a>
                     </div>
                 </div>
             </section>

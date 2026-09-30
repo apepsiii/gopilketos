@@ -64,7 +64,9 @@ type AdminCandidateFormData struct {
 
 type AdminCreditsData struct {
 	AdminLayoutData
-	Credits []CreditView
+	Credits        []CreditView
+	Periods        []string
+	SelectedPeriod string
 }
 
 type AdminCreditFormData struct {
@@ -601,7 +603,30 @@ func AdminCandidateDeleteHandler(db *sql.DB) echo.HandlerFunc {
 
 func AdminCreditsHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
-		rows, err := db.Query("SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits ORDER BY order_num ASC, id ASC")
+		selectedPeriod := strings.TrimSpace(c.QueryParam("period"))
+
+		// Get distinct periods
+		periodRows, _ := db.Query("SELECT DISTINCT period FROM credits WHERE period != '' ORDER BY period DESC")
+		periods := []string{}
+		if periodRows != nil {
+			defer periodRows.Close()
+			for periodRows.Next() {
+				var p string
+				if err := periodRows.Scan(&p); err == nil && p != "" {
+					periods = append(periods, p)
+				}
+			}
+		}
+
+		query := "SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits"
+		var args []interface{}
+		if selectedPeriod != "" {
+			query += " WHERE period = ?"
+			args = append(args, selectedPeriod)
+		}
+		query += " ORDER BY order_num ASC, id ASC"
+
+		rows, err := db.Query(query, args...)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal memuat daftar demisioner")
 		}
@@ -619,6 +644,8 @@ func AdminCreditsHandler(db *sql.DB) echo.HandlerFunc {
 		return c.Render(http.StatusOK, "admin_credits.html", AdminCreditsData{
 			AdminLayoutData: adminLayout("Demisioner OSIS | OSIS Admin", "Kredit Demisioner OSIS", "Kelola daftar pengurus OSIS periode sebelumnya untuk apresiasi dan dokumentasi.", "admin_credits_content", "credits"),
 			Credits:         credits,
+			Periods:         periods,
+			SelectedPeriod: selectedPeriod,
 		})
 	}
 }

@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	"html/template"
 	"testing"
 
 	"gopilketos/database"
+	"gopilketos/handlers"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -45,5 +47,32 @@ func TestTemplatesAndMigration(t *testing.T) {
 	err = db.QueryRow("SELECT COUNT(*) FROM credits").Scan(&count)
 	if err != nil {
 		t.Fatalf("credits table query failed: %v", err)
+	}
+
+	// Test rendering landing.html
+	var buf bytes.Buffer
+	landingData := handlers.LandingPageData{
+		Announcement: "Pengumuman",
+		Credits: []handlers.CreditView{
+			{ID: 1, Name: "Ahmad", ClassName: "XII RPL 1", Division: "Ketua OSIS", Period: "2024/2025", OrderNum: 1},
+		},
+		TotalCredits: 5,
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "landing.html", landingData); err != nil {
+		t.Fatalf("Failed to execute landing.html: %v", err)
+	}
+
+	// Test rendering demisioner.html
+	buf.Reset()
+	demisionerData := handlers.DemisionerPageData{
+		Credits: []handlers.CreditView{
+			{ID: 1, Name: "Ahmad", ClassName: "XII RPL 1", Division: "Ketua OSIS", Period: "2024/2025", OrderNum: 1},
+		},
+		Periods:    []string{"2024/2025"},
+		Divisions:  []string{"Ketua OSIS"},
+		TotalCount: 1,
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "demisioner.html", demisionerData); err != nil {
+		t.Fatalf("Failed to execute demisioner.html: %v", err)
 	}
 }

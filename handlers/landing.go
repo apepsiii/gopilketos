@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v5"
 )
@@ -15,6 +16,14 @@ type LandingPageData struct {
 	ChairmanCandidates     []CandidateView
 	ViceChairmanCandidates []CandidateView
 	Credits                []CreditView
+	TotalCredits           int
+}
+
+type DemisionerPageData struct {
+	Credits    []CreditView
+	Periods    []string
+	Divisions  []string
+	TotalCount int
 }
 
 type CreditView struct {
@@ -95,6 +104,12 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			}
 		}
 
+		totalCredits := len(credits)
+		featuredCredits := credits
+		if len(featuredCredits) > 4 {
+			featuredCredits = featuredCredits[:4]
+		}
+
 		data := LandingPageData{
 			Announcement:           announcement,
 			TotalVoters:            totalVoters,
@@ -102,8 +117,52 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			Participation:          participation,
 			ChairmanCandidates:     chairmen,
 			ViceChairmanCandidates: vice,
-			Credits:                credits,
+			Credits:                featuredCredits,
+			TotalCredits:           totalCredits,
 		}
 		return c.Render(http.StatusOK, "landing.html", data)
+	}
+}
+
+func DemisionerPageHandler(db *sql.DB) echo.HandlerFunc {
+	return func(c *echo.Context) error {
+		credits := []CreditView{}
+		rows, err := db.Query("SELECT id, name, class_name, division, COALESCE(photo_url, ''), COALESCE(period, ''), COALESCE(order_num, 1) FROM credits ORDER BY order_num ASC, id ASC")
+		if err == nil {
+			defer rows.Close()
+			for rows.Next() {
+				var cr CreditView
+				if err := rows.Scan(&cr.ID, &cr.Name, &cr.ClassName, &cr.Division, &cr.PhotoURL, &cr.Period, &cr.OrderNum); err == nil {
+					credits = append(credits, cr)
+				}
+			}
+		}
+
+		// Extract unique periods and divisions preserving chronological order
+		periodMap := make(map[string]bool)
+		divisionMap := make(map[string]bool)
+		periods := []string{}
+		divisions := []string{}
+
+		for _, cr := range credits {
+			p := strings.TrimSpace(cr.Period)
+			if p != "" && !periodMap[p] {
+				periodMap[p] = true
+				periods = append(periods, p)
+			}
+			d := strings.TrimSpace(cr.Division)
+			if d != "" && !divisionMap[d] {
+				divisionMap[d] = true
+				divisions = append(divisions, d)
+			}
+		}
+
+		data := DemisionerPageData{
+			Credits:    credits,
+			Periods:    periods,
+			Divisions:  divisions,
+			TotalCount: len(credits),
+		}
+		return c.Render(http.StatusOK, "demisioner.html", data)
 	}
 }
