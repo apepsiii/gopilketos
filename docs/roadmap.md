@@ -18,7 +18,7 @@ Dokumen ini merangkum inisiatif strategis dan roadmap pengembangan fitur **Gopil
 ### 1. 📅 Timeline Tahapan Pemilihan & Kalender Kegiatan Sekolah
 * **Deskripsi**: Menampilkan infografis interaktif tahapan pemilihan serta kalender agenda besar sekolah di landing page dan portal pemilih.
 * **Komponen Fitur**:
-  - **Tahapan Pilketos**: Sosialisasi & Pendaftaran Calon $\rightarrow$ Verifikasi Berkas $\rightarrow$ Uji Kelayakan $\rightarrow$ Debat Terbuka Paslon $\rightarrow$ Masa Tenang $\rightarrow$ Hari Pemungutan Suara $\rightarrow$ Sidang Pleno & Pelantikan.
+  - **Tahapan Pilketos**: Sosialisasi & Pendaftaran Calon $\rightarrow$ Verifikasi Berkas $\rightarrow$ Kampanye & Debat Terbuka $\rightarrow$ Hari Pemilihan (TPS) $\rightarrow$ Sidang Pleno $\rightarrow$ Pelantikan OSIS.
   - **Agenda Besar Sekolah**: Classmeeting, Peringatan Hari Besar Nasional/Keagamaan, Latihan Dasar Kepemimpinan (LDKS), dan Ujian.
 * **Manfaat**: Siswa dan guru dapat memantau secara pasti progres pesta demokrasi dan jadwal penting sekolah.
 
