@@ -161,7 +161,6 @@ func main() {
 	e.Static("/static/uploads", uploadsDir)
 
 	e.GET("/", handlers.LandingPageHandler(db))
-	e.GET("/demisioner", handlers.DemisionerPageHandler(db))
 	e.GET("/scanner", handlers.ScannerPageHandler())
 	e.POST("/validate-uuid", handlers.ValidateUUIDHandler(db))
 	e.GET("/api/candidates", handlers.ListCandidatesHandler(db))
