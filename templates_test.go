@@ -75,4 +75,43 @@ func TestTemplatesAndMigration(t *testing.T) {
 	if err := tmpl.ExecuteTemplate(&buf, "demisioner.html", demisionerData); err != nil {
 		t.Fatalf("Failed to execute demisioner.html: %v", err)
 	}
+
+	// Verify testimonials table exists
+	var testimCount int
+	err = db.QueryRow("SELECT COUNT(*) FROM testimonials").Scan(&testimCount)
+	if err != nil {
+		t.Fatalf("testimonials table query failed: %v", err)
+	}
+
+	// Test rendering kiosk.html
+	buf.Reset()
+	kioskData := handlers.KioskPageData{
+		Title:        "Video Booth Kesan & Pesan",
+		AutoApprove:  true,
+		GDriveActive: false,
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "kiosk.html", kioskData); err != nil {
+		t.Fatalf("Failed to execute kiosk.html: %v", err)
+	}
+
+	// Test rendering admin_testimonials.html
+	buf.Reset()
+	adminTestimData := handlers.AdminTestimonialsData{
+		AdminLayoutData: handlers.AdminLayoutData{
+			Title:           "Video Kiosk",
+			PageTitle:       "Video Kiosk",
+			PageSubtitle:    "Kelola video",
+			ContentTemplate: "admin_testimonials_content",
+			ActiveTab:       "testimonials",
+		},
+		Testimonials: []handlers.TestimonialView{
+			{ID: 1, Name: "Budi", ClassName: "X RPL 1", Message: "Semoga sukses!", IsApproved: true, SyncStatus: "local", CreatedAt: "30 Sep 2026 19:00 WIB"},
+		},
+		TotalCount:   1,
+		LocalCount:   1,
+		GDriveActive: true,
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "admin_testimonials.html", adminTestimData); err != nil {
+		t.Fatalf("Failed to execute admin_testimonials.html: %v", err)
+	}
 }

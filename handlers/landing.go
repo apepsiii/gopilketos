@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v5"
 )
@@ -17,6 +18,7 @@ type LandingPageData struct {
 	ViceChairmanCandidates []CandidateView
 	Credits                []CreditView
 	TotalCredits           int
+	Testimonials           []TestimonialView
 }
 
 type DemisionerPageData struct {
@@ -111,6 +113,24 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			featuredCredits = featuredCredits[:4]
 		}
 
+		testimonials := []TestimonialView{}
+		rowsTestim, errTestim := db.Query(`SELECT id, name, class_name, COALESCE(message, ''), 
+			COALESCE(video_path, ''), COALESCE(video_type, 'video/webm'), 
+			COALESCE(gdrive_file_id, ''), COALESCE(gdrive_url, ''), 
+			COALESCE(sync_status, 'local'), COALESCE(created_at, '') 
+			FROM testimonials WHERE is_approved = 1 ORDER BY id DESC LIMIT 8`)
+		if errTestim == nil {
+			defer rowsTestim.Close()
+			for rowsTestim.Next() {
+				var t TestimonialView
+				var createdAt time.Time
+				if err := rowsTestim.Scan(&t.ID, &t.Name, &t.ClassName, &t.Message, &t.VideoPath, &t.VideoType, &t.GDriveFileID, &t.GDriveURL, &t.SyncStatus, &createdAt); err == nil {
+					t.CreatedAt = createdAt.Format("02 Jan 2006")
+					testimonials = append(testimonials, t)
+				}
+			}
+		}
+
 		data := LandingPageData{
 			Announcement:           announcement,
 			TotalVoters:            totalVoters,
@@ -120,6 +140,7 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 			ViceChairmanCandidates: vice,
 			Credits:                featuredCredits,
 			TotalCredits:           totalCredits,
+			Testimonials:           testimonials,
 		}
 		return c.Render(http.StatusOK, "landing.html", data)
 	}

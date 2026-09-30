@@ -61,6 +61,20 @@ func Migrate(db *sql.DB) error {
 			order_num INTEGER DEFAULT 1,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
+		`CREATE TABLE IF NOT EXISTS testimonials (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			name TEXT NOT NULL,
+			class_name TEXT NOT NULL,
+			message TEXT DEFAULT '',
+			video_path TEXT NOT NULL,
+			video_type TEXT DEFAULT 'video/webm',
+			gdrive_file_id TEXT DEFAULT '',
+			gdrive_url TEXT DEFAULT '',
+			sync_status TEXT DEFAULT 'local',
+			sync_error TEXT DEFAULT '',
+			is_approved INTEGER DEFAULT 1,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		);`,
 	}
 	for _, q := range queries {
 		if _, err := db.Exec(q); err != nil {
@@ -69,17 +83,23 @@ func Migrate(db *sql.DB) error {
 	}
 
 	columnChecks := map[string]string{
-		"onesender_enabled":  "INTEGER DEFAULT 0",
-		"onesender_api_url":  "TEXT",
-		"onesender_api_key":  "TEXT",
-		"onesender_template": "TEXT",
-		"wa_provider":        "TEXT DEFAULT 'gowa'",
-		"wa_enabled":         "INTEGER DEFAULT 0",
-		"wa_api_url":         "TEXT DEFAULT 'http://127.0.0.1:8054/api/whatsapp/send'",
-		"wa_device_id":       "TEXT DEFAULT 'Pionir'",
-		"wa_username":        "TEXT DEFAULT 'admin'",
-		"wa_password":        "TEXT DEFAULT 'PutihAbu123!'",
-		"wa_template":        "TEXT",
+		"onesender_enabled":           "INTEGER DEFAULT 0",
+		"onesender_api_url":           "TEXT",
+		"onesender_api_key":           "TEXT",
+		"onesender_template":          "TEXT",
+		"wa_provider":                 "TEXT DEFAULT 'gowa'",
+		"wa_enabled":                  "INTEGER DEFAULT 0",
+		"wa_api_url":                  "TEXT DEFAULT 'http://127.0.0.1:8054/api/whatsapp/send'",
+		"wa_device_id":                "TEXT DEFAULT 'Pionir'",
+		"wa_username":                 "TEXT DEFAULT 'admin'",
+		"wa_password":                 "TEXT DEFAULT 'PutihAbu123!'",
+		"wa_template":                 "TEXT",
+		"gdrive_enabled":              "INTEGER DEFAULT 0",
+		"gdrive_folder_id":            "TEXT DEFAULT ''",
+		"gdrive_service_account_json": "TEXT DEFAULT ''",
+		"gdrive_delete_local":         "INTEGER DEFAULT 0",
+		"testimonials_auto_approve":   "INTEGER DEFAULT 1",
+		"testimonials_enabled":        "INTEGER DEFAULT 1",
 	}
 	for col, colType := range columnChecks {
 		var dummy interface{}

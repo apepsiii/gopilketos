@@ -56,6 +56,10 @@
                     <a href="#tata-cara" class="hover:text-indigo-600 transition-colors">Tata Cara</a>
                     <a href="#partisipasi" class="hover:text-indigo-600 transition-colors">Partisipasi</a>
                     {{if .Credits}}<a href="/demisioner" class="hover:text-indigo-600 transition-colors">Demisioner</a>{{end}}
+                    <a href="/kiosk" class="text-rose-600 hover:text-rose-700 font-bold transition-colors flex items-center gap-1">
+                        <span class="material-symbols-outlined text-base">video_camera_front</span>
+                        <span>Bilik Video</span>
+                    </a>
                 </nav>
 
                 <div class="flex items-center gap-3">
@@ -572,6 +576,99 @@
                 </div>
             </section>
             {{end}}
+
+            <!-- Video Testimonials & Harapan Siswa Section -->
+            <section id="video-ucapan" class="py-16 bg-gradient-to-b from-slate-50 to-white border-t border-slate-200/80">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                        <div class="max-w-xl">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-xs font-bold mb-3 border border-rose-100">
+                                <span class="material-symbols-outlined text-sm">video_camera_front</span>
+                                <span>Bilik Video Siswa</span>
+                            </div>
+                            <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                Harapan &amp; Kesan Pemilih
+                            </h3>
+                            <p class="mt-2 text-sm text-slate-500 leading-relaxed">
+                                Rekaman pesan dan aspirasi langsung dari siswa-siswi SMK NIBA Business School yang telah menggunakan bilik video kiosk.
+                            </p>
+                        </div>
+
+                        <a href="/kiosk"
+                            class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-500 hover:to-orange-400 text-white font-bold text-xs sm:text-sm shadow-md shadow-rose-600/20 transition-all hover:scale-[1.02] shrink-0">
+                            <span class="material-symbols-outlined text-lg">videocam</span>
+                            <span>Rekam Pesanmu di Bilik Kiosk</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+
+                    {{if .Testimonials}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {{range .Testimonials}}
+                        <div class="bg-white rounded-3xl border border-slate-200/80 p-4 shadow-xs hover:shadow-xl hover:border-rose-200 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <!-- Video Player Container -->
+                                <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group">
+                                    <video src="{{.VideoPath}}" preload="metadata" playsinline class="w-full h-full object-cover"></video>
+                                    <button type="button"
+                                        onclick="playTestimonialVideo('{{.VideoPath}}', '{{.GDriveURL}}', '{{.Name}} ({{.ClassName}})')"
+                                        class="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-colors">
+                                        <div class="w-12 h-12 rounded-full bg-rose-600 group-hover:scale-110 text-white flex items-center justify-center shadow-lg transition-transform duration-200">
+                                            <span class="material-symbols-outlined text-2xl">play_arrow</span>
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <!-- Student Details -->
+                                <div>
+                                    <div class="flex items-center justify-between gap-2">
+                                        <h4 class="font-extrabold text-slate-900 text-sm leading-snug truncate">{{.Name}}</h4>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 shrink-0">
+                                            {{.ClassName}}
+                                        </span>
+                                    </div>
+                                    {{if .Message}}
+                                    <p class="text-xs text-slate-600 italic mt-2 line-clamp-2 leading-relaxed">
+                                        "{{.Message}}"
+                                    </p>
+                                    {{end}}
+                                </div>
+                            </div>
+
+                            <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                    {{.CreatedAt}}
+                                </span>
+                                <span class="text-rose-600 font-semibold flex items-center gap-0.5">
+                                    <span class="material-symbols-outlined text-xs">verified</span>
+                                    Siswa
+                                </span>
+                            </div>
+                        </div>
+                        {{end}}
+                    </div>
+                    {{else}}
+                    <!-- Empty State with CTA -->
+                    <div class="bg-gradient-to-r from-rose-500/10 via-orange-500/5 to-amber-500/10 border border-rose-200/60 rounded-3xl p-8 sm:p-12 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-white text-rose-600 shadow-md flex items-center justify-center mx-auto mb-4">
+                            <span class="material-symbols-outlined text-3xl">videocam</span>
+                        </div>
+                        <h4 class="text-lg sm:text-xl font-bold text-slate-900">Jadilah Siswa Pertama yang Merekam Harapan!</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mt-2">
+                            Bilik Kiosk telah disediakan untuk kamu menyampaikan pesan, kesan, dan harapan terbaik bagi Ketua &amp; Wakil Ketua OSIS baru.
+                        </p>
+                        <div class="mt-6">
+                            <a href="/kiosk"
+                                class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm shadow-md transition">
+                                <span class="material-symbols-outlined text-lg">touch_app</span>
+                                <span>Buka Bilik Kiosk &amp; Rekam Video</span>
+                            </a>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->
@@ -720,10 +817,74 @@
                 document.body.style.overflow = '';
             }
 
+            // Testimonial Video Modal
+            function playTestimonialVideo(localPath, gdriveUrl, sender) {
+                const modal = document.getElementById('testimModal');
+                const title = document.getElementById('testimModalTitle');
+                const player = document.getElementById('testimModalPlayer');
+                const frame = document.getElementById('testimModalFrame');
+
+                title.textContent = 'Harapan & Kesan: ' + sender;
+                player.classList.add('hidden');
+                frame.classList.add('hidden');
+
+                if (localPath) {
+                    player.src = localPath;
+                    player.classList.remove('hidden');
+                    player.play().catch(() => {});
+                } else if (gdriveUrl) {
+                    frame.src = gdriveUrl;
+                    frame.classList.remove('hidden');
+                }
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeTestimModal() {
+                const modal = document.getElementById('testimModal');
+                const player = document.getElementById('testimModalPlayer');
+                const frame = document.getElementById('testimModalFrame');
+                player.pause();
+                player.src = '';
+                frame.src = '';
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') closeModal();
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeTestimModal();
+                }
             });
         </script>
+
+        <!-- Testimonial Video Modal -->
+        <div id="testimModal" class="fixed inset-0 z-50 hidden modal-blur flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col">
+                <div class="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-rose-500">video_camera_front</span>
+                        <h4 id="testimModalTitle" class="text-sm font-bold truncate">Pesan Video Siswa</h4>
+                    </div>
+                    <button type="button" onclick="closeTestimModal()"
+                        class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+                        <span class="material-symbols-outlined text-base">close</span>
+                    </button>
+                </div>
+                <div class="bg-black aspect-video flex items-center justify-center">
+                    <video id="testimModalPlayer" controls playsinline class="w-full h-full object-contain hidden"></video>
+                    <iframe id="testimModalFrame" class="w-full h-full border-0 hidden" allow="autoplay"></iframe>
+                </div>
+                <div class="p-3.5 bg-slate-50 border-t border-slate-100 flex justify-end">
+                    <button type="button" onclick="closeTestimModal()"
+                        class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-300 transition">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
     </body>
 
 </html>

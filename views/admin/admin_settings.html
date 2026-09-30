@@ -86,6 +86,84 @@
             </div>
         </section>
 
+        <!-- Google Drive & Kiosk Video Testimonials Config -->
+        <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+            <div class="flex items-center justify-between gap-4 mb-2">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-rose-600">video_camera_front</span>
+                    Bilik Kiosk &amp; Sinkronisasi Google Drive
+                </h2>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                    Video Booth
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-6">Konfigurasi perekaman video ucapan/kesan &amp; pesan dari bilik kiosk siswa, penyimpanan lokal, serta sinkronisasi otomatis ke Google Drive agar tidak membebani kapasitas server.</p>
+
+            <div class="space-y-5">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="flex items-start gap-3 p-4 bg-slate-50/80 rounded-xl border border-slate-200/80">
+                        <input type="checkbox" name="testimonials_enabled" id="testimonials_enabled" value="1"
+                            {{if .TestimonialsEnabled}}checked{{end}}
+                            class="w-5 h-5 mt-0.5 rounded border-slate-300 text-rose-600 focus:ring-rose-500" />
+                        <div>
+                            <label for="testimonials_enabled" class="text-sm font-semibold text-slate-800 cursor-pointer">Bilik Video Kiosk Aktif</label>
+                            <p class="text-xs text-slate-500 mt-0.5">Izinkan pemilih merekam video kesan &amp; pesan melalui halaman <code class="text-rose-600 font-mono">/kiosk</code>.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-4 bg-slate-50/80 rounded-xl border border-slate-200/80">
+                        <input type="checkbox" name="testimonials_auto_approve" id="testimonials_auto_approve" value="1"
+                            {{if .TestimonialsAutoApprove}}checked{{end}}
+                            class="w-5 h-5 mt-0.5 rounded border-slate-300 text-rose-600 focus:ring-rose-500" />
+                        <div>
+                            <label for="testimonials_auto_approve" class="text-sm font-semibold text-slate-800 cursor-pointer">Auto Approve (Tampilkan Langsung)</label>
+                            <p class="text-xs text-slate-500 mt-0.5">Jika tidak dicentang, video baru masuk ke antrean moderasi admin terlebih dahulu.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4">
+                    <div class="flex items-start gap-3 p-4 bg-amber-50/60 rounded-xl border border-amber-200/60 mb-4">
+                        <input type="checkbox" name="gdrive_enabled" id="gdrive_enabled" value="1"
+                            {{if .GDriveEnabled}}checked{{end}}
+                            class="w-5 h-5 mt-0.5 rounded border-slate-300 text-amber-600 focus:ring-amber-500" />
+                        <div>
+                            <label for="gdrive_enabled" class="text-sm font-semibold text-slate-800 cursor-pointer">Aktifkan Sinkronisasi Google Drive</label>
+                            <p class="text-xs text-slate-600 mt-0.5">Video yang diunggah ke server lokal akan otomatis disinkronkan ke Google Drive di latar belakang menggunakan Service Account.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-4 bg-slate-50/80 rounded-xl border border-slate-200/80 mb-4">
+                        <input type="checkbox" name="gdrive_delete_local" id="gdrive_delete_local" value="1"
+                            {{if .GDriveDeleteLocal}}checked{{end}}
+                            class="w-5 h-5 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <div>
+                            <label for="gdrive_delete_local" class="text-sm font-semibold text-slate-800 cursor-pointer">Hapus File Lokal Setelah Berhasil Disinkronkan</label>
+                            <p class="text-xs text-slate-500 mt-0.5">Setelah file video terunggah sempurna ke Google Drive, file lokal di server dihapus otomatis untuk menghemat ruang disk.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Google Drive Folder ID (Opsional)</label>
+                            <input type="text" name="gdrive_folder_id" value="{{.GDriveFolderID}}"
+                                placeholder="1abCD_efGHijKLmnOPqrstUVwxYZ"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-rose-500 focus:outline-none font-mono" />
+                            <p class="text-[11px] text-slate-400 mt-1">ID folder tujuan penyimpanan video di Google Drive (didapat dari URL folder drive, misal: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600">drive.google.com/drive/folders/&lt;FOLDER_ID&gt;</code>). Pastikan folder dibagikan (share) dengan email Service Account sebagai <b>Editor</b>.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Google Service Account JSON Key</label>
+                            <textarea name="gdrive_service_account_json" rows="6"
+                                placeholder='{"type": "service_account", "project_id": "...", "private_key": "-----BEGIN PRIVATE KEY-----\n...", "client_email": "..."}'
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs focus:bg-white focus:border-rose-500 focus:outline-none font-mono leading-relaxed">{{.GDriveServiceAccountJSON}}</textarea>
+                            <p class="text-[11px] text-slate-400 mt-1">Salin dan tempel (paste) seluruh isi file JSON kredensial Google Service Account yang diunduh dari Google Cloud Console.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <div class="flex justify-end">
             <button type="submit"
                 class="px-6 py-3 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition flex items-center gap-2 shadow-md">
@@ -118,6 +196,24 @@
             </button>
         </div>
         <div id="test-result" class="mt-4 hidden"></div>
+    </section>
+
+    <!-- Test GDrive Connection (Separate card) -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+        <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-rose-600">cloud_sync</span>
+            Uji Koneksi Google Drive API
+        </h2>
+        <p class="text-xs text-slate-500 mb-4">Verifikasi autentikasi Service Account JSON dan izin akses folder Google Drive yang telah Anda simpan di atas.</p>
+
+        <div class="flex items-center gap-4">
+            <button type="button" id="test-gdrive-btn"
+                class="px-5 py-2.5 bg-rose-600 text-white font-bold text-sm rounded-xl hover:bg-rose-700 transition flex items-center justify-center gap-2 shrink-0">
+                <span class="material-symbols-outlined text-lg">sync_saved_locally</span>
+                Uji Koneksi Google Drive
+            </button>
+            <div id="test-gdrive-result" class="text-xs"></div>
+        </div>
     </section>
 
     <!-- Broadcast WhatsApp Reminder Section -->
@@ -402,6 +498,36 @@ Suara Anda menentukan masa depan sekolah kita! ✨
             } finally {
                 broadcastBtn.disabled = false;
                 broadcastBtn.innerHTML = '<span class="material-symbols-outlined text-lg">forward_to_inbox</span><span>Kirim Broadcast Pengingat</span>';
+            }
+        });
+    }
+
+    // Test Google Drive Connection
+    const testGDriveBtn = document.getElementById('test-gdrive-btn');
+    const testGDriveResult = document.getElementById('test-gdrive-result');
+    if (testGDriveBtn) {
+        testGDriveBtn.addEventListener('click', async () => {
+            testGDriveBtn.disabled = true;
+            testGDriveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">progress_activity</span> Menguji...';
+            testGDriveResult.textContent = '';
+            testGDriveResult.className = 'text-xs text-slate-500';
+
+            try {
+                const res = await fetch('/admin/settings/test-gdrive', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok && data.status === 'success') {
+                    testGDriveResult.className = 'text-xs text-emerald-600 font-semibold';
+                    testGDriveResult.textContent = '✅ ' + data.message;
+                } else {
+                    testGDriveResult.className = 'text-xs text-rose-600 font-semibold';
+                    testGDriveResult.textContent = '❌ ' + (data.error || 'Uji koneksi gagal.');
+                }
+            } catch (err) {
+                testGDriveResult.className = 'text-xs text-rose-600 font-semibold';
+                testGDriveResult.textContent = '❌ Kesalahan: ' + err.message;
+            } finally {
+                testGDriveBtn.disabled = false;
+                testGDriveBtn.innerHTML = '<span class="material-symbols-outlined text-lg">sync_saved_locally</span> Uji Koneksi Google Drive';
             }
         });
     }

@@ -138,11 +138,17 @@ type AdminSettingsData struct {
 	OneSenderTemplate string
 	WAEnabled         bool
 	WAProvider        string
-	WAURL             string
-	WADeviceID        string
-	WAUsername        string
-	WAPassword        string
-	WATemplate        string
+	WAURL                    string
+	WADeviceID               string
+	WAUsername               string
+	WAPassword               string
+	WATemplate               string
+	GDriveEnabled            bool
+	GDriveFolderID           string
+	GDriveServiceAccountJSON string
+	GDriveDeleteLocal        bool
+	TestimonialsAutoApprove  bool
+	TestimonialsEnabled      bool
 }
 
 type AdminLoginData struct {
@@ -1326,6 +1332,8 @@ func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 		var announcement string
 		var waEnabled int
 		var waProvider, waURL, waDeviceID, waUsername, waPassword, waTemplate, onesenderKey string
+		var gdriveEnabled, gdriveDeleteLocal, testimAutoApprove, testimEnabled int
+		var gdriveFolderID, gdriveSAJSON string
 
 		_ = db.QueryRow(`SELECT 
 			COALESCE(announcement_text, ''),
@@ -1336,23 +1344,38 @@ func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 			COALESCE(NULLIF(wa_username, ''), 'admin'),
 			COALESCE(NULLIF(wa_password, ''), 'PutihAbu123!'),
 			COALESCE(NULLIF(wa_template, ''), NULLIF(onesender_template, ''), ''),
-			COALESCE(onesender_api_key, '')
-		FROM settings ORDER BY id DESC LIMIT 1`).Scan(&announcement, &waEnabled, &waProvider, &waURL, &waDeviceID, &waUsername, &waPassword, &waTemplate, &onesenderKey)
+			COALESCE(onesender_api_key, ''),
+			COALESCE(gdrive_enabled, 0),
+			COALESCE(gdrive_folder_id, ''),
+			COALESCE(gdrive_service_account_json, ''),
+			COALESCE(gdrive_delete_local, 0),
+			COALESCE(testimonials_auto_approve, 1),
+			COALESCE(testimonials_enabled, 1)
+		FROM settings ORDER BY id DESC LIMIT 1`).Scan(
+			&announcement, &waEnabled, &waProvider, &waURL, &waDeviceID, &waUsername, &waPassword, &waTemplate, &onesenderKey,
+			&gdriveEnabled, &gdriveFolderID, &gdriveSAJSON, &gdriveDeleteLocal, &testimAutoApprove, &testimEnabled,
+		)
 
 		data := AdminSettingsData{
-			AdminLayoutData:   adminLayout("Pengaturan | OSIS Admin", "Pengaturan Sistem", "Atur pengumuman dan integrasi WhatsApp Gateway (GOWA).", "admin_settings_content", "settings"),
-			Announcement:      announcement,
-			OneSenderEnabled:  waEnabled == 1,
-			OneSenderURL:      waURL,
-			OneSenderKey:      onesenderKey,
-			OneSenderTemplate: waTemplate,
-			WAEnabled:         waEnabled == 1,
-			WAProvider:        waProvider,
-			WAURL:             waURL,
-			WADeviceID:        waDeviceID,
-			WAUsername:        waUsername,
-			WAPassword:        waPassword,
-			WATemplate:        waTemplate,
+			AdminLayoutData:          adminLayout("Pengaturan | OSIS Admin", "Pengaturan Sistem", "Atur pengumuman, integrasi WhatsApp Gateway (GOWA), dan Google Drive Kiosk.", "admin_settings_content", "settings"),
+			Announcement:             announcement,
+			OneSenderEnabled:         waEnabled == 1,
+			OneSenderURL:             waURL,
+			OneSenderKey:             onesenderKey,
+			OneSenderTemplate:        waTemplate,
+			WAEnabled:                waEnabled == 1,
+			WAProvider:               waProvider,
+			WAURL:                    waURL,
+			WADeviceID:               waDeviceID,
+			WAUsername:               waUsername,
+			WAPassword:               waPassword,
+			WATemplate:               waTemplate,
+			GDriveEnabled:            gdriveEnabled == 1,
+			GDriveFolderID:           gdriveFolderID,
+			GDriveServiceAccountJSON: gdriveSAJSON,
+			GDriveDeleteLocal:        gdriveDeleteLocal == 1,
+			TestimonialsAutoApprove:  testimAutoApprove == 1,
+			TestimonialsEnabled:      testimEnabled == 1,
 		}
 		return c.Render(http.StatusOK, "admin_settings.html", data)
 	}
@@ -1391,6 +1414,25 @@ func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		apiKey := strings.TrimSpace(c.FormValue("onesender_key"))
 
+		gdriveEnabled := 0
+		if c.FormValue("gdrive_enabled") == "1" {
+			gdriveEnabled = 1
+		}
+		gdriveFolderID := strings.TrimSpace(c.FormValue("gdrive_folder_id"))
+		gdriveSAJSON := strings.TrimSpace(c.FormValue("gdrive_service_account_json"))
+		gdriveDeleteLocal := 0
+		if c.FormValue("gdrive_delete_local") == "1" {
+			gdriveDeleteLocal = 1
+		}
+		testimAutoApprove := 0
+		if c.FormValue("testimonials_auto_approve") == "1" {
+			testimAutoApprove = 1
+		}
+		testimEnabled := 0
+		if c.FormValue("testimonials_enabled") == "1" {
+			testimEnabled = 1
+		}
+
 		enabledVal := 0
 		if waEnabled {
 			enabledVal = 1
@@ -1402,19 +1444,27 @@ func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 		if err == sql.ErrNoRows {
 			_, err = db.Exec(`INSERT INTO settings (
 				announcement_text, onesender_enabled, onesender_api_url, onesender_api_key, onesender_template,
-				wa_provider, wa_enabled, wa_api_url, wa_device_id, wa_username, wa_password, wa_template
-			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				wa_provider, wa_enabled, wa_api_url, wa_device_id, wa_username, wa_password, wa_template,
+				gdrive_enabled, gdrive_folder_id, gdrive_service_account_json, gdrive_delete_local,
+				testimonials_auto_approve, testimonials_enabled
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 				announcement, enabledVal, waURL, apiKey, waTemplate,
-				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate)
+				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate,
+				gdriveEnabled, gdriveFolderID, gdriveSAJSON, gdriveDeleteLocal,
+				testimAutoApprove, testimEnabled)
 		} else if err == nil {
 			_, err = db.Exec(`UPDATE settings SET 
 				announcement_text = ?, 
 				onesender_enabled = ?, onesender_api_url = ?, onesender_api_key = ?, onesender_template = ?,
 				wa_provider = ?, wa_enabled = ?, wa_api_url = ?, wa_device_id = ?, wa_username = ?, wa_password = ?, wa_template = ?,
+				gdrive_enabled = ?, gdrive_folder_id = ?, gdrive_service_account_json = ?, gdrive_delete_local = ?,
+				testimonials_auto_approve = ?, testimonials_enabled = ?,
 				updated_at = CURRENT_TIMESTAMP 
 			WHERE id = ?`,
 				announcement, enabledVal, waURL, apiKey, waTemplate,
-				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate, existingID)
+				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate,
+				gdriveEnabled, gdriveFolderID, gdriveSAJSON, gdriveDeleteLocal,
+				testimAutoApprove, testimEnabled, existingID)
 		}
 
 		if err != nil {
@@ -1423,6 +1473,7 @@ func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 		return c.Redirect(http.StatusSeeOther, "/admin/settings")
 	}
 }
+
 
 func AdminTestMessageHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {

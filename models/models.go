@@ -55,3 +55,19 @@ type Credit struct {
 	OrderNum  int
 	CreatedAt string
 }
+
+type Testimonial struct {
+	ID           uint
+	Name         string
+	ClassName    string
+	Message      string
+	VideoPath    string
+	VideoType    string
+	GDriveFileID string
+	GDriveURL    string
+	SyncStatus   string
+	SyncError    string
+	IsApproved   bool
+	CreatedAt    string
+}
+

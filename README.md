@@ -10,26 +10,28 @@ Aplikasi e-voting OSIS untuk SMK NIBA, dibangun dengan Golang, Echo v5, SQLite, 
 ## Fitur
 
 ### Admin Module
-- Dashboard dengan metrics real-time
-- Manajemen kandidat (CRUD dengan foto upload)
-- Manajemen pemilih (DPT, UUID generation, import CSV)
-- Kartu pemilih printable
-- Scanner kehadiran (attendance)
-- Audit logs dengan masked UUIDs
-- Settings (announcement, OneSender config)
-- Backup database & export report
+- Dashboard dengan metrics real-time & perolehan suara
+- Manajemen kandidat (CRUD foto, nomor urut, visi, misi, proker & orasi video)
+- Manajemen pemilih (DPT, UUID generation, import CSV/Excel, printable voter cards)
+- Scanner absensi & kehadiran TPS
+- Moderasi & manajemen Video Ucapan Kiosk (tampilkan/sembunyikan, tonton preview, sinkronisasi Google Drive)
+- Pengaturan sistem (Pengumuman, integrasi WhatsApp Gateway/GOWA, kredensial Google Service Account, broadcast reminder)
+- Audit logs dengan masked UUIDs & backup database
 
-### Voter Module
-- Landing page dengan profil kandidat
-- QR Code scanner untuk login passwordless
+### Voter & Public Module
+- Landing page interaktif dengan profil kandidat, video orasi, dan timeline pemilihan
+- Galeri Demisioner OSIS dengan filter angkatan/periode & divisi
+- **Bilik Kiosk Video Ucapan (`/kiosk`)**: Layar sentuh perekam pesan & kesan siswa langsung di browser
+- QR Code scanner untuk login bilik suara passwordless
 - Multi-step voting flow (Step 1 → Step 2 → Confirm → Success)
-- Notifikasi WhatsApp setelah voting
+- Notifikasi konfirmasi WhatsApp otomatis setelah voting
 
-### Technical
-- Server-side rendering dengan Go HTML Templates
+### Technical & Cloud Sync
+- Built-in Google Drive Sync Client (Go standard library crypto RS256 JWT assertion, tanpa SDK eksternal)
+- Penyimpanan lokal berketahanan tinggi (`/public/uploads/videos`) dengan opsi auto-delete setelah terunggah ke Google Drive
+- Server-side rendering dengan Go HTML Templates & Tailwind CSS
 - SQLite database dengan auto-migration
-- Docker-ready untuk deployment
-- Responsive UI dengan TailwindCSS
+- Docker-ready untuk deployment produksi
 
 ---
 
@@ -61,6 +63,8 @@ go run main.go
 
 Akses:
 - Voter: `http://localhost:8024`
+- Demisioner: `http://localhost:8024/demisioner`
+- Bilik Video Kiosk: `http://localhost:8024/kiosk`
 - Admin: `http://localhost:8024/admin/login`
 
 Default login:
