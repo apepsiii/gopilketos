@@ -142,7 +142,9 @@ func main() {
 	}
 
 	funcMap := template.FuncMap{
-		"eq": func(a, b string) bool { return a == b },
+		"eq": func(a, b interface{}) bool {
+			return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b)
+		},
 	}
 	tmpl := template.New("").Funcs(funcMap)
 	viewsFS := getViewsFS()

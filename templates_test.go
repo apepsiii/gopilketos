@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"database/sql"
+	"fmt"
 	"html/template"
 	"testing"
 
@@ -14,7 +15,9 @@ import (
 func TestTemplatesAndMigration(t *testing.T) {
 	// Test template parsing
 	funcMap := template.FuncMap{
-		"eq": func(a, b string) bool { return a == b },
+		"eq": func(a, b interface{}) bool {
+			return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b)
+		},
 	}
 	tmpl := template.New("").Funcs(funcMap)
 	viewsFS := getViewsFS()
@@ -140,5 +143,22 @@ func TestTemplatesAndMigration(t *testing.T) {
 	}
 	if err := tmpl.ExecuteTemplate(&buf, "dpt.html", dptData); err != nil {
 		t.Fatalf("Failed to execute dpt.html: %v", err)
+	}
+
+	// Test rendering admin_candidate_form.html
+	buf.Reset()
+	candidateFormData := handlers.AdminCandidateFormData{
+		AdminLayoutData: handlers.AdminLayoutData{
+			Title:           "Tambah Kandidat",
+			PageTitle:       "Tambah Kandidat",
+			PageSubtitle:    "Form profil kandidat",
+			ContentTemplate: "admin_candidate_form_content",
+			ActiveTab:       "candidates",
+		},
+		CandidateNumber: 1,
+		Action:          "Tambah Kandidat",
+	}
+	if err := tmpl.ExecuteTemplate(&buf, "admin_candidate_form.html", candidateFormData); err != nil {
+		t.Fatalf("Failed to execute admin_candidate_form.html: %v", err)
 	}
 }
