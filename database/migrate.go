@@ -102,5 +102,37 @@ func Migrate(db *sql.DB) error {
 		}
 	}
 
+	candidateColumnChecks := map[string]string{
+		"candidate_number": "INTEGER DEFAULT 1",
+	}
+	for col, colType := range candidateColumnChecks {
+		var dummy interface{}
+		err := db.QueryRow("SELECT " + col + " FROM candidates LIMIT 1").Scan(&dummy)
+		if err != nil {
+			db.Exec("ALTER TABLE candidates ADD COLUMN " + col + " " + colType)
+		}
+	}
+
+	// Ensure proper 1..3 candidate_number for existing candidates per position
+	for _, pos := range []string{"CHAIRMAN", "VICE_CHAIRMAN"} {
+		rows, err := db.Query("SELECT id FROM candidates WHERE position = ? ORDER BY id ASC", pos)
+		if err == nil {
+			type item struct{ id, num int }
+			var updates []item
+			num := 1
+			for rows.Next() {
+				var cid int
+				if err := rows.Scan(&cid); err == nil {
+					updates = append(updates, item{cid, num})
+					num++
+				}
+			}
+			rows.Close()
+			for _, u := range updates {
+				db.Exec("UPDATE candidates SET candidate_number = ? WHERE id = ? AND (candidate_number IS NULL OR candidate_number <= 0 OR candidate_number > 3)", u.num, u.id)
+			}
+		}
+	}
+
 	return nil
 }

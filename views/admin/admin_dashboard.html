@@ -207,7 +207,7 @@
 
     // Chairman Horizontal Bar Chart
     const chairmanData = [
-        {{range .ChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
+        {{range .ChairmanResults}}{number: {{.CandidateNumber}}, name: "No. {{.CandidateNumber}} - {{.Name}}", count: {{.Count}}},{{end}}
     ];
     const chairmanCtx = document.getElementById('chairmanChart').getContext('2d');
     new Chart(chairmanCtx, {
@@ -245,7 +245,7 @@
 
     // Vice Chairman Horizontal Bar Chart
     const viceData = [
-        {{range .ViceChairmanResults}}{name: "{{.Name}}", count: {{.Count}}},{{end}}
+        {{range .ViceChairmanResults}}{number: {{.CandidateNumber}}, name: "No. {{.CandidateNumber}} - {{.Name}}", count: {{.Count}}},{{end}}
     ];
     const viceCtx = document.getElementById('viceChairmanChart').getContext('2d');
     new Chart(viceCtx, {

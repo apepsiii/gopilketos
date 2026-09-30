@@ -14,15 +14,16 @@ type Setting struct {
 }
 
 type Candidate struct {
-	ID        uint
-	Name      string
-	ClassName string
-	PhotoURL  string
-	Vision    string
-	Mission   string
-	Program   string
-	Position  string
-	CreatedAt string
+	ID              uint
+	CandidateNumber int
+	Name            string
+	ClassName       string
+	PhotoURL        string
+	Vision          string
+	Mission         string
+	Program         string
+	Position        string
+	CreatedAt       string
 }
 
 type Voter struct {

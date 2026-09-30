@@ -38,8 +38,9 @@ type AdminDashboardData struct {
 }
 
 type CandidateResult struct {
-	Name  string
-	Count int
+	CandidateNumber int
+	Name            string
+	Count           int
 }
 
 type AdminCandidatesData struct {
@@ -49,15 +50,16 @@ type AdminCandidatesData struct {
 
 type AdminCandidateFormData struct {
 	AdminLayoutData
-	ID        int
-	Name      string
-	ClassName string
-	PhotoURL  string
-	Vision    string
-	Mission   string
-	Program   string
-	Position  string
-	Action    string
+	ID              int
+	CandidateNumber int
+	Name            string
+	ClassName       string
+	PhotoURL        string
+	Vision          string
+	Mission         string
+	Program         string
+	Position        string
+	Action          string
 }
 
 type AdminVotersData struct {
@@ -344,11 +346,11 @@ func AdminDashboardHandler(db *sql.DB) echo.HandlerFunc {
 }
 
 func fetchCandidateResults(db *sql.DB, position string, voteField string) ([]CandidateResult, error) {
-	query := fmt.Sprintf(`SELECT c.name, COUNT(v.id) FROM candidates c
+	query := fmt.Sprintf(`SELECT COALESCE(c.candidate_number, 1), c.name, COUNT(v.id) FROM candidates c
 		LEFT JOIN votes v ON v.%s = c.id
 		WHERE c.position = ?
 		GROUP BY c.id
-		ORDER BY COUNT(v.id) DESC, c.name`, voteField)
+		ORDER BY c.candidate_number ASC, COUNT(v.id) DESC, c.name`, voteField)
 	rows, err := db.Query(query, position)
 	if err != nil {
 		return nil, err
@@ -358,7 +360,7 @@ func fetchCandidateResults(db *sql.DB, position string, voteField string) ([]Can
 	results := []CandidateResult{}
 	for rows.Next() {
 		var r CandidateResult
-		if err := rows.Scan(&r.Name, &r.Count); err != nil {
+		if err := rows.Scan(&r.CandidateNumber, &r.Name, &r.Count); err != nil {
 			return nil, err
 		}
 		results = append(results, r)
@@ -368,7 +370,7 @@ func fetchCandidateResults(db *sql.DB, position string, voteField string) ([]Can
 
 func AdminCandidatesHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
-		rows, err := db.Query("SELECT id, name, class_name, photo_url, vision, mission, program, position FROM candidates ORDER BY position, id")
+		rows, err := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position FROM candidates ORDER BY position, candidate_number ASC, id ASC")
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal memuat daftar kandidat")
 		}
@@ -377,7 +379,7 @@ func AdminCandidatesHandler(db *sql.DB) echo.HandlerFunc {
 		candidates := []CandidateView{}
 		for rows.Next() {
 			var candidate CandidateView
-			if err := rows.Scan(&candidate.ID, &candidate.Name, &candidate.ClassName, &candidate.PhotoURL, &candidate.Vision, &candidate.Mission, &candidate.Program, &candidate.Position); err != nil {
+			if err := rows.Scan(&candidate.ID, &candidate.CandidateNumber, &candidate.Name, &candidate.ClassName, &candidate.PhotoURL, &candidate.Vision, &candidate.Mission, &candidate.Program, &candidate.Position); err != nil {
 				return c.String(http.StatusInternalServerError, "Gagal memproses kandidat")
 			}
 			candidates = append(candidates, candidate)
@@ -396,13 +398,17 @@ func AdminCandidateFormHandler(db *sql.DB) echo.HandlerFunc {
 		if idStr == "" {
 			idStr = c.Param("id")
 		}
-		form := AdminCandidateFormData{AdminLayoutData: adminLayout("Tambah Kandidat | OSIS Admin", "Tambah Kandidat", "Create or edit candidate profiles.", "admin_candidate_form_content", "candidates"), Action: "Tambah Kandidat"}
+		form := AdminCandidateFormData{
+			AdminLayoutData: adminLayout("Tambah Kandidat | OSIS Admin", "Tambah Kandidat", "Create or edit candidate profiles.", "admin_candidate_form_content", "candidates"),
+			CandidateNumber: 1,
+			Action:          "Tambah Kandidat",
+		}
 		if idStr != "" {
 			id, err := strconv.Atoi(idStr)
 			if err == nil {
 				var photoURL string
-				_ = db.QueryRow("SELECT id, name, class_name, photo_url, vision, mission, program, position FROM candidates WHERE id = ?", id).Scan(
-					&form.ID, &form.Name, &form.ClassName, &photoURL, &form.Vision, &form.Mission, &form.Program, &form.Position)
+				_ = db.QueryRow("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position FROM candidates WHERE id = ?", id).Scan(
+					&form.ID, &form.CandidateNumber, &form.Name, &form.ClassName, &photoURL, &form.Vision, &form.Mission, &form.Program, &form.Position)
 				form.PhotoURL = photoURL
 				form.Action = "Simpan Perubahan"
 				form.AdminLayoutData = adminLayout("Edit Kandidat | OSIS Admin", "Edit Kandidat", "Create or edit candidate profiles.", "admin_candidate_form_content", "candidates")
@@ -421,6 +427,11 @@ func AdminCandidateCreateHandler(db *sql.DB) echo.HandlerFunc {
 		program := c.FormValue("program")
 		position := c.FormValue("position")
 		photoURL := c.FormValue("photo_url")
+		numberStr := c.FormValue("candidate_number")
+		candidateNumber, _ := strconv.Atoi(numberStr)
+		if candidateNumber < 1 || candidateNumber > 3 {
+			candidateNumber = 1
+		}
 
 		if name == "" || className == "" || position == "" {
 			return c.String(http.StatusBadRequest, "Nama, kelas, dan posisi wajib diisi")
@@ -434,7 +445,7 @@ func AdminCandidateCreateHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		photoURL = normalizeCandidatePhotoURL(photoURL)
 
-		_, err := db.Exec("INSERT INTO candidates (name, class_name, photo_url, vision, mission, program, position) VALUES (?, ?, ?, ?, ?, ?, ?)", name, className, photoURL, vision, mission, program, position)
+		_, err := db.Exec("INSERT INTO candidates (candidate_number, name, class_name, photo_url, vision, mission, program, position) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", candidateNumber, name, className, photoURL, vision, mission, program, position)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal menyimpan kandidat")
 		}
@@ -455,6 +466,11 @@ func AdminCandidateUpdateHandler(db *sql.DB) echo.HandlerFunc {
 		program := c.FormValue("program")
 		position := c.FormValue("position")
 		photoURL := c.FormValue("photo_url")
+		numberStr := c.FormValue("candidate_number")
+		candidateNumber, _ := strconv.Atoi(numberStr)
+		if candidateNumber < 1 || candidateNumber > 3 {
+			candidateNumber = 1
+		}
 
 		if name == "" || className == "" || position == "" {
 			return c.String(http.StatusBadRequest, "Nama, kelas, dan posisi wajib diisi")
@@ -468,7 +484,7 @@ func AdminCandidateUpdateHandler(db *sql.DB) echo.HandlerFunc {
 		}
 		photoURL = normalizeCandidatePhotoURL(photoURL)
 
-		_, err = db.Exec("UPDATE candidates SET name = ?, class_name = ?, photo_url = ?, vision = ?, mission = ?, program = ?, position = ? WHERE id = ?", name, className, photoURL, vision, mission, program, position, id)
+		_, err = db.Exec("UPDATE candidates SET candidate_number = ?, name = ?, class_name = ?, photo_url = ?, vision = ?, mission = ?, program = ?, position = ? WHERE id = ?", candidateNumber, name, className, photoURL, vision, mission, program, position, id)
 		if err != nil {
 			return c.String(http.StatusInternalServerError, "Gagal memperbarui kandidat")
 		}
@@ -1389,12 +1405,12 @@ func AdminAttendanceListHandler(db *sql.DB) echo.HandlerFunc {
 func AdminBackupHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		candidates := []CandidateView{}
-		rows, _ := db.Query("SELECT id, name, class_name, photo_url, vision, mission, program, position FROM candidates ORDER BY position, id")
+		rows, _ := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program, position FROM candidates ORDER BY position, candidate_number, id")
 		if rows != nil {
 			defer rows.Close()
 			for rows.Next() {
 				var c CandidateView
-				rows.Scan(&c.ID, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program, &c.Position)
+				rows.Scan(&c.ID, &c.CandidateNumber, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program, &c.Position)
 				candidates = append(candidates, c)
 			}
 		}

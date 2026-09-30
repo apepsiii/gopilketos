@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         summary.innerHTML = `
             <div class="p-6 rounded-2xl bg-blue-50/70 border border-blue-200/80">
-                <p class="text-xs font-bold uppercase tracking-wider text-blue-700 mb-3">Ketua Terpilih</p>
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs font-bold uppercase tracking-wider text-blue-700">Calon Ketua OSIS</p>
+                    <span class="px-2 py-0.5 rounded-lg bg-blue-100 text-blue-800 font-mono text-xs font-bold">No. ${chairman.candidate_number || 1}</span>
+                </div>
                 <div class="flex items-center gap-4">
                     <img src="${chairman.photo_url ? encodeURI(chairman.photo_url) : '/static/images/default-profile.svg'}" 
                          alt="${escapeHTML(chairman.name)}" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-300 shadow-sm" />
@@ -56,17 +59,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>
 
-            <div class="p-6 rounded-2xl bg-indigo-50/70 border border-indigo-200/80">
-                <p class="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-3">Wakil Ketua Terpilih</p>
+            <div class="p-6 rounded-2xl bg-purple-50/70 border border-purple-200/80">
+                <div class="flex items-center justify-between mb-3">
+                    <p class="text-xs font-bold uppercase tracking-wider text-purple-700">Calon Wakil Ketua OSIS</p>
+                    <span class="px-2 py-0.5 rounded-lg bg-purple-100 text-purple-800 font-mono text-xs font-bold">No. ${vice.candidate_number || 1}</span>
+                </div>
                 <div class="flex items-center gap-4">
                     <img src="${vice.photo_url ? encodeURI(vice.photo_url) : '/static/images/default-profile.svg'}" 
-                         alt="${escapeHTML(vice.name)}" class="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-300 shadow-sm" />
+                         alt="${escapeHTML(vice.name)}" class="w-16 h-16 rounded-2xl object-cover border-2 border-purple-300 shadow-sm" />
                     <div>
                         <p class="font-bold text-lg text-slate-900">${escapeHTML(vice.name)}</p>
                         <p class="text-xs text-slate-500">${escapeHTML(vice.class_name)}</p>
                     </div>
                 </div>
-                <div class="mt-4 p-3.5 bg-white rounded-xl border border-indigo-100 shadow-xs">
+                <div class="mt-4 p-3.5 bg-white rounded-xl border border-purple-100 shadow-xs">
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Visi</p>
                     <p class="text-xs text-slate-700 line-clamp-2">${escapeHTML(vice.vision || '-')}</p>
                 </div>

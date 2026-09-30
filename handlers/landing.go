@@ -17,14 +17,15 @@ type LandingPageData struct {
 }
 
 type CandidateView struct {
-	ID        int
-	Name      string
-	ClassName string
-	PhotoURL  string
-	Vision    string
-	Mission   string
-	Program   string
-	Position  string
+	ID              int
+	CandidateNumber int
+	Name            string
+	ClassName       string
+	PhotoURL        string
+	Vision          string
+	Mission         string
+	Program         string
+	Position        string
 }
 
 func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
@@ -46,24 +47,26 @@ func LandingPageHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		chairmen := []CandidateView{}
-		rows, err := db.Query("SELECT id, name, class_name, photo_url, vision, mission, program FROM candidates WHERE position = 'CHAIRMAN' ORDER BY id")
+		rows, err := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program FROM candidates WHERE position = 'CHAIRMAN' ORDER BY candidate_number ASC, id ASC")
 		if err == nil {
 			defer rows.Close()
 			for rows.Next() {
 				var c CandidateView
-				if err := rows.Scan(&c.ID, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program); err == nil {
+				if err := rows.Scan(&c.ID, &c.CandidateNumber, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program); err == nil {
+					c.Position = "CHAIRMAN"
 					chairmen = append(chairmen, c)
 				}
 			}
 		}
 
 		vice := []CandidateView{}
-		rows2, err2 := db.Query("SELECT id, name, class_name, photo_url, vision, mission, program FROM candidates WHERE position = 'VICE_CHAIRMAN' ORDER BY id")
+		rows2, err2 := db.Query("SELECT id, COALESCE(candidate_number, 1), name, class_name, photo_url, vision, mission, program FROM candidates WHERE position = 'VICE_CHAIRMAN' ORDER BY candidate_number ASC, id ASC")
 		if err2 == nil {
 			defer rows2.Close()
 			for rows2.Next() {
 				var c CandidateView
-				if err := rows2.Scan(&c.ID, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program); err == nil {
+				if err := rows2.Scan(&c.ID, &c.CandidateNumber, &c.Name, &c.ClassName, &c.PhotoURL, &c.Vision, &c.Mission, &c.Program); err == nil {
+					c.Position = "VICE_CHAIRMAN"
 					vice = append(vice, c)
 				}
 			}
