@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -64,8 +63,8 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, VoteResponse{"error", "Gagal update status voter"})
 		}
 
-		var chairmanPosition, vicePosition string
-		err = tx.QueryRow("SELECT position FROM candidates WHERE id = ?", req.ChairmanID).Scan(&chairmanPosition)
+		var chairmanPosition, chairmanName string
+		err = tx.QueryRow("SELECT position, name FROM candidates WHERE id = ?", req.ChairmanID).Scan(&chairmanPosition, &chairmanName)
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, VoteResponse{"error", "Kandidat ketua tidak ditemukan"})
 		} else if err != nil {
@@ -75,7 +74,8 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, VoteResponse{"error", "Kandidat ID pertama bukan chairman"})
 		}
 
-		err = tx.QueryRow("SELECT position FROM candidates WHERE id = ?", req.ViceChairmanID).Scan(&vicePosition)
+		var vicePosition, viceChairmanName string
+		err = tx.QueryRow("SELECT position, name FROM candidates WHERE id = ?", req.ViceChairmanID).Scan(&vicePosition, &viceChairmanName)
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, VoteResponse{"error", "Kandidat wakil tidak ditemukan"})
 		} else if err != nil {
@@ -96,27 +96,27 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		if phoneNumber != "" {
-			go func() {
-				sender, err := services.NewOneSenderClient(db)
+			go func(phone, name, cName, vName, receipt string) {
+				sender, err := services.NewWhatsAppClient(db)
 				if err != nil {
-					log.Printf("Gagal membuat OneSender client: %v", err)
+					log.Printf("[WA] Gagal membuat WhatsApp client: %v", err)
+					return
+				}
+				if !sender.IsEnabled() {
 					return
 				}
 
-				message := fmt.Sprintf(`Halo %s! Terima kasih telah berpartisipasi dalam Pemilihan OSIS SMK NIBA Business School.
-
-Suara Anda telah tercatat dengan aman dan rahasia.
-
-.partisipasimu sangat berarti untuk masa depan sekolah kita. Juntos, kita bisa menciptakan perubahan positif! 💪
-
-"Mari bersama-sama membangun sekolah yang lebih baik."
-
-Terima kasih!`, voterName)
-
-				if err := sender.SendMessage(phoneNumber, message); err != nil {
-					log.Printf("Gagal mengirim WA ke %s: %v", phoneNumber, err)
+				message := sender.BuildVoteMessage(name, cName, vName, time.Now())
+				status := "sent"
+				if err := sender.SendMessage(phone, message); err != nil {
+					status = "failed: " + err.Error()
+					log.Printf("[WA] Gagal mengirim WA ke %s: %v", phone, err)
+				} else {
+					log.Printf("[WA] Berhasil mengirim WA notifikasi ke %s", phone)
 				}
-			}()
+
+				_, _ = db.Exec("UPDATE votes SET wa_notif_sent = ?, wa_notif_status = ? WHERE masked_uuid = ?", status == "sent", status, receipt)
+			}(phoneNumber, voterName, chairmanName, viceChairmanName, ballotReceipt)
 		}
 
 		return c.JSON(http.StatusOK, VoteResponse{"success", "Pilihan berhasil disimpan"})

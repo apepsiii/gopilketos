@@ -11,6 +11,20 @@ DATE=$(date +"%d%m%y")
 echo "[*] Version: $VERSION"
 echo ""
 
+ARCH=$(uname -m)
+CC_FLAG=""
+if [ "$ARCH" != "aarch64" ] && [ "$ARCH" != "arm64" ]; then
+    if command -v aarch64-linux-gnu-gcc &> /dev/null; then
+        export CC=aarch64-linux-gnu-gcc
+        echo "[*] Host is $ARCH (cross-compiling with aarch64-linux-gnu-gcc)"
+    else
+        echo "[!] Notice: Host is $ARCH. If cross-compilation fails, install aarch64-linux-gnu-gcc or run this script directly on the Armbian device."
+    fi
+else
+    echo "[*] Native ARM64 environment detected ($ARCH)"
+fi
+echo ""
+
 echo "[1/2] Building pilketos binary (ARM64)..."
 OUT_APP="pilketos_${VERSION}_${DATE}_arm64"
 # CGO_ENABLED=1 needed for mattn/go-sqlite3
@@ -19,7 +33,7 @@ CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o "$OUT_APP" .
 if [ $? -eq 0 ]; then
     echo "    ✅ $OUT_APP"
 else
-    echo "    ❌ Failed! Make sure GCC is installed (apt install gcc)"
+    echo "    ❌ Failed! Make sure GCC is installed (apt install gcc / gcc-aarch64-linux-gnu)"
     exit 1
 fi
 

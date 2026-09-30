@@ -114,6 +114,13 @@ type AdminSettingsData struct {
 	OneSenderURL      string
 	OneSenderKey      string
 	OneSenderTemplate string
+	WAEnabled         bool
+	WAProvider        string
+	WAURL             string
+	WADeviceID        string
+	WAUsername        string
+	WAPassword        string
+	WATemplate        string
 }
 
 type AdminLoginData struct {
@@ -1118,18 +1125,35 @@ func AdminLogsHandler(db *sql.DB) echo.HandlerFunc {
 func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		var announcement string
-		var enabled int
-		var url, key, template string
+		var waEnabled int
+		var waProvider, waURL, waDeviceID, waUsername, waPassword, waTemplate, onesenderKey string
 
-		_ = db.QueryRow("SELECT announcement_text, onesender_enabled, onesender_api_url, onesender_api_key, onesender_template FROM settings ORDER BY id DESC LIMIT 1").Scan(&announcement, &enabled, &url, &key, &template)
+		_ = db.QueryRow(`SELECT 
+			COALESCE(announcement_text, ''),
+			COALESCE(wa_enabled, onesender_enabled, 0),
+			COALESCE(wa_provider, 'gowa'),
+			COALESCE(NULLIF(wa_api_url, ''), NULLIF(onesender_api_url, ''), 'http://127.0.0.1:8054/api/whatsapp/send'),
+			COALESCE(NULLIF(wa_device_id, ''), 'Pionir'),
+			COALESCE(NULLIF(wa_username, ''), 'admin'),
+			COALESCE(NULLIF(wa_password, ''), 'PutihAbu123!'),
+			COALESCE(NULLIF(wa_template, ''), NULLIF(onesender_template, ''), ''),
+			COALESCE(onesender_api_key, '')
+		FROM settings ORDER BY id DESC LIMIT 1`).Scan(&announcement, &waEnabled, &waProvider, &waURL, &waDeviceID, &waUsername, &waPassword, &waTemplate, &onesenderKey)
 
 		data := AdminSettingsData{
-			AdminLayoutData:   adminLayout("Pengaturan | OSIS Admin", "Pengaturan Sistem", "Atur pengumuman dan konfigurasi WhatsApp.", "admin_settings_content", "settings"),
+			AdminLayoutData:   adminLayout("Pengaturan | OSIS Admin", "Pengaturan Sistem", "Atur pengumuman dan integrasi WhatsApp Gateway (GOWA).", "admin_settings_content", "settings"),
 			Announcement:      announcement,
-			OneSenderEnabled:  enabled == 1,
-			OneSenderURL:      url,
-			OneSenderKey:      key,
-			OneSenderTemplate: template,
+			OneSenderEnabled:  waEnabled == 1,
+			OneSenderURL:      waURL,
+			OneSenderKey:      onesenderKey,
+			OneSenderTemplate: waTemplate,
+			WAEnabled:         waEnabled == 1,
+			WAProvider:        waProvider,
+			WAURL:             waURL,
+			WADeviceID:        waDeviceID,
+			WAUsername:        waUsername,
+			WAPassword:        waPassword,
+			WATemplate:        waTemplate,
 		}
 		return c.Render(http.StatusOK, "admin_settings.html", data)
 	}
@@ -1138,13 +1162,38 @@ func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 		announcement := c.FormValue("announcement")
-		onesenderEnabled := c.FormValue("onesender_enabled") == "1"
-		onesenderURL := c.FormValue("onesender_url")
-		onesenderKey := c.FormValue("onesender_key")
-		onesenderTemplate := c.FormValue("onesender_template")
+		waEnabled := c.FormValue("wa_enabled") == "1" || c.FormValue("onesender_enabled") == "1"
+		waProvider := c.FormValue("wa_provider")
+		if waProvider == "" {
+			waProvider = "gowa"
+		}
+		waURL := strings.TrimSpace(c.FormValue("wa_url"))
+		if waURL == "" {
+			waURL = strings.TrimSpace(c.FormValue("onesender_url"))
+		}
+		if waURL == "" {
+			waURL = "http://127.0.0.1:8054/api/whatsapp/send"
+		}
+		waDeviceID := strings.TrimSpace(c.FormValue("wa_device_id"))
+		if waDeviceID == "" {
+			waDeviceID = "Pionir"
+		}
+		waUsername := strings.TrimSpace(c.FormValue("wa_username"))
+		if waUsername == "" {
+			waUsername = "admin"
+		}
+		waPassword := strings.TrimSpace(c.FormValue("wa_password"))
+		if waPassword == "" {
+			waPassword = "PutihAbu123!"
+		}
+		waTemplate := strings.TrimSpace(c.FormValue("wa_template"))
+		if waTemplate == "" {
+			waTemplate = strings.TrimSpace(c.FormValue("onesender_template"))
+		}
+		apiKey := strings.TrimSpace(c.FormValue("onesender_key"))
 
 		enabledVal := 0
-		if onesenderEnabled {
+		if waEnabled {
 			enabledVal = 1
 		}
 
@@ -1152,11 +1201,21 @@ func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 		err := db.QueryRow("SELECT id FROM settings ORDER BY id DESC LIMIT 1").Scan(&existingID)
 
 		if err == sql.ErrNoRows {
-			_, err = db.Exec(`INSERT INTO settings (announcement_text, onesender_enabled, onesender_api_url, onesender_api_key, onesender_template) VALUES (?, ?, ?, ?, ?)`,
-				announcement, enabledVal, onesenderURL, onesenderKey, onesenderTemplate)
+			_, err = db.Exec(`INSERT INTO settings (
+				announcement_text, onesender_enabled, onesender_api_url, onesender_api_key, onesender_template,
+				wa_provider, wa_enabled, wa_api_url, wa_device_id, wa_username, wa_password, wa_template
+			) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				announcement, enabledVal, waURL, apiKey, waTemplate,
+				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate)
 		} else if err == nil {
-			_, err = db.Exec(`UPDATE settings SET announcement_text = ?, onesender_enabled = ?, onesender_api_url = ?, onesender_api_key = ?, onesender_template = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-				announcement, enabledVal, onesenderURL, onesenderKey, onesenderTemplate, existingID)
+			_, err = db.Exec(`UPDATE settings SET 
+				announcement_text = ?, 
+				onesender_enabled = ?, onesender_api_url = ?, onesender_api_key = ?, onesender_template = ?,
+				wa_provider = ?, wa_enabled = ?, wa_api_url = ?, wa_device_id = ?, wa_username = ?, wa_password = ?, wa_template = ?,
+				updated_at = CURRENT_TIMESTAMP 
+			WHERE id = ?`,
+				announcement, enabledVal, waURL, apiKey, waTemplate,
+				waProvider, enabledVal, waURL, waDeviceID, waUsername, waPassword, waTemplate, existingID)
 		}
 
 		if err != nil {
@@ -1173,22 +1232,20 @@ func AdminTestMessageHandler(db *sql.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Nomor HP wajib diisi"})
 		}
 
-		sender, err := services.NewOneSenderClient(db)
+		sender, err := services.NewWhatsAppClient(db)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal membuat client: " + err.Error()})
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal membuat client WhatsApp: " + err.Error()})
 		}
 
-		testMessage := fmt.Sprintf(`Halo! Ini adalah pesan test dari Sistem E-Voting OSIS SMK NIBA.
-
-Jika Anda menerima pesan ini, berarti konfigurasi OneSender sudah benar dan berfungsi dengan baik.
-
-Terima kasih!`)
+		testMessage := fmt.Sprintf("Halo! 🙏 Ini adalah pesan uji coba dari Sistem E-Voting OSIS SMK NIBA.\n\n"+
+			"Integrasi WhatsApp Gateway (GOWA / Shim) berhasil terhubung dengan baik!\n\n"+
+			"Waktu kirim: %s", time.Now().Format("02 Jan 2006 15:04:05 WIB"))
 
 		if err := sender.SendMessage(phone, testMessage); err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal mengirim pesan: " + err.Error()})
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal mengirim pesan via WhatsApp: " + err.Error()})
 		}
 
-		return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Pesan test berhasil dikirim ke " + phone})
+		return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Pesan uji coba berhasil dikirim ke " + phone})
 	}
 }
 

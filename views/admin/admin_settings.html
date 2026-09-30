@@ -20,48 +20,68 @@
                 class="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm focus:bg-white focus:border-blue-500 focus:outline-none">{{.Announcement}}</textarea>
         </section>
 
-        <!-- OneSender WhatsApp Config -->
+        <!-- GOWA WhatsApp Gateway Config -->
         <section class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
-            <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                <span class="material-symbols-outlined text-emerald-600">chat</span>
-                Konfigurasi OneSender WhatsApp
-            </h2>
-            <p class="text-xs text-slate-500 mb-4">Kirimkan pesan bukti partisipasi otomatis via WhatsApp setelah
-                pemilih sukses melakukan voting.</p>
+            <div class="flex items-center justify-between gap-4 mb-2">
+                <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-emerald-600">chat</span>
+                    Gateway WhatsApp Notifikasi (GOWA)
+                </h2>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Gowa Engine
+                </span>
+            </div>
+            <p class="text-xs text-slate-500 mb-6">Kirimkan pesan bukti partisipasi otomatis via WhatsApp setelah pemilih sukses melakukan voting melalui integrasi NIBA-Gowa Shim &amp; Docker Gowa.</p>
 
-            <div class="space-y-4">
-                <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                    <input type="checkbox" name="onesender_enabled" id="onesender_enabled" value="1"
-                        {{if .OneSenderEnabled}}checked{{end}}
+            <div class="space-y-5">
+                <div class="flex items-center gap-3 p-4 bg-slate-50/80 rounded-xl border border-slate-200/80">
+                    <input type="checkbox" name="wa_enabled" id="wa_enabled" value="1"
+                        {{if .WAEnabled}}checked{{end}}
                         class="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
-                    <label for="onesender_enabled" class="text-sm font-semibold text-slate-800 cursor-pointer">Aktifkan
-                        Notifikasi WhatsApp Otomatis</label>
+                    <div>
+                        <label for="wa_enabled" class="text-sm font-semibold text-slate-800 cursor-pointer">Aktifkan Notifikasi WhatsApp Otomatis</label>
+                        <p class="text-xs text-slate-500 mt-0.5">Sistem akan otomatis mengirim konfirmasi setelah suara berhasil disimpan.</p>
+                    </div>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">URL API
-                            OneSender</label>
-                        <input type="url" name="onesender_url" value="{{.OneSenderURL}}"
-                            placeholder="https://onesender.example.com/send"
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none" />
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Endpoint URL (Shim / Gowa)</label>
+                        <input type="text" name="wa_url" value="{{.WAURL}}"
+                            placeholder="http://127.0.0.1:8054/api/whatsapp/send"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none font-mono" />
+                        <p class="text-[11px] text-slate-400 mt-1">Default lokal: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600">http://127.0.0.1:8054/api/whatsapp/send</code></p>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">API
-                            Key</label>
-                        <input type="password" name="onesender_key" value="{{.OneSenderKey}}"
-                            placeholder="Masukkan token API key"
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Device ID (X-Device-Id)</label>
+                        <input type="text" name="wa_device_id" value="{{.WADeviceID}}"
+                            placeholder="Pionir"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none font-mono" />
+                        <p class="text-[11px] text-slate-400 mt-1">Device ID di Shim (misal: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600">Pionir</code> dimap ke <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-600">samsung</code>)</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Username Basic Auth</label>
+                        <input type="text" name="wa_username" value="{{.WAUsername}}"
+                            placeholder="admin"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none font-mono" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password Basic Auth</label>
+                        <input type="password" name="wa_password" value="{{.WAPassword}}"
+                            placeholder="PutihAbu123!"
                             class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none font-mono" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Template Pesan
-                        (Opsional)</label>
-                    <textarea name="onesender_template" rows="3"
-                        placeholder="Kosongkan untuk menggunakan pesan bawaan sistem"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none">{{.OneSenderTemplate}}</textarea>
-                    <p class="text-xs text-slate-400 mt-1">Variabel tersedia: nama pemilih dan waktu vote.</p>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Template Pesan (Opsional)</label>
+                    <textarea name="wa_template" rows="4"
+                        placeholder="Kosongkan untuk menggunakan template resmi default sistem"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm focus:bg-white focus:border-blue-500 focus:outline-none leading-relaxed">{{.WATemplate}}</textarea>
+                    <p class="text-xs text-slate-400 mt-1">Tag variabel yang didukung: <span class="font-mono text-slate-600 font-semibold">{nama}</span>, <span class="font-mono text-slate-600 font-semibold">{kandidat_ketua}</span>, <span class="font-mono text-slate-600 font-semibold">{kandidat_wakil}</span>, <span class="font-mono text-slate-600 font-semibold">{waktu}</span></p>
                 </div>
             </div>
         </section>
@@ -191,7 +211,7 @@
 
             if (res.ok && data.status === 'success') {
                 result.className = 'mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-sm';
-                result.textContent = data.message || 'Pesan test berhasil dikirim via OneSender!';
+                result.textContent = data.message || 'Pesan uji coba berhasil dikirim via WhatsApp Gateway!';
             } else {
                 result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm';
                 result.textContent = data.error || 'Gagal mengirim pesan test.';
