@@ -58,6 +58,24 @@ type gdriveUploadResponse struct {
 	Name string `json:"name"`
 }
 
+// SanitizeFolderID cleans and extracts pure Google Drive folder ID from raw input or full URLs
+func SanitizeFolderID(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if strings.Contains(raw, "/folders/") {
+		parts := strings.Split(raw, "/folders/")
+		if len(parts) > 1 {
+			raw = parts[1]
+		}
+	}
+	if idx := strings.Index(raw, "?"); idx != -1 {
+		raw = raw[:idx]
+	}
+	if idx := strings.Index(raw, "/"); idx != -1 {
+		raw = raw[:idx]
+	}
+	return strings.TrimSpace(raw)
+}
+
 // NewGDriveClient loads configuration from settings table
 func NewGDriveClient(db *sql.DB) (*GDriveClient, error) {
 	var (
@@ -87,7 +105,7 @@ func NewGDriveClient(db *sql.DB) (*GDriveClient, error) {
 
 	cfg := GDriveConfig{
 		Enabled:             enabledNull.Int64 == 1,
-		FolderID:            strings.TrimSpace(folderIDNull.String),
+		FolderID:            SanitizeFolderID(folderIDNull.String),
 		ServiceAccountJSON:  strings.TrimSpace(saJSONNull.String),
 		DeleteLocal:         deleteLocalNull.Int64 == 1,
 		AutoApprove:         autoApproveNull.Int64 == 1,
@@ -100,6 +118,15 @@ func NewGDriveClient(db *sql.DB) (*GDriveClient, error) {
 			Timeout: 90 * time.Second, // Allow sufficient time for video uploads
 		},
 	}, nil
+}
+
+// GetClientEmail returns the client email from the Service Account JSON
+func (c *GDriveClient) GetClientEmail() string {
+	var sa serviceAccountKey
+	if err := json.Unmarshal([]byte(c.config.ServiceAccountJSON), &sa); err == nil {
+		return sa.ClientEmail
+	}
+	return ""
 }
 
 // GetConfig returns the active configuration
@@ -156,7 +183,7 @@ func (c *GDriveClient) getAccessToken() (string, error) {
 	})
 	claimsBytes, _ := json.Marshal(map[string]interface{}{
 		"iss":   sa.ClientEmail,
-		"scope": "https://www.googleapis.com/auth/drive.file",
+		"scope": "https://www.googleapis.com/auth/drive",
 		"aud":   tokenURI,
 		"exp":   now + 3600,
 		"iat":   now,
@@ -239,11 +266,12 @@ func (c *GDriveClient) UploadVideo(localFilePath, filename, mimeType string) (fi
 		return "", "", err
 	}
 
+	folderID := SanitizeFolderID(c.config.FolderID)
 	metaObj := map[string]interface{}{
 		"name": filename,
 	}
-	if c.config.FolderID != "" {
-		metaObj["parents"] = []string{c.config.FolderID}
+	if folderID != "" {
+		metaObj["parents"] = []string{folderID}
 	}
 	metaBytes, _ := json.Marshal(metaObj)
 	metaPart.Write(metaBytes)
@@ -270,7 +298,7 @@ func (c *GDriveClient) UploadVideo(localFilePath, filename, mimeType string) (fi
 	}
 
 	// Upload request
-	uploadURL := "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink"
+	uploadURL := "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=id,name,webViewLink"
 	req, err := http.NewRequest("POST", uploadURL, bodyBuf)
 	if err != nil {
 		return "", "", err
@@ -311,7 +339,7 @@ func (c *GDriveClient) UploadVideo(localFilePath, filename, mimeType string) (fi
 
 // setFilePublicRead makes the uploaded Google Drive file publicly viewable
 func (c *GDriveClient) setFilePublicRead(accessToken, fileID string) {
-	permURL := fmt.Sprintf("https://www.googleapis.com/drive/v3/files/%s/permissions", fileID)
+	permURL := fmt.Sprintf("https://www.googleapis.com/drive/v3/files/%s/permissions?supportsAllDrives=true", fileID)
 	permPayload := []byte(`{"role":"reader","type":"anyone"}`)
 
 	req, err := http.NewRequest("POST", permURL, bytes.NewBuffer(permPayload))
@@ -332,9 +360,13 @@ func (c *GDriveClient) TestConnection() error {
 		return err
 	}
 
+	var sa serviceAccountKey
+	_ = json.Unmarshal([]byte(c.config.ServiceAccountJSON), &sa)
+
+	folderID := SanitizeFolderID(c.config.FolderID)
 	// Check folder if specified
-	if c.config.FolderID != "" {
-		folderURL := fmt.Sprintf("https://www.googleapis.com/drive/v3/files/%s?fields=id,name", c.config.FolderID)
+	if folderID != "" {
+		folderURL := fmt.Sprintf("https://www.googleapis.com/drive/v3/files/%s?supportsAllDrives=true&fields=id,name", folderID)
 		req, _ := http.NewRequest("GET", folderURL, nil)
 		req.Header.Set("Authorization", "Bearer "+token)
 		resp, err := c.httpClient.Do(req)
@@ -344,6 +376,9 @@ func (c *GDriveClient) TestConnection() error {
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			body, _ := io.ReadAll(resp.Body)
+			if resp.StatusCode == http.StatusNotFound {
+				return fmt.Errorf("folder ID '%s' tidak ditemukan atau akun service belum memiliki akses (status 404). Pastikan folder Google Drive telah dibagikan (Share) ke email Service Account (%s) sebagai 'Editor' (Penyunting).", folderID, sa.ClientEmail)
+			}
 			return fmt.Errorf("folder ID tidak ditemukan atau akun service belum memiliki akses (status %d): %s", resp.StatusCode, string(body))
 		}
 	}

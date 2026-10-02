@@ -146,6 +146,7 @@ type AdminSettingsData struct {
 	GDriveEnabled            bool
 	GDriveFolderID           string
 	GDriveServiceAccountJSON string
+	GDriveClientEmail        string
 	GDriveDeleteLocal        bool
 	TestimonialsAutoApprove  bool
 	TestimonialsEnabled      bool
@@ -1356,6 +1357,16 @@ func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 			&gdriveEnabled, &gdriveFolderID, &gdriveSAJSON, &gdriveDeleteLocal, &testimAutoApprove, &testimEnabled,
 		)
 
+		var clientEmail string
+		if gdriveSAJSON != "" {
+			var sa struct {
+				ClientEmail string `json:"client_email"`
+			}
+			if err := json.Unmarshal([]byte(gdriveSAJSON), &sa); err == nil {
+				clientEmail = sa.ClientEmail
+			}
+		}
+
 		data := AdminSettingsData{
 			AdminLayoutData:          adminLayout("Pengaturan | OSIS Admin", "Pengaturan Sistem", "Atur pengumuman, integrasi WhatsApp Gateway (GOWA), dan Google Drive Kiosk.", "admin_settings_content", "settings"),
 			Announcement:             announcement,
@@ -1373,6 +1384,7 @@ func AdminSettingsHandler(db *sql.DB) echo.HandlerFunc {
 			GDriveEnabled:            gdriveEnabled == 1,
 			GDriveFolderID:           gdriveFolderID,
 			GDriveServiceAccountJSON: gdriveSAJSON,
+			GDriveClientEmail:        clientEmail,
 			GDriveDeleteLocal:        gdriveDeleteLocal == 1,
 			TestimonialsAutoApprove:  testimAutoApprove == 1,
 			TestimonialsEnabled:      testimEnabled == 1,
@@ -1418,7 +1430,7 @@ func AdminSettingsSaveHandler(db *sql.DB) echo.HandlerFunc {
 		if c.FormValue("gdrive_enabled") == "1" {
 			gdriveEnabled = 1
 		}
-		gdriveFolderID := strings.TrimSpace(c.FormValue("gdrive_folder_id"))
+		gdriveFolderID := services.SanitizeFolderID(c.FormValue("gdrive_folder_id"))
 		gdriveSAJSON := strings.TrimSpace(c.FormValue("gdrive_service_account_json"))
 		gdriveDeleteLocal := 0
 		if c.FormValue("gdrive_delete_local") == "1" {

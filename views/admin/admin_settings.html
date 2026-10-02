@@ -154,10 +154,29 @@
 
                         <div>
                             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Google Service Account JSON Key</label>
-                            <textarea name="gdrive_service_account_json" rows="6"
+                            <textarea name="gdrive_service_account_json" rows="6" id="gdrive_service_account_json"
                                 placeholder='{"type": "service_account", "project_id": "...", "private_key": "-----BEGIN PRIVATE KEY-----\n...", "client_email": "..."}'
                                 class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs focus:bg-white focus:border-rose-500 focus:outline-none font-mono leading-relaxed">{{.GDriveServiceAccountJSON}}</textarea>
                             <p class="text-[11px] text-slate-400 mt-1">Salin dan tempel (paste) seluruh isi file JSON kredensial Google Service Account yang diunduh dari Google Cloud Console.</p>
+
+                            {{if .GDriveClientEmail}}
+                            <div class="mt-3.5 p-3.5 rounded-xl bg-indigo-50/80 border border-indigo-200 text-xs text-indigo-950 space-y-2">
+                                <div class="flex items-center gap-1.5 font-bold text-indigo-900">
+                                    <span class="material-symbols-outlined text-base text-indigo-600">share</span>
+                                    <span>Langkah Wajib Sharing Akses Folder Google Drive:</span>
+                                </div>
+                                <p class="text-slate-600 text-[11px] leading-relaxed">
+                                    Buka Google Drive &gt; Klik kanan pada Folder ID di atas &gt; Pilih <b>Bagikan (Share)</b> &gt; Tempel (paste) email Service Account di bawah ini dan berikan hak akses <b>Editor (Penyunting)</b>:
+                                </p>
+                                <div class="flex items-center gap-2">
+                                    <code id="sa-email-box" class="bg-white px-3 py-1.5 rounded-lg border border-indigo-200 font-mono text-xs select-all text-indigo-900 font-bold flex-1 break-all">{{.GDriveClientEmail}}</code>
+                                    <button type="button" onclick="navigator.clipboard.writeText('{{.GDriveClientEmail}}'); alert('Email Service Account disalin ke clipboard!');" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition flex items-center gap-1 shrink-0">
+                                        <span class="material-symbols-outlined text-sm">content_copy</span>
+                                        <span>Salin Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                            {{end}}
                         </div>
                     </div>
                 </div>
@@ -517,10 +536,14 @@ Suara Anda menentukan masa depan sekolah kita! ✨
                 const data = await res.json();
                 if (res.ok && data.status === 'success') {
                     testGDriveResult.className = 'text-xs text-emerald-600 font-semibold';
-                    testGDriveResult.textContent = '✅ ' + data.message;
+                    testGDriveResult.innerHTML = '✅ ' + data.message;
                 } else {
-                    testGDriveResult.className = 'text-xs text-rose-600 font-semibold';
-                    testGDriveResult.textContent = '❌ ' + (data.error || 'Uji koneksi gagal.');
+                    testGDriveResult.className = 'text-xs text-rose-600 font-medium space-y-1';
+                    let errorHtml = '<div>❌ ' + (data.error || 'Uji koneksi gagal.') + '</div>';
+                    if (data.client_email) {
+                        errorHtml += '<div class="text-slate-600 font-normal text-[11px] mt-1 bg-rose-50 p-2 rounded-lg border border-rose-200">💡 <b>Solusi:</b> Buka folder di Google Drive, klik <b>Bagikan (Share)</b>, lalu masukkan email Service Account: <span class="font-mono font-bold text-slate-800 select-all">' + data.client_email + '</span> sebagai <b>Editor</b>.</div>';
+                    }
+                    testGDriveResult.innerHTML = errorHtml;
                 }
             } catch (err) {
                 testGDriveResult.className = 'text-xs text-rose-600 font-semibold';

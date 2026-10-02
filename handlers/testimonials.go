@@ -395,12 +395,16 @@ func AdminTestGDriveHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		if err := client.TestConnection(); err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Uji koneksi Google Drive gagal: " + err.Error()})
+			return c.JSON(http.StatusBadRequest, map[string]string{
+				"error":        "Uji koneksi Google Drive gagal: " + err.Error(),
+				"client_email": client.GetClientEmail(),
+			})
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{
-			"status":  "success",
-			"message": "Koneksi Google Drive Service Account berhasil diverifikasi!",
+			"status":       "success",
+			"message":      "Koneksi Google Drive Service Account dan akses folder berhasil diverifikasi!",
+			"client_email": client.GetClientEmail(),
 		})
 	}
 }
