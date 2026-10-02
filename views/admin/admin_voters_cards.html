@@ -5,39 +5,45 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 no-print">
         <div>
             <h1 class="text-3xl font-bold tracking-tight text-slate-900">Cetak Kartu Pemilih</h1>
-            <p class="text-slate-500 mt-1">Format cetak kartu pemilih A4 (8 kartu per lembar) lengkap dengan QR Code dan Barcode.</p>
+            <p class="text-slate-500 mt-1">Format cetak kartu pemilih A4 (8 kartu per lembar) lengkap dengan QR Code dan
+                Barcode.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
             <div class="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200">
                 <label for="class-select" class="text-xs font-bold text-slate-500 uppercase">Filter Kelas:</label>
-                <select id="class-select" class="text-sm font-semibold text-slate-700 bg-transparent focus:outline-none">
+                <select id="class-select"
+                    class="text-sm font-semibold text-slate-700 bg-transparent focus:outline-none">
                     <option value="">Semua Kelas</option>
                 </select>
             </div>
-            <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition flex items-center gap-2 shadow-xs">
+            <button onclick="window.print()"
+                class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition flex items-center gap-2 shadow-xs">
                 <span class="material-symbols-outlined text-lg">print</span>
                 <span>Cetak Kartu (<span id="visible-card-count">0</span>)</span>
             </button>
-            <a href="/admin/voters" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition text-sm font-medium">Kembali</a>
+            <a href="/admin/voters"
+                class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition text-sm font-medium">Kembali</a>
         </div>
     </div>
 
     <!-- Print Grid: 2 columns on screen and print -->
     <div id="print-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{range .Voters}}
-        <article class="voter-card rounded-2xl border border-slate-200 bg-white p-5 shadow-xs break-inside-avoid" 
-                 data-name="{{.Name}}" 
-                 data-class="{{.ClassName}}" 
-                 data-uuid="{{.UUID}}">
+        <article class="voter-card rounded-2xl border border-slate-200 bg-white p-5 shadow-xs break-inside-avoid"
+            data-name="{{.Name}}" data-class="{{.ClassName}}" data-uuid="{{.UUID}}">
             <div class="flex items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="logo flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white text-base font-bold shadow-xs">OSIS</div>
+                    <div
+                        class="logo flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-white text-base font-bold shadow-xs">
+                        OSIS</div>
                     <div>
-                        <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold">PEMILIHAN KETUA &amp; WAKIL KETUA</p>
+                        <p class="text-[9px] uppercase tracking-widest text-slate-400 font-bold">PEMILIHAN KETUA &amp;
+                            WAKIL KETUA</p>
                         <h2 class="text-base font-bold text-slate-900 leading-tight">SMK NIBA Business School</h2>
                     </div>
                 </div>
-                <div class="badge rounded-lg bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase text-indigo-700">Kartu Pemilih</div>
+                <div class="badge rounded-lg bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase text-indigo-700">
+                    Kartu Pemilih</div>
             </div>
 
             <div class="mb-3 rounded-xl border border-slate-100 bg-slate-50 p-3.5 text-center">
@@ -46,11 +52,13 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 items-center">
-                <div class="flex flex-col items-center justify-center p-2 bg-slate-50/50 rounded-xl border border-slate-100">
+                <div
+                    class="flex flex-col items-center justify-center p-2 bg-slate-50/50 rounded-xl border border-slate-100">
                     <div class="qr-code" data-uuid="{{.UUID}}" id="qr-{{.ID}}"></div>
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Scan QR Code</span>
                 </div>
-                <div class="barcode-wrap text-center flex flex-col items-center justify-center p-2 bg-slate-50/50 rounded-xl border border-slate-100">
+                <div
+                    class="barcode-wrap text-center flex flex-col items-center justify-center p-2 bg-slate-50/50 rounded-xl border border-slate-100">
                     <svg id="barcode-{{.ID}}" class="max-w-full"></svg>
                     <p class="mt-1 text-[9px] font-mono text-slate-500 break-all select-all">{{.UUID}}</p>
                 </div>
@@ -61,83 +69,101 @@
 </section>
 
 <style>
-@media print {
-    body { background: white !important; }
-    .no-print, aside, nav, header { display: none !important; }
-    main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-    .ml-72 { margin-left: 0 !important; }
-    #print-grid {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8mm !important;
-        page-break-after: always;
+    @media print {
+        body {
+            background: white !important;
+        }
+
+        .no-print,
+        aside,
+        nav,
+        header {
+            display: none !important;
+        }
+
+        main {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        .ml-72 {
+            margin-left: 0 !important;
+        }
+
+        #print-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 8mm !important;
+            page-break-after: always;
+        }
+
+        .voter-card {
+            border: 1px solid #cbd5e1 !important;
+            box-shadow: none !important;
+            page-break-inside: avoid !important;
+            margin-bottom: 0 !important;
+        }
     }
-    .voter-card {
-        border: 1px solid #cbd5e1 !important;
-        box-shadow: none !important;
-        page-break-inside: avoid !important;
-        margin-bottom: 0 !important;
-    }
-}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script>
-window.addEventListener('DOMContentLoaded', function() {
-    const cards = Array.from(document.querySelectorAll('.voter-card'));
-    const classSelect = document.getElementById('class-select');
-    const counterEl = document.getElementById('visible-card-count');
+    window.addEventListener('DOMContentLoaded', function () {
+        const cards = Array.from(document.querySelectorAll('.voter-card'));
+        const classSelect = document.getElementById('class-select');
+        const counterEl = document.getElementById('visible-card-count');
 
-    // Populate class filter
-    const classes = [...new Set(cards.map(c => c.dataset.class).filter(Boolean))].sort();
-    classes.forEach(cls => {
-        const opt = document.createElement('option');
-        opt.value = cls;
-        opt.textContent = cls;
-        classSelect.appendChild(opt);
-    });
-
-    function updateCardCount() {
-        const visible = cards.filter(c => c.style.display !== 'none').length;
-        if (counterEl) counterEl.textContent = visible;
-    }
-
-    classSelect.addEventListener('change', function() {
-        const selected = this.value;
-        cards.forEach(card => {
-            if (!selected || card.dataset.class === selected) {
-                card.style.display = '';
-            } else {
-                card.style.display = 'none';
-            }
+        // Populate class filter
+        const classes = [...new Set(cards.map(c => c.dataset.class).filter(Boolean))].sort();
+        classes.forEach(cls => {
+            const opt = document.createElement('option');
+            opt.value = cls;
+            opt.textContent = cls;
+            classSelect.appendChild(opt);
         });
+
+        function updateCardCount() {
+            const visible = cards.filter(c => c.style.display !== 'none').length;
+            if (counterEl) counterEl.textContent = visible;
+        }
+
+        classSelect.addEventListener('change', function () {
+            const selected = this.value;
+            cards.forEach(card => {
+                if (!selected || card.dataset.class === selected) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            updateCardCount();
+        });
+
+        // Render QR and Full CODE128 Barcodes
+        cards.forEach(function (card) {
+            const qrContainer = card.querySelector('.qr-code');
+            const uuid = qrContainer.dataset.uuid;
+            const canvas = document.createElement('canvas');
+            qrContainer.appendChild(canvas);
+
+            QRCode.toCanvas(canvas, uuid, { width: 90, margin: 0 }, function (error) {
+                if (error) console.error(error);
+            });
+
+            const barcodeSvg = card.querySelector('svg');
+            // Render full UUID without truncation so scanner reads exact voter identity
+            JsBarcode(barcodeSvg, uuid, {
+                format: 'CODE128',
+                width: 1.0,
+                height: 35,
+                displayValue: false,
+                margin: 0
+            });
+        });
+
         updateCardCount();
     });
-
-    // Render QR and Full CODE128 Barcodes
-    cards.forEach(function(card) {
-        const qrContainer = card.querySelector('.qr-code');
-        const uuid = qrContainer.dataset.uuid;
-        const canvas = document.createElement('canvas');
-        qrContainer.appendChild(canvas);
-
-        QRCode.toCanvas(canvas, uuid, { width: 90, margin: 0 }, function (error) {
-            if (error) console.error(error);
-        });
-
-        const barcodeSvg = card.querySelector('svg');
-        // Render full UUID without truncation so scanner reads exact voter identity
-        JsBarcode(barcodeSvg, uuid, {
-            format: 'CODE128',
-            width: 1.0,
-            height: 35,
-            displayValue: false,
-            margin: 0
-        });
-    });
-
-    updateCardCount();
-});
 </script>
 {{end}}

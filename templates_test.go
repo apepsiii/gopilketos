@@ -5,10 +5,13 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"strings"
 	"testing"
+	"time"
 
 	"gopilketos/database"
 	"gopilketos/handlers"
+	"gopilketos/services"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -160,5 +163,47 @@ func TestTemplatesAndMigration(t *testing.T) {
 	}
 	if err := tmpl.ExecuteTemplate(&buf, "admin_candidate_form.html", candidateFormData); err != nil {
 		t.Fatalf("Failed to execute admin_candidate_form.html: %v", err)
+	}
+}
+
+func TestTeacherSalutationsAndMessages(t *testing.T) {
+	// Test teacher detection
+	if !services.IsTeacherOrStaff("GURU") {
+		t.Errorf("Expected GURU to be recognized as teacher/staff")
+	}
+	if !services.IsTeacherOrStaff("STAF") {
+		t.Errorf("Expected STAF to be recognized as teacher/staff")
+	}
+	if !services.IsTeacherOrStaff("Satpam") {
+		t.Errorf("Expected Satpam to be recognized as teacher/staff")
+	}
+	if services.IsTeacherOrStaff("X-MPLB") {
+		t.Errorf("Expected X-MPLB to NOT be recognized as teacher/staff")
+	}
+	if services.IsTeacherOrStaff("XI-PM") {
+		t.Errorf("Expected XI-PM to NOT be recognized as teacher/staff")
+	}
+
+	// Test salutations
+	sapaanTeacher, ythTeacher, panggilanTeacher := services.GetSalutation("GURU")
+	if sapaanTeacher != "Bapak/Ibu" || ythTeacher != "Yth. Bapak/Ibu" || panggilanTeacher != "Bapak/Ibu" {
+		t.Errorf("Unexpected teacher salutations: %s, %s, %s", sapaanTeacher, ythTeacher, panggilanTeacher)
+	}
+
+	sapaanStudent, ythStudent, panggilanStudent := services.GetSalutation("X-MPLB")
+	if sapaanStudent != "Halo" || ythStudent != "Halo" || panggilanStudent != "kamu" {
+		t.Errorf("Unexpected student salutations: %s, %s, %s", sapaanStudent, ythStudent, panggilanStudent)
+	}
+
+	// Test vote messages
+	client := &services.WhatsAppClient{}
+	teacherMsg := client.BuildVoteMessage("Muhammad Saepurahman, S.E.", "GURU", "Kandidat A", "Kandidat B", time.Now())
+	if !strings.Contains(teacherMsg, "Yth. Bapak/Ibu Muhammad Saepurahman, S.E.") {
+		t.Errorf("Expected teacher vote message to contain 'Yth. Bapak/Ibu', got: %s", teacherMsg)
+	}
+
+	studentMsg := client.BuildVoteMessage("Ahmad Fauzi", "X-MPLB", "Kandidat A", "Kandidat B", time.Now())
+	if !strings.Contains(studentMsg, "Halo Ahmad Fauzi (X-MPLB)!") {
+		t.Errorf("Expected student vote message to contain 'Halo Ahmad Fauzi (X-MPLB)!', got: %s", studentMsg)
 	}
 }

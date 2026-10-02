@@ -142,9 +142,7 @@ func main() {
 	}
 
 	funcMap := template.FuncMap{
-		"eq": func(a, b interface{}) bool {
-			return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b)
-		},
+		"eq": func(a, b interface{}) bool { return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b) },
 	}
 	tmpl := template.New("").Funcs(funcMap)
 	viewsFS := getViewsFS()
@@ -163,10 +161,6 @@ func main() {
 	e.Static("/static/uploads", uploadsDir)
 
 	e.GET("/", handlers.LandingPageHandler(db))
-	e.GET("/demisioner", handlers.DemisionerPageHandler(db))
-	e.GET("/dpt", handlers.DPTPageHandler(db))
-	e.GET("/kiosk", handlers.KioskPageHandler(db))
-	e.POST("/api/testimonials/upload", handlers.UploadTestimonialHandler(db))
 	e.GET("/scanner", handlers.ScannerPageHandler())
 	e.POST("/validate-uuid", handlers.ValidateUUIDHandler(db))
 	e.GET("/api/candidates", handlers.ListCandidatesHandler(db))
@@ -187,20 +181,6 @@ func main() {
 	adminGroup.POST("/candidates", handlers.AdminCandidateCreateHandler(db))
 	adminGroup.POST("/candidates/:id", handlers.AdminCandidateUpdateHandler(db))
 	adminGroup.POST("/candidates/:id/delete", handlers.AdminCandidateDeleteHandler(db))
-
-	adminGroup.GET("/credits", handlers.AdminCreditsHandler(db))
-	adminGroup.GET("/credits/new", handlers.AdminCreditFormHandler(db))
-	adminGroup.GET("/credits/:id/edit", handlers.AdminCreditFormHandler(db))
-	adminGroup.POST("/credits", handlers.AdminCreditCreateHandler(db))
-	adminGroup.POST("/credits/:id", handlers.AdminCreditUpdateHandler(db))
-	adminGroup.POST("/credits/:id/delete", handlers.AdminCreditDeleteHandler(db))
-
-	adminGroup.GET("/testimonials", handlers.AdminTestimonialsHandler(db))
-	adminGroup.POST("/testimonials/:id/toggle", handlers.AdminTestimonialToggleHandler(db))
-	adminGroup.POST("/testimonials/:id/delete", handlers.AdminTestimonialDeleteHandler(db))
-	adminGroup.POST("/testimonials/:id/sync", handlers.AdminTestimonialSyncHandler(db))
-	adminGroup.POST("/testimonials/sync-all", handlers.AdminTestimonialsSyncAllHandler(db))
-
 	adminGroup.GET("/logout", handlers.AdminLogoutHandler())
 
 	adminGroup.GET("/voters", handlers.AdminVotersHandler(db))
@@ -218,8 +198,6 @@ func main() {
 	adminGroup.GET("/settings", handlers.AdminSettingsHandler(db))
 	adminGroup.POST("/settings/save", handlers.AdminSettingsSaveHandler(db))
 	adminGroup.POST("/settings/test-message", handlers.AdminTestMessageHandler(db))
-	adminGroup.POST("/settings/test-gdrive", handlers.AdminTestGDriveHandler(db))
-	adminGroup.POST("/settings/broadcast-reminder", handlers.AdminBroadcastReminderHandler(db))
 	adminGroup.POST("/settings/reset-votes", handlers.AdminResetVotesHandler(db))
 	adminGroup.GET("/settings/backup", handlers.AdminBackupHandler(db))
 	adminGroup.GET("/settings/report", handlers.AdminReportHandler(db))

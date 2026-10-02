@@ -255,12 +255,12 @@
             <!-- Target Selection -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Target Penerima Broadcast</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white cursor-pointer transition-colors">
                         <input type="radio" name="broadcast_target" value="all" checked class="text-indigo-600 focus:ring-indigo-500" />
                         <div>
                             <span class="text-xs font-bold text-slate-800 block">Semua Pemilih (DPT)</span>
-                            <span class="text-[10px] text-slate-400">Seluruh siswa dengan nomor HP</span>
+                            <span class="text-[10px] text-slate-400">Seluruh siswa dan guru/staf</span>
                         </div>
                     </label>
 
@@ -279,23 +279,64 @@
                             <span class="text-[10px] text-slate-400">Belum discan di meja absensi</span>
                         </div>
                     </label>
+
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="teachers" class="text-amber-600 focus:ring-amber-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Khusus Dewan Guru &amp; Staf</span>
+                            <span class="text-[10px] text-slate-400">Kategori GURU, STAF, Satpam</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-amber-200 bg-amber-50/40 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="teachers_not_voted" class="text-amber-600 focus:ring-amber-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Guru/Staf Belum Memilih</span>
+                            <span class="text-[10px] text-slate-400">Khusus Guru yang belum coblos</span>
+                        </div>
+                    </label>
+
+                    <label class="flex items-center gap-2.5 p-3 rounded-xl border border-blue-200 bg-blue-50/40 hover:bg-white cursor-pointer transition-colors">
+                        <input type="radio" name="broadcast_target" value="students_not_voted" class="text-blue-600 focus:ring-blue-500" />
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Siswa Belum Memilih</span>
+                            <span class="text-[10px] text-slate-400">Siswa (X, XI, XII) belum coblos</span>
+                        </div>
+                    </label>
                 </div>
             </div>
 
             <!-- Custom Message Template -->
             <div>
-                <label for="broadcast-message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Template Pesan Pengingat</label>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                    <label for="broadcast-message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Template Pesan Pengingat</label>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="setBroadcastPreset('smart')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-semibold text-slate-700 transition">Otomatis ({yth})</button>
+                        <button type="button" onclick="setBroadcastPreset('guru')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-[11px] font-semibold transition">Pesan Santun Guru</button>
+                        <button type="button" onclick="setBroadcastPreset('siswa')" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-[11px] font-semibold transition">Pesan Akrab Siswa</button>
+                    </div>
+                </div>
                 <textarea id="broadcast-message" rows="5"
                     class="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs sm:text-sm focus:bg-white focus:border-indigo-600 focus:outline-none leading-relaxed font-sans"
-                    placeholder="Tuliskan pesan broadcast pengingat...">Halo {nama} ({kelas})! 🗳️
+                    placeholder="Kosongkan untuk otomatis pesan santun ke Guru dan akrab ke Siswa...">{yth} {nama}! 🗳️
 
 Mengingatkan bahwa Pemilihan Ketua &amp; Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.
 
-Gunakan hak suara Anda di bilik TPS sekarang juga!
-Suara Anda menentukan masa depan sekolah kita! ✨
+Kami memohon kesediaan {panggilan} untuk dapat hadir dan menyalurkan hak suara di bilik TPS sekarang juga.
+Partisipasi {panggilan} menentukan masa depan sekolah kita! ✨
 
 - Panitia Pilketos SMK NIBA</textarea>
-                <p class="text-[11px] text-slate-400 mt-1">Variabel otomatis yang didukung: <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{nama}</code>, <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{kelas}</code>, <code class="bg-slate-100 px-1 py-0.5 rounded text-indigo-600 font-semibold">{uuid}</code>.</p>
+                <div class="mt-2 text-[11px] text-slate-500 space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <p class="font-semibold text-slate-700">💡 Variabel Pintar Sapaan Otomatis:</p>
+                    <div class="flex flex-wrap gap-2 text-[10px]">
+                        <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-indigo-700 font-bold">{yth}</span>: <i>"Yth. Bapak/Ibu"</i> (guru) atau <i>"Halo"</i> (siswa)
+                        <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-indigo-700 font-bold">{sapaan}</span>: <i>"Bapak/Ibu"</i> (guru) atau <i>"Halo"</i> (siswa)
+                        <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-indigo-700 font-bold">{panggilan}</span>: <i>"Bapak/Ibu"</i> (guru) atau <i>"kamu"</i> (siswa)
+                        <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-indigo-700 font-bold">{nama}</span>: Nama Lengkap
+                        <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-mono text-indigo-700 font-bold">{kelas}</span>: Kelas / Jabatan
+                    </div>
+                    <p class="text-[10px] text-slate-400 italic pt-0.5">*Jika kolom template dikosongkan, sistem secara cerdas akan otomatis mengirimkan teks formal penuh kehormatan untuk Dewan Guru &amp; Staf, serta teks penyemangat untuk siswa.</p>
+                </div>
             </div>
 
             <div class="flex items-center justify-between pt-2">
@@ -469,6 +510,19 @@ Suara Anda menentukan masa depan sekolah kita! ✨
         openModalBtn.disabled = false;
         openModalBtn.innerHTML = '<span class="material-symbols-outlined text-lg">warning</span> Reset Semua Surat Suara';
     });
+
+    // Presets for WhatsApp Broadcast Message
+    function setBroadcastPreset(type) {
+        const area = document.getElementById('broadcast-message');
+        if (!area) return;
+        if (type === 'guru') {
+            area.value = "Yth. Bapak/Ibu {nama} 🗳️\n\nDengan hormat, kami dari Panitia Pemilihan OSIS SMK NIBA Business School menginformasikan bahwa pemungutan suara digital sedang berlangsung.\n\nKami memohon kesediaan Bapak/Ibu untuk dapat hadir dan menyalurkan hak suara di bilik TPS sekarang juga.\nDukungan dan partisipasi Bapak/Ibu sangat berarti bagi kesuksesan pesta demokrasi serta kemajuan sekolah kita. ✨\n\nSalam hormat,\nPanitia Pilketos SMK NIBA";
+        } else if (type === 'siswa') {
+            area.value = "Halo {nama} ({kelas})! 🗳️\n\nMengingatkan bahwa Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.\n\nGunakan hak suara kamu di bilik TPS sekarang juga!\nSuara kamu menentukan masa depan organisasi kita! ✨\n\nSalam hangat,\nPanitia Pilketos SMK NIBA";
+        } else {
+            area.value = "{yth} {nama}! 🗳️\n\nMengingatkan bahwa Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.\n\nKami memohon kesediaan {panggilan} untuk dapat hadir dan menyalurkan hak suara di bilik TPS sekarang juga.\nPartisipasi {panggilan} menentukan masa depan sekolah kita! ✨\n\n- Panitia Pilketos SMK NIBA";
+        }
+    }
 
     // Broadcast WhatsApp Reminder
     const broadcastBtn = document.getElementById('broadcast-btn');

@@ -135,21 +135,55 @@ func FormatPhoneNumber(phone string) string {
 	return phone
 }
 
-// BuildVoteMessage formats the confirmation message with available variables
-func (c *WhatsAppClient) BuildVoteMessage(voterName, chairmanName, viceChairmanName string, voteTime time.Time) string {
-	timeStr := voteTime.Format("02 Jan 2006 15:04 WIB")
-	template := c.config.Template
+// IsTeacherOrStaff returns true if the class name represents teachers, staff, or school personnel
+func IsTeacherOrStaff(className string) bool {
+	cn := strings.ToUpper(strings.TrimSpace(className))
+	if cn == "GURU" || cn == "STAF" || cn == "STAFF" || cn == "SATPAM" || cn == "TENDIK" || cn == "TU" || cn == "KEPSEK" || cn == "WAKASEK" {
+		return true
+	}
+	if strings.Contains(cn, "GURU") || strings.Contains(cn, "STAF") || strings.Contains(cn, "STAFF") || strings.Contains(cn, "SATPAM") {
+		return true
+	}
+	return false
+}
 
-	if strings.TrimSpace(template) == "" {
-		return fmt.Sprintf("Halo %s! 🙏\n\n"+
+// GetSalutation returns appropriate honorifics/salutations based on voter's category
+func GetSalutation(className string) (sapaan string, yth string, panggilan string) {
+	if IsTeacherOrStaff(className) {
+		return "Bapak/Ibu", "Yth. Bapak/Ibu", "Bapak/Ibu"
+	}
+	return "Halo", "Halo", "kamu"
+}
+
+// BuildVoteMessage formats the confirmation message with polite teacher/student salutations and variables
+func (c *WhatsAppClient) BuildVoteMessage(voterName, className, chairmanName, viceChairmanName string, voteTime time.Time) string {
+	timeStr := voteTime.Format("02 Jan 2006 15:04 WIB")
+	template := strings.TrimSpace(c.config.Template)
+	isTeacher := IsTeacherOrStaff(className)
+	sapaan, yth, panggilan := GetSalutation(className)
+
+	if template == "" {
+		if isTeacher {
+			return fmt.Sprintf("Yth. Bapak/Ibu %s 🙏\n\n"+
+				"Terima kasih atas partisipasi dan teladan Bapak/Ibu dalam menyalurkan hak suara pada Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School.\n\n"+
+				"✅ Suara Bapak/Ibu telah tercatat dengan aman pada %s.\n\n"+
+				"Bimbingan dan dukungan Bapak/Ibu sangat berarti bagi kesuksesan pesta demokrasi serta pembelajaran siswa-siswi kita. ✨\n\n"+
+				"Salam hormat,\nPanitia Pilketos SMK NIBA", voterName, timeStr)
+		}
+
+		return fmt.Sprintf("Halo %s (%s)! 🗳️\n\n"+
 			"Terima kasih telah berpartisipasi dalam Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School.\n\n"+
-			"✅ Suara Anda telah tercatat dengan aman pada %s.\n\n"+
-			"Partisipasi Anda sangat berarti bagi kemajuan sekolah kita.\n\n"+
-			"Salam hangat,\nPanitia Pilketos", voterName, timeStr)
+			"✅ Suara kamu telah tercatat dengan aman pada %s.\n\n"+
+			"Suara kamu menentukan masa depan organisasi kita! ✨\n\n"+
+			"Salam hangat,\nPanitia Pilketos SMK NIBA", voterName, className, timeStr)
 	}
 
 	msg := template
+	msg = strings.ReplaceAll(msg, "{sapaan}", sapaan)
+	msg = strings.ReplaceAll(msg, "{yth}", yth)
+	msg = strings.ReplaceAll(msg, "{panggilan}", panggilan)
 	msg = strings.ReplaceAll(msg, "{nama}", voterName)
+	msg = strings.ReplaceAll(msg, "{kelas}", className)
 	msg = strings.ReplaceAll(msg, "{kandidat_ketua}", chairmanName)
 	msg = strings.ReplaceAll(msg, "{kandidat_wakil}", viceChairmanName)
 	msg = strings.ReplaceAll(msg, "{waktu}", timeStr)

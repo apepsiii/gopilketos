@@ -47,8 +47,8 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 		defer tx.Rollback()
 
 		var hasVoted int
-		var phoneNumber, voterName string
-		err = tx.QueryRow("SELECT has_voted, phone_number, name FROM voters WHERE uuid = ?", req.UUID).Scan(&hasVoted, &phoneNumber, &voterName)
+		var phoneNumber, voterName, className string
+		err = tx.QueryRow("SELECT has_voted, phone_number, name, class_name FROM voters WHERE uuid = ?", req.UUID).Scan(&hasVoted, &phoneNumber, &voterName, &className)
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusNotFound, VoteResponse{"error", "UUID tidak ditemukan"})
 		} else if err != nil {
@@ -96,7 +96,7 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 		}
 
 		if phoneNumber != "" {
-			go func(phone, name, cName, vName, receipt string) {
+			go func(phone, name, cName, vName, clsName, receipt string) {
 				sender, err := services.NewWhatsAppClient(db)
 				if err != nil {
 					log.Printf("[WA] Gagal membuat WhatsApp client: %v", err)
@@ -106,7 +106,7 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 					return
 				}
 
-				message := sender.BuildVoteMessage(name, cName, vName, time.Now())
+				message := sender.BuildVoteMessage(name, clsName, cName, vName, time.Now())
 				status := "sent"
 				if err := sender.SendMessage(phone, message); err != nil {
 					status = "failed: " + err.Error()
@@ -116,7 +116,7 @@ func SubmitVoteHandler(db *sql.DB) echo.HandlerFunc {
 				}
 
 				_, _ = db.Exec("UPDATE votes SET wa_notif_sent = ?, wa_notif_status = ? WHERE masked_uuid = ?", status == "sent", status, receipt)
-			}(phoneNumber, voterName, chairmanName, viceChairmanName, ballotReceipt)
+			}(phoneNumber, voterName, chairmanName, viceChairmanName, className, ballotReceipt)
 		}
 
 		return c.JSON(http.StatusOK, VoteResponse{"success", "Pilihan berhasil disimpan"})

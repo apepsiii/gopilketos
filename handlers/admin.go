@@ -1526,6 +1526,14 @@ func AdminBroadcastReminderHandler(db *sql.DB) echo.HandlerFunc {
 			query += " AND has_voted = 0"
 		} else if target == "not_present" {
 			query += " AND COALESCE(presence_status, 0) = 0"
+		} else if target == "teachers" {
+			query += " AND (UPPER(class_name) LIKE '%GURU%' OR UPPER(class_name) LIKE '%STAF%' OR UPPER(class_name) LIKE '%STAFF%' OR UPPER(class_name) LIKE '%SATPAM%')"
+		} else if target == "teachers_not_voted" {
+			query += " AND has_voted = 0 AND (UPPER(class_name) LIKE '%GURU%' OR UPPER(class_name) LIKE '%STAF%' OR UPPER(class_name) LIKE '%STAFF%' OR UPPER(class_name) LIKE '%SATPAM%')"
+		} else if target == "students" {
+			query += " AND NOT (UPPER(class_name) LIKE '%GURU%' OR UPPER(class_name) LIKE '%STAF%' OR UPPER(class_name) LIKE '%STAFF%' OR UPPER(class_name) LIKE '%SATPAM%')"
+		} else if target == "students_not_voted" {
+			query += " AND has_voted = 0 AND NOT (UPPER(class_name) LIKE '%GURU%' OR UPPER(class_name) LIKE '%STAF%' OR UPPER(class_name) LIKE '%STAFF%' OR UPPER(class_name) LIKE '%SATPAM%')"
 		}
 
 		rows, err := db.Query(query)
@@ -1560,14 +1568,28 @@ func AdminBroadcastReminderHandler(db *sql.DB) echo.HandlerFunc {
 		// Asynchronous background delivery with gentle rate limiting
 		go func(list []recipient, templateMsg string, client *services.WhatsAppClient) {
 			for _, rec := range list {
+				isTeacher := services.IsTeacherOrStaff(rec.ClassName)
+				sapaan, yth, panggilan := services.GetSalutation(rec.ClassName)
+
 				msg := templateMsg
 				if msg == "" {
-					msg = fmt.Sprintf("Halo %s (%s)! 🗳️\n\n"+
-						"Mengingatkan bahwa Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.\n\n"+
-						"Gunakan hak suara Anda di bilik TPS sekarang juga.\n"+
-						"Suara Anda menentukan masa depan sekolah kita! ✨\n\n"+
-						"- Panitia Pilketos SMK NIBA", rec.Name, rec.ClassName)
+					if isTeacher {
+						msg = fmt.Sprintf("Yth. Bapak/Ibu %s 🗳️\n\n"+
+							"Dengan hormat, kami dari Panitia Pemilihan OSIS SMK NIBA Business School menginformasikan bahwa pemungutan suara digital sedang berlangsung.\n\n"+
+							"Kami memohon kesediaan Bapak/Ibu untuk dapat hadir dan menyalurkan hak suara di bilik TPS.\n"+
+							"Dukungan dan partisipasi Bapak/Ibu sangat berarti bagi kesuksesan pesta demokrasi serta kemajuan sekolah kita. ✨\n\n"+
+							"Salam hormat,\nPanitia Pilketos SMK NIBA", rec.Name)
+					} else {
+						msg = fmt.Sprintf("Halo %s (%s)! 🗳️\n\n"+
+							"Mengingatkan bahwa Pemilihan Ketua & Wakil Ketua OSIS SMK NIBA Business School sedang berlangsung.\n\n"+
+							"Gunakan hak suara kamu di bilik TPS sekarang juga.\n"+
+							"Suara kamu menentukan masa depan sekolah kita! ✨\n\n"+
+							"- Panitia Pilketos SMK NIBA", rec.Name, rec.ClassName)
+					}
 				} else {
+					msg = strings.ReplaceAll(msg, "{sapaan}", sapaan)
+					msg = strings.ReplaceAll(msg, "{yth}", yth)
+					msg = strings.ReplaceAll(msg, "{panggilan}", panggilan)
 					msg = strings.ReplaceAll(msg, "{nama}", rec.Name)
 					msg = strings.ReplaceAll(msg, "{kelas}", rec.ClassName)
 					msg = strings.ReplaceAll(msg, "{uuid}", rec.UUID)
